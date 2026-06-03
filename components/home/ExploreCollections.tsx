@@ -60,10 +60,10 @@ export function ExploreCollections() {
               
               {/* Background Image */}
               <div 
-                className="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-60 mix-blend-luminosity group-hover:mix-blend-normal"
+                className="absolute inset-0 z-0 bg-cover bg-center transition-all duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100"
                 style={{ backgroundImage: `url(${col.image})` }}
               />
-              <div className="absolute inset-0 z-0 bg-gradient-to-b from-jungle/90 via-jungle/40 to-jungle/90" />
+              <div className="absolute inset-0 z-0 bg-gradient-to-b from-jungle/80 via-transparent to-jungle/90 group-hover:opacity-70 transition-opacity duration-700" />
 
               {/* Top Content */}
               <div className="relative z-10 p-8 flex flex-col items-start">

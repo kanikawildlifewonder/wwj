@@ -187,7 +187,7 @@ export default function ShopPage() {
               <h2 className="font-sans text-sm tracking-widest uppercase font-bold text-jungle">Filters</h2>
               <button onClick={() => setMobileFiltersOpen(false)}><X className="w-5 h-5 text-jungle" /></button>
             </div>
-            <FilterPanel />
+            {FilterPanel()}
             <button onClick={() => setMobileFiltersOpen(false)} className="mt-8 w-full bg-jungle text-gold py-3 text-xs font-bold tracking-widest uppercase rounded-btn">
               Apply Filters
             </button>

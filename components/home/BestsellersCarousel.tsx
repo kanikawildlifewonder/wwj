@@ -52,18 +52,18 @@ const BESTSELLERS = [
 
 export function BestsellersCarousel() {
   return (
-    <section className="bg-ivory py-20 border-b border-border text-jungle relative overflow-hidden">
+    <section className="bg-jungle py-20 border-b border-border text-ivory relative overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8">
         
         {/* Header */}
         <div className="text-center mb-12 flex flex-col items-center">
           <div className="flex items-center gap-4 mb-4">
-            <span className="w-8 h-[1px] bg-jungle/30" />
-            <span className="text-jungle text-xs tracking-[0.2em] uppercase font-bold flex items-center">
+            <span className="w-8 h-[1px] bg-gold/30" />
+            <span className="text-gold text-xs tracking-[0.2em] uppercase font-bold flex items-center">
               <PawPrint className="w-3 h-3 inline-block mr-2" />
               Bestsellers
             </span>
-            <span className="w-8 h-[1px] bg-jungle/30" />
+            <span className="w-8 h-[1px] bg-gold/30" />
           </div>
         </div>
 
@@ -71,11 +71,11 @@ export function BestsellersCarousel() {
         <div className="relative group">
           
           {/* Navigation Buttons */}
-          <button className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-8 h-8 rounded-full bg-ivory border border-border shadow-lg flex items-center justify-center text-jungle hover:text-gold hover:border-gold transition-colors opacity-0 group-hover:opacity-100 hidden md:flex">
+          <button className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-8 h-8 rounded-full bg-forest border border-border shadow-lg flex items-center justify-center text-ivory/70 hover:text-gold hover:border-gold transition-colors opacity-0 group-hover:opacity-100 hidden md:flex">
             <ChevronLeft className="w-4 h-4" />
           </button>
           
-          <button className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-8 h-8 rounded-full bg-ivory border border-border shadow-lg flex items-center justify-center text-jungle hover:text-gold hover:border-gold transition-colors opacity-0 group-hover:opacity-100 hidden md:flex">
+          <button className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-8 h-8 rounded-full bg-forest border border-border shadow-lg flex items-center justify-center text-ivory/70 hover:text-gold hover:border-gold transition-colors opacity-0 group-hover:opacity-100 hidden md:flex">
             <ChevronRight className="w-4 h-4" />
           </button>
 
@@ -85,9 +85,9 @@ export function BestsellersCarousel() {
               <div key={product.id} className="min-w-[260px] max-w-[280px] flex-none snap-start group/card cursor-pointer">
                 
                 {/* Image Container */}
-                <div className="relative aspect-square rounded-xl overflow-hidden bg-cream mb-4 border border-jungle/10">
+                <div className="relative aspect-square rounded-xl overflow-hidden bg-forest mb-4 border border-border">
                   {product.badge && (
-                    <div className="absolute top-3 left-3 z-10 bg-ivory/90 backdrop-blur px-2 py-1 text-[9px] font-bold tracking-widest text-jungle rounded">
+                    <div className="absolute top-3 left-3 z-10 bg-gold/90 backdrop-blur px-2 py-1 text-[9px] font-bold tracking-widest text-jungle rounded">
                       {product.badge}
                     </div>
                   )}
@@ -102,7 +102,7 @@ export function BestsellersCarousel() {
 
                 {/* Details */}
                 <div className="flex flex-col gap-1 px-1">
-                  <h3 className="font-sans font-medium text-sm text-jungle leading-tight group-hover/card:text-gold-dark transition-colors">
+                  <h3 className="font-sans font-medium text-sm text-ivory leading-tight group-hover/card:text-gold transition-colors">
                     {product.name}
                   </h3>
                   
@@ -112,10 +112,10 @@ export function BestsellersCarousel() {
                         <Star key={s} className="w-3 h-3 fill-current" />
                       ))}
                     </div>
-                    <span className="text-[10px] text-jungle/60">({product.reviews})</span>
+                    <span className="text-[10px] text-ivory/50">({product.reviews})</span>
                   </div>
                   
-                  <div className="mt-1 font-sans font-bold text-sm text-jungle">
+                  <div className="mt-1 font-sans font-bold text-sm text-gold">
                     ₹{product.price}
                   </div>
                 </div>
