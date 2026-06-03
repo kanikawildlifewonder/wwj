@@ -56,6 +56,10 @@ export default async function AdminLayout({
             <Users className="w-5 h-5 text-gold" />
             <span className="font-medium">Customers</span>
           </Link>
+          <Link href="/admin/pages" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-ivory/10 transition-colors">
+            <LayoutDashboard className="w-5 h-5 text-gold" />
+            <span className="font-medium">Site Content</span>
+          </Link>
           <Link href="/admin/settings" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-ivory/10 transition-colors">
             <Settings className="w-5 h-5 text-gold" />
             <span className="font-medium">Settings</span>

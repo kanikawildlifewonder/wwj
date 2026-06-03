@@ -6,13 +6,23 @@ import { WildlifeStoryBanner } from "@/components/home/WildlifeStoryBanner";
 import { BestsellersCarousel } from "@/components/home/BestsellersCarousel";
 import { TrustStrip } from "@/components/home/TrustStrip";
 
-export default function HomePage() {
+import { getPageContent } from "@/app/actions/content";
+
+export default async function HomePage() {
+  const heroContentStr = await getPageContent("home-hero");
+  let heroProps = {};
+  if (heroContentStr) heroProps = JSON.parse(heroContentStr);
+
+  const aboutContentStr = await getPageContent("home-about");
+  let aboutProps = {};
+  if (aboutContentStr) aboutProps = JSON.parse(aboutContentStr);
+
   return (
     <>
-      <HeroBanner />
+      <HeroBanner {...heroProps} />
       <BrandValueStrip />
       <ExploreCollections />
-      <WildlifeStoryBanner />
+      <WildlifeStoryBanner {...aboutProps} />
       <BestsellersCarousel />
       <div className="bg-jungle h-24" /> {/* Spacer for the bottom wave of TrustStrip */}
       <TrustStrip />

@@ -4,7 +4,15 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
 
-export function HeroBanner() {
+export function HeroBanner({
+  title = "WEAR <br /> THE WILD",
+  subtitle = "Celebrate Nature. Inspire Change.",
+  buttonText = "Shop Collection"
+}: {
+  title?: string;
+  subtitle?: string;
+  buttonText?: string;
+}) {
   return (
     <section className="relative w-full h-[85vh] min-h-[600px] flex items-center justify-center overflow-hidden bg-jungle">
       {/* Background Image Placeholder */}
@@ -31,12 +39,10 @@ export function HeroBanner() {
             <span className="w-12 h-[1px] bg-gold" />
           </div>
           
-          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl text-ivory mb-2 tracking-tight">
-            WEAR <br /> THE WILD
-          </h1>
+          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl text-ivory mb-2 tracking-tight" dangerouslySetInnerHTML={{ __html: title }} />
           
           <p className="font-serif text-2xl md:text-3xl text-ivory/90 italic mb-6">
-            Celebrate Nature. Inspire Change.
+            {subtitle}
           </p>
           
           <p className="font-sans text-sm md:text-base text-ivory/80 max-w-md mb-10 leading-relaxed">
@@ -48,7 +54,7 @@ export function HeroBanner() {
               href="/collections" 
               className="bg-gold text-jungle px-8 py-3 text-sm font-bold tracking-widest uppercase hover:bg-gold-light transition-colors text-center"
             >
-              Shop Collection
+              {buttonText}
             </Link>
             <Link 
               href="/wildlife-impact" 

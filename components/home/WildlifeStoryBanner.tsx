@@ -1,7 +1,15 @@
 import React from "react";
 import Link from "next/link";
 
-export function WildlifeStoryBanner() {
+export function WildlifeStoryBanner({
+  subtitle = "INSPIRED BY NATURE. MADE FOR YOU.",
+  title = "Every Piece Tells <br /> A Wild Story.",
+  paragraph = "From the elegance of a butterfly to the strength of a tiger, our designs are a tribute to the incredible wildlife that inspires us every day."
+}: {
+  subtitle?: string;
+  title?: string;
+  paragraph?: string;
+}) {
   return (
     <section className="relative bg-jungle py-16 border-b border-border overflow-hidden">
       {/* Tiger Background Left */}
@@ -16,13 +24,11 @@ export function WildlifeStoryBanner() {
           {/* Left Text Content */}
           <div className="flex-1 space-y-6 max-w-xl relative z-10">
             <h4 className="font-sans text-xs tracking-[0.2em] uppercase font-bold text-gold">
-              INSPIRED BY NATURE. MADE FOR YOU.
+              {subtitle}
             </h4>
-            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-ivory tracking-tight leading-tight">
-              Every Piece Tells <br /> A Wild Story.
-            </h2>
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-ivory tracking-tight leading-tight" dangerouslySetInnerHTML={{ __html: title }} />
             <p className="font-sans text-sm text-ivory/80 leading-relaxed max-w-md">
-              From the elegance of a butterfly to the strength of a tiger, our designs are a tribute to the incredible wildlife that inspires us every day.
+              {paragraph}
             </p>
             <div className="pt-4">
               <Link 
