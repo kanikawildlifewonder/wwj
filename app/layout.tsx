@@ -7,6 +7,7 @@ import {
   UserButton,
   Show,
 } from "@clerk/nextjs";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -46,6 +47,7 @@ export default function RootLayout({
         className={`${playfair.variable} ${cormorant.variable} ${inter.variable} antialiased h-full scroll-smooth`}
       >
         <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+          <Toaster richColors position="top-center" />
           {/* Clerk auth controls are surfaced inside the per-route Header component */}
           {/* ClerkProvider makes auth state available to all Server & Client components */}
           {children}
