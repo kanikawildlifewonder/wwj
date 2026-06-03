@@ -26,7 +26,10 @@ export function Header() {
   const cartCount = totalItems();
   const wishlistCount = wishlistItems.length;
 
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
+    setIsMounted(true);
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -104,7 +107,7 @@ export function Header() {
 
           <Link href="/account/wishlist" aria-label="Wishlist" className="hover:text-gold transition-colors p-1 relative hidden sm:block">
             <Heart className="w-5 h-5" />
-            {wishlistCount > 0 && (
+            {isMounted && wishlistCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-gold text-jungle text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                 {wishlistCount}
               </span>
@@ -117,7 +120,7 @@ export function Header() {
             className="hover:text-gold transition-colors p-1 relative"
           >
             <ShoppingBag className="w-5 h-5" />
-            {cartCount > 0 && (
+            {isMounted && cartCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-gold text-jungle text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                 {cartCount > 9 ? "9+" : cartCount}
               </span>
