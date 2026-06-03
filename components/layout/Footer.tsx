@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <footer className="bg-jungle text-ivory/80 pt-16 pb-8 border-t border-border">
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 mb-12">
           
           {/* Brand & About */}
           <div className="space-y-6">
@@ -59,13 +59,22 @@ export function Footer() {
 
           {/* Quick Links */}
           <div className="space-y-6">
-            <h4 className="font-sans text-sm tracking-widest font-bold text-ivory uppercase">Quick Links</h4>
+            <h4 className="font-sans text-sm tracking-widest font-bold text-ivory uppercase">Explore</h4>
             <ul className="space-y-3 text-sm flex flex-col">
               <li><Link href="/shop" className="hover:text-gold transition-colors">Shop All</Link></li>
-              <li><Link href="/catalogue" className="hover:text-gold transition-colors">Catalog</Link></li>
-              <li><Link href="/styling-tips" className="hover:text-gold transition-colors">Styling Tips</Link></li>
               <li><Link href="/about" className="hover:text-gold transition-colors">About Us</Link></li>
+              <li><Link href="/impact" className="hover:text-gold transition-colors">Our Impact</Link></li>
               <li><Link href="/contact" className="hover:text-gold transition-colors">Contact Us</Link></li>
+            </ul>
+          </div>
+
+          {/* Legal & Support */}
+          <div className="space-y-6">
+            <h4 className="font-sans text-sm tracking-widest font-bold text-ivory uppercase">Support</h4>
+            <ul className="space-y-3 text-sm flex flex-col">
+              <li><Link href="/faq" className="hover:text-gold transition-colors">FAQs</Link></li>
+              <li><Link href="/privacy" className="hover:text-gold transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="hover:text-gold transition-colors">Terms of Service</Link></li>
             </ul>
           </div>
 
