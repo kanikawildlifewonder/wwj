@@ -1,15 +1,20 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MOCK_PRODUCTS, COLLECTIONS_LIST } from "@/lib/mock-data";
+import { COLLECTIONS_LIST } from "@/lib/mock-data";
 import { ProductCard } from "@/components/shop/ProductCard";
+import prisma from "@/lib/prisma";
 
 const COLLECTION_MAP: Record<string, string> = {
   jewellery: "WWJ Jewellery",
   accessories: "WWA Accessories",
   gifting: "Gifting Collection",
+};
+
+const CATEGORY_MAP: Record<string, string[]> = {
+  jewellery: ["necklaces", "earrings", "rings", "bracelets"],
+  accessories: ["accessories", "bags"],
+  gifting: ["gifting"],
 };
 
 const COLLECTION_IMAGES: Record<string, string> = {
@@ -22,13 +27,20 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export default function CollectionPage({ params }: PageProps) {
-  const resolvedParams = React.use(params);
-  const { slug } = resolvedParams;
+export default async function CollectionPage({ params }: PageProps) {
+  const { slug } = await params;
   const collectionName = COLLECTION_MAP[slug];
   if (!collectionName) notFound();
 
-  const products = MOCK_PRODUCTS.filter((p) => p.collection === collectionName);
+  // Fetch products that match the categories in this collection
+  const categories = CATEGORY_MAP[slug] || [];
+  const products = await prisma.product.findMany({
+    where: {
+      category: { in: categories }
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+
   const collectionInfo = COLLECTIONS_LIST.find((c) => c.slug === slug);
 
   return (

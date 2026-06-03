@@ -13,6 +13,8 @@ const SORT_OPTIONS = [
   { label: "Top Rated", value: "rating" },
 ];
 
+import { getProducts } from "@/app/actions/products";
+
 export default function ShopPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedAnimal, setSelectedAnimal] = useState("All");
@@ -22,25 +24,36 @@ export default function ShopPage() {
   const [showNewArrivals, setShowNewArrivals] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [priceMax, setPriceMax] = useState(5000);
+  
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  React.useEffect(() => {
+    getProducts().then(data => {
+      setAllProducts(data);
+      setIsLoading(false);
+    });
+  }, []);
 
   const filtered = useMemo(() => {
-    let products = [...MOCK_PRODUCTS];
-    if (selectedCategory !== "All") products = products.filter((p) => p.category === selectedCategory);
-    if (selectedAnimal !== "All") products = products.filter((p) => p.animalInspiration === selectedAnimal);
+    let products = [...allProducts];
+    if (selectedCategory !== "All") products = products.filter((p) => p.category.toLowerCase() === selectedCategory.toLowerCase());
+    // Animal filter is omitted for DB products unless we add it to the schema, fallback safely
+    if (selectedAnimal !== "All") products = products.filter((p) => (p.animalInspiration || 'None') === selectedAnimal);
     if (showInStockOnly) products = products.filter((p) => p.inStock);
-    if (showBestsellers) products = products.filter((p) => p.isBestseller);
+    if (showBestsellers) products = products.filter((p) => p.featured);
     if (showNewArrivals) products = products.filter((p) => p.isNewArrival);
     products = products.filter((p) => p.price <= priceMax);
 
     switch (sortBy) {
       case "price_asc": products.sort((a, b) => a.price - b.price); break;
       case "price_desc": products.sort((a, b) => b.price - a.price); break;
-      case "popular": products.sort((a, b) => b.reviewCount - a.reviewCount); break;
-      case "rating": products.sort((a, b) => b.rating - a.rating); break;
+      case "popular": products.sort((a, b) => (b.reviewCount || 0) - (a.reviewCount || 0)); break;
+      case "rating": products.sort((a, b) => (b.rating || 0) - (a.rating || 0)); break;
       default: break;
     }
     return products;
-  }, [selectedCategory, selectedAnimal, sortBy, showInStockOnly, showBestsellers, showNewArrivals, priceMax]);
+  }, [allProducts, selectedCategory, selectedAnimal, sortBy, showInStockOnly, showBestsellers, showNewArrivals, priceMax]);
 
   const FilterPanel = () => (
     <div className="space-y-8">

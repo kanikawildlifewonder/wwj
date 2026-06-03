@@ -27,7 +27,7 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Link href={`/products/${product.slug}`} className="group block">
+    <Link href={`/products/${product.id}`} className="group block">
       <div className="relative aspect-square rounded-xl overflow-hidden bg-cream mb-4 border border-jungle/10">
         {/* Badges */}
         <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
