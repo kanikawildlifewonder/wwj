@@ -100,22 +100,22 @@ export default function CheckoutPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
                     <label className="block text-sm text-jungle/70 mb-1">Email</label>
-                    <input {...register("email")} className="w-full border border-border px-4 py-3 rounded-btn bg-cream focus:outline-none focus:border-gold" />
+                    <input {...register("email")} className="w-full border border-border px-4 py-3 rounded-btn bg-cream text-jungle focus:outline-none focus:border-gold" />
                     {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
                   </div>
                   <div>
                     <label className="block text-sm text-jungle/70 mb-1">First Name</label>
-                    <input {...register("firstName")} className="w-full border border-border px-4 py-3 rounded-btn bg-cream focus:outline-none focus:border-gold" />
+                    <input {...register("firstName")} className="w-full border border-border px-4 py-3 rounded-btn bg-cream text-jungle focus:outline-none focus:border-gold" />
                     {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName.message}</p>}
                   </div>
                   <div>
                     <label className="block text-sm text-jungle/70 mb-1">Last Name</label>
-                    <input {...register("lastName")} className="w-full border border-border px-4 py-3 rounded-btn bg-cream focus:outline-none focus:border-gold" />
+                    <input {...register("lastName")} className="w-full border border-border px-4 py-3 rounded-btn bg-cream text-jungle focus:outline-none focus:border-gold" />
                     {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName.message}</p>}
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm text-jungle/70 mb-1">Phone Number</label>
-                    <input {...register("phone")} className="w-full border border-border px-4 py-3 rounded-btn bg-cream focus:outline-none focus:border-gold" />
+                    <input {...register("phone")} className="w-full border border-border px-4 py-3 rounded-btn bg-cream text-jungle focus:outline-none focus:border-gold" />
                     {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
                   </div>
                 </div>
@@ -127,22 +127,22 @@ export default function CheckoutPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
                     <label className="block text-sm text-jungle/70 mb-1">Full Address</label>
-                    <input {...register("address")} className="w-full border border-border px-4 py-3 rounded-btn bg-cream focus:outline-none focus:border-gold" />
+                    <input {...register("address")} className="w-full border border-border px-4 py-3 rounded-btn bg-cream text-jungle focus:outline-none focus:border-gold" />
                     {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address.message}</p>}
                   </div>
                   <div>
                     <label className="block text-sm text-jungle/70 mb-1">City</label>
-                    <input {...register("city")} className="w-full border border-border px-4 py-3 rounded-btn bg-cream focus:outline-none focus:border-gold" />
+                    <input {...register("city")} className="w-full border border-border px-4 py-3 rounded-btn bg-cream text-jungle focus:outline-none focus:border-gold" />
                     {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city.message}</p>}
                   </div>
                   <div>
                     <label className="block text-sm text-jungle/70 mb-1">State / Province</label>
-                    <input {...register("state")} className="w-full border border-border px-4 py-3 rounded-btn bg-cream focus:outline-none focus:border-gold" />
+                    <input {...register("state")} className="w-full border border-border px-4 py-3 rounded-btn bg-cream text-jungle focus:outline-none focus:border-gold" />
                     {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state.message}</p>}
                   </div>
                   <div>
                     <label className="block text-sm text-jungle/70 mb-1">PIN Code / ZIP</label>
-                    <input {...register("pincode")} className="w-full border border-border px-4 py-3 rounded-btn bg-cream focus:outline-none focus:border-gold" />
+                    <input {...register("pincode")} className="w-full border border-border px-4 py-3 rounded-btn bg-cream text-jungle focus:outline-none focus:border-gold" />
                     {errors.pincode && <p className="text-red-500 text-xs mt-1">{errors.pincode.message}</p>}
                   </div>
                   <div>
