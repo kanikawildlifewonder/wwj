@@ -81,7 +81,7 @@ export async function seedMockProducts() {
           category: p.category,
           images: p.images,
           inStock: p.stockCount > 0,
-          featured: p.badge === 'Bestseller'
+          featured: p.isBestseller
         }
       })
     }

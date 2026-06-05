@@ -74,9 +74,27 @@ export default async function CollectionPage({ params }: PageProps) {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {products.map((p: any) => {
+              const uiProduct: any = {
+                ...p,
+                slug: p.id,
+                longDescription: p.description,
+                collection: collectionName,
+                animalInspiration: "Wildlife",
+                material: "Standard",
+                colors: [],
+                stockCount: p.inStock ? 10 : 0,
+                sku: p.id.substring(0, 8).toUpperCase(),
+                isBestseller: p.featured,
+                isNewArrival: false,
+                rating: 5,
+                reviewCount: 12,
+                features: [],
+                careInstructions: "",
+                tags: []
+              };
+              return <ProductCard key={p.id} product={uiProduct} />;
+            })}
           </div>
         )}
       </div>

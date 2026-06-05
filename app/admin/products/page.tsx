@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { Plus, Search, Filter, MoreVertical, Edit, Trash2, Database } from "lucide-react";
 import { formatINR } from "@/lib/utils/currency";
 import { getProducts, deleteProduct, seedMockProducts, addProduct } from "@/app/actions/products";
@@ -101,55 +102,14 @@ export default function AdminProductsPage() {
               <Database className="w-4 h-4" /> {isSeeding ? "Seeding..." : "Seed Mock Data"}
             </button>
           )}
-          <button 
-            onClick={() => setIsModalOpen(true)}
+          <Link 
+            href="/admin/products/new"
             className="bg-jungle text-gold px-4 py-2 rounded-btn flex items-center gap-2 text-sm font-bold tracking-wide hover:bg-charcoal transition-colors"
           >
             <Plus className="w-4 h-4" /> Add Product
-          </button>
+          </Link>
         </div>
       </div>
-
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-jungle/80 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl">
-            <h3 className="font-display text-2xl text-jungle mb-4">Add New Product</h3>
-            <form onSubmit={handleAddProduct} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-jungle mb-1">Name</label>
-                <input required type="text" value={newName} onChange={e => setNewName(e.target.value)} className="w-full px-3 py-2 border rounded-lg" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-jungle mb-1">Description</label>
-                <textarea required value={newDesc} onChange={e => setNewDesc(e.target.value)} className="w-full px-3 py-2 border rounded-lg resize-none" rows={3}></textarea>
-              </div>
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-jungle mb-1">Price (₹)</label>
-                  <input required type="number" value={newPrice} onChange={e => setNewPrice(e.target.value)} className="w-full px-3 py-2 border rounded-lg" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-jungle mb-1">Category</label>
-                  <select value={newCat} onChange={e => setNewCat(e.target.value)} className="w-full px-3 py-2 border rounded-lg bg-white">
-                    <option value="necklaces">Necklaces</option>
-                    <option value="earrings">Earrings</option>
-                    <option value="rings">Rings</option>
-                    <option value="bracelets">Bracelets</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-jungle mb-1">Image URL</label>
-                <input type="text" placeholder="/images/products/..." value={newImage} onChange={e => setNewImage(e.target.value)} className="w-full px-3 py-2 border rounded-lg" />
-              </div>
-              <div className="flex justify-end gap-3 pt-4 border-t">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-jungle hover:bg-cream rounded-lg">Cancel</button>
-                <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-gold text-jungle rounded-lg font-medium">{isSubmitting ? "Saving..." : "Save Product"}</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
         {/* Toolbar */}
