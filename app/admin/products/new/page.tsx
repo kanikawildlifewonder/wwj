@@ -6,7 +6,33 @@ import Link from "next/link";
 import { ChevronLeft, Upload, Image as ImageIcon, Save, CheckCircle, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { addProduct } from "@/app/actions/products";
-import { uploadImage } from "@/app/actions/upload";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+const uploadMediaClient = async (file: File) => {
+  const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+  const filename = `${uniqueSuffix}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+
+  const { error } = await supabase
+    .storage
+    .from('PRODUCT')
+    .upload(filename, file, { cacheControl: '3600', upsert: false });
+
+  if (error) {
+    return { success: false, url: null, error: error.message };
+  }
+
+  const { data: publicUrlData } = supabase
+    .storage
+    .from('PRODUCT')
+    .getPublicUrl(filename);
+
+  return { success: true, url: publicUrlData.publicUrl };
+};
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -81,23 +107,17 @@ export default function NewProductPage() {
       const uploadPromises = [];
 
       if (mainImageFile) {
-        const formData = new FormData();
-        formData.append("image", mainImageFile);
-        uploadPromises.push(uploadImage(formData).then(res => ({ type: 'main', index: 0, res })));
+        uploadPromises.push(uploadMediaClient(mainImageFile).then(res => ({ type: 'main', index: 0, res })));
       }
 
       galleryFiles.forEach((file, index) => {
         if (file) {
-          const formData = new FormData();
-          formData.append("image", file);
-          uploadPromises.push(uploadImage(formData).then(res => ({ type: 'gallery', index: index, res })));
+          uploadPromises.push(uploadMediaClient(file).then(res => ({ type: 'gallery', index: index, res })));
         }
       });
 
       if (videoFile) {
-        const formData = new FormData();
-        formData.append("image", videoFile);
-        uploadPromises.push(uploadImage(formData).then(res => ({ type: 'video', index: 0, res })));
+        uploadPromises.push(uploadMediaClient(videoFile).then(res => ({ type: 'video', index: 0, res })));
       }
 
       if (uploadPromises.length > 0) {
@@ -105,7 +125,7 @@ export default function NewProductPage() {
         
         for (const result of results) {
           if (!result.res.success || !result.res.url) {
-            toast.error(result.res.error || "Failed to upload a media file", { id: "upload" });
+            toast.error("Failed to upload a media file", { id: "upload" });
             setIsSubmitting(false);
             return;
           }
