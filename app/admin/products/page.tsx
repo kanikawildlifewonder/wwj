@@ -63,6 +63,7 @@ export default function AdminProductsPage() {
       name: newName,
       description: newDesc,
       price: parseFloat(newPrice),
+      mainCategory: "wwj",
       category: newCat,
       images: [newImage || "/images/products/placeholder.png"],
       inStock: true
