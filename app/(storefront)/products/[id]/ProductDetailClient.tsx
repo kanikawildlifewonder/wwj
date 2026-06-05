@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Star, Heart, ShoppingBag, ChevronLeft, ChevronRight, Package, RotateCcw, Shield, Truck, Play } from "lucide-react";
+import { Star, Heart, ShoppingBag, ChevronLeft, ChevronRight, Package, RotateCcw, Shield, Truck, Play, Pause, Volume2, VolumeX, Maximize } from "lucide-react";
 import { motion } from "motion/react";
 import { useCartStore, useWishlistStore } from "@/store/cartStore";
 import { formatINR, calculateDiscount } from "@/lib/utils/currency";
@@ -13,6 +13,50 @@ export default function ProductDetailClient({ product, reviews, related }: { pro
   const [quantity, setQuantity] = useState(1);
   const { addItem, openCart } = useCartStore();
   const { toggle, hasItem } = useWishlistStore();
+  
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const [videoProgress, setVideoProgress] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      videoRef.current.play().catch(() => {});
+      setIsPlaying(true);
+    }
+  };
+
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    videoRef.current.muted = !isMuted;
+    setIsMuted(!isMuted);
+  };
+
+  const handleTimeUpdate = () => {
+    if (!videoRef.current) return;
+    const progress = (videoRef.current.currentTime / videoRef.current.duration) * 100;
+    setVideoProgress(progress || 0);
+  };
+
+  const handleFullscreen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    if (videoRef.current.requestFullscreen) {
+      videoRef.current.requestFullscreen();
+    }
+  };
+
+  useEffect(() => {
+    setIsPlaying(true);
+    setIsMuted(true);
+    setVideoProgress(0);
+  }, [selectedMediaIndex]);
   
   const isWishlisted = hasItem(product.id);
   const discount = product.originalPrice ? calculateDiscount(product.originalPrice, product.price) : null;
@@ -52,13 +96,65 @@ export default function ProductDetailClient({ product, reviews, related }: { pro
           <div className="space-y-4">
             <div className="relative aspect-square rounded-xl overflow-hidden bg-cream flex items-center justify-center">
               {mediaList[selectedMediaIndex]?.type === 'video' ? (
-                <video
-                  src={mediaList[selectedMediaIndex].url}
-                  controls
-                  playsInline
-                  className="w-full h-full object-contain bg-black"
-                  preload="metadata"
-                />
+                <div className="relative w-full h-full bg-black group/video flex items-center justify-center cursor-pointer" onClick={togglePlay}>
+                  <video
+                    ref={videoRef}
+                    src={mediaList[selectedMediaIndex].url}
+                    loop
+                    muted={isMuted}
+                    autoPlay
+                    playsInline
+                    onTimeUpdate={handleTimeUpdate}
+                    className="w-full h-full object-contain"
+                    preload="metadata"
+                  />
+                  
+                  {/* Subtle Vignette Overlay for controls readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 opacity-0 group-hover/video:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+                  {/* Play/Pause Large Center Icon Overlay (Visible when paused) */}
+                  {!isPlaying && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 transition-all duration-300">
+                      <div className="w-16 h-16 rounded-full bg-ivory/90 backdrop-blur flex items-center justify-center text-jungle shadow-lg scale-100 hover:scale-110 transition-transform">
+                        <Play className="w-6 h-6 fill-current ml-1" />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Custom Glassmorphic Controls Bar */}
+                  <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between opacity-0 group-hover/video:opacity-100 transition-opacity duration-300 z-20">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={togglePlay}
+                        className="w-8 h-8 rounded-full bg-ivory/80 backdrop-blur flex-shrink-0 flex items-center justify-center text-jungle hover:bg-white hover:text-charcoal transition-all shadow"
+                      >
+                        {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
+                      </button>
+                      
+                      <button
+                        onClick={toggleMute}
+                        className="w-8 h-8 rounded-full bg-ivory/80 backdrop-blur flex-shrink-0 flex items-center justify-center text-jungle hover:bg-white hover:text-charcoal transition-all shadow"
+                      >
+                        {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={handleFullscreen}
+                      className="w-8 h-8 rounded-full bg-ivory/80 backdrop-blur flex-shrink-0 flex items-center justify-center text-jungle hover:bg-white hover:text-charcoal transition-all shadow"
+                    >
+                      <Maximize className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Sleek Progress Bar */}
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 z-20 pointer-events-none">
+                    <div 
+                      className="h-full bg-gold transition-all duration-100" 
+                      style={{ width: `${videoProgress}%` }}
+                    />
+                  </div>
+                </div>
               ) : (
                 <div
                   className="w-full h-full bg-cover bg-center transition-all duration-500"
