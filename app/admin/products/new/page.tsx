@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, Upload, Image as ImageIcon, Save, CheckCircle } from "lucide-react";
+import { ChevronLeft, Upload, Image as ImageIcon, Save, CheckCircle, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { addProduct } from "@/app/actions/products";
 import { uploadImage } from "@/app/actions/upload";
@@ -16,19 +16,50 @@ export default function NewProductPage() {
     name: "",
     description: "",
     price: "",
+    mainCategory: "wwj",
     category: "necklaces",
     inStock: true,
     featured: false,
   });
 
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [customCategory, setCustomCategory] = useState("");
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [mainImageFile, setMainImageFile] = useState<File | null>(null);
+  const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
+
+  const [galleryFiles, setGalleryFiles] = useState<(File | null)[]>([null, null, null, null]);
+  const [galleryPreviews, setGalleryPreviews] = useState<(string | null)[]>([null, null, null, null]);
+
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
+
+  const handleMainImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
+      setMainImageFile(file);
+      setMainImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleGalleryChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const newFiles = [...galleryFiles];
+      newFiles[index] = file;
+      setGalleryFiles(newFiles);
+
+      const newPreviews = [...galleryPreviews];
+      newPreviews[index] = URL.createObjectURL(file);
+      setGalleryPreviews(newPreviews);
+    }
+  };
+
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setVideoFile(file);
+      setVideoPreview(URL.createObjectURL(file));
     }
   };
 
@@ -40,25 +71,55 @@ export default function NewProductPage() {
     }
 
     setIsSubmitting(true);
-    let imageUrl = "/images/products/placeholder.png";
+    let mainImageUrl = "/images/products/placeholder.png";
+    const galleryUrls: string[] = [];
+    let videoUrl: string | undefined = undefined;
 
     try {
-      // 1. Upload Image if provided
-      if (imageFile) {
-        toast.loading("Uploading image...", { id: "upload" });
-        const uploadFormData = new FormData();
-        uploadFormData.append("image", imageFile);
-        
-        const uploadRes = await uploadImage(uploadFormData);
-        if (uploadRes.success && uploadRes.url) {
-          imageUrl = uploadRes.url;
-          toast.success("Image uploaded successfully!", { id: "upload" });
-        } else {
-          toast.error(uploadRes.error || "Failed to upload image", { id: "upload" });
-          setIsSubmitting(false);
-          return;
-        }
+      toast.loading("Uploading media...", { id: "upload" });
+      
+      const uploadPromises = [];
+
+      if (mainImageFile) {
+        const formData = new FormData();
+        formData.append("image", mainImageFile);
+        uploadPromises.push(uploadImage(formData).then(res => ({ type: 'main', index: 0, res })));
       }
+
+      galleryFiles.forEach((file, index) => {
+        if (file) {
+          const formData = new FormData();
+          formData.append("image", file);
+          uploadPromises.push(uploadImage(formData).then(res => ({ type: 'gallery', index: index, res })));
+        }
+      });
+
+      if (videoFile) {
+        const formData = new FormData();
+        formData.append("image", videoFile);
+        uploadPromises.push(uploadImage(formData).then(res => ({ type: 'video', index: 0, res })));
+      }
+
+      if (uploadPromises.length > 0) {
+        const results = await Promise.all(uploadPromises);
+        
+        for (const result of results) {
+          if (!result.res.success || !result.res.url) {
+            toast.error(result.res.error || "Failed to upload a media file", { id: "upload" });
+            setIsSubmitting(false);
+            return;
+          }
+
+          if (result.type === 'main') mainImageUrl = result.res.url;
+          else if (result.type === 'gallery') galleryUrls[result.index] = result.res.url;
+          else if (result.type === 'video') videoUrl = result.res.url;
+        }
+        toast.success("Media uploaded successfully!", { id: "upload" });
+      } else {
+        toast.dismiss("upload");
+      }
+
+      const allImages = [mainImageUrl, ...galleryUrls.filter(Boolean)];
 
       // 2. Save Product
       toast.loading("Saving product...", { id: "save" });
@@ -66,8 +127,10 @@ export default function NewProductPage() {
         name: formData.name,
         description: formData.description,
         price: parseFloat(formData.price),
-        category: formData.category,
-        images: [imageUrl],
+        mainCategory: formData.mainCategory,
+        category: isCustomCategory ? customCategory : formData.category,
+        images: allImages,
+        video: videoUrl,
         inStock: formData.inStock,
         featured: formData.featured,
       });
@@ -138,32 +201,61 @@ export default function NewProductPage() {
             <h3 className="text-lg font-medium text-jungle border-b border-border pb-4">Media</h3>
             
             <div className="space-y-4">
-              <label className="block text-sm font-medium text-jungle">Product Image</label>
-              
-              <div className="flex items-center justify-center w-full">
-                <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-border border-dashed rounded-xl cursor-pointer bg-cream/30 hover:bg-cream/50 transition-colors relative overflow-hidden">
-                  {imagePreview ? (
+              {/* Main Thumbnail */}
+              <div>
+                <label className="block text-sm font-medium text-jungle mb-2">Main Thumbnail <span className="text-red-500">*</span></label>
+                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-border border-dashed rounded-xl cursor-pointer bg-cream/30 hover:bg-cream/50 transition-colors relative overflow-hidden">
+                  {mainImagePreview ? (
                     <div className="absolute inset-0 w-full h-full">
-                      <div className="w-full h-full bg-contain bg-center bg-no-repeat" style={{ backgroundImage: `url(${imagePreview})` }} />
+                      <div className="w-full h-full bg-contain bg-center bg-no-repeat" style={{ backgroundImage: `url(${mainImagePreview})` }} />
                       <div className="absolute inset-0 bg-jungle/40 opacity-0 hover:opacity-100 flex items-center justify-center transition-opacity">
-                        <p className="text-white font-medium flex items-center gap-2">
-                          <Upload className="w-5 h-5" /> Change Image
-                        </p>
+                        <p className="text-white font-medium flex items-center gap-2"><Upload className="w-5 h-5" /> Change</p>
                       </div>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center pt-5 pb-6 text-jungle/50">
-                      <ImageIcon className="w-10 h-10 mb-3 text-jungle/30" />
-                      <p className="mb-2 text-sm"><span className="font-semibold text-jungle">Click to upload</span> or drag and drop</p>
-                      <p className="text-xs">PNG, JPG or WEBP (MAX. 5MB)</p>
+                      <ImageIcon className="w-8 h-8 mb-2 text-jungle/30" />
+                      <p className="text-sm font-medium">Main Image</p>
                     </div>
                   )}
-                  <input 
-                    type="file" 
-                    className="hidden" 
-                    accept="image/png, image/jpeg, image/webp"
-                    onChange={handleImageChange}
-                  />
+                  <input type="file" className="hidden" accept="image/png, image/jpeg, image/webp" onChange={handleMainImageChange} required />
+                </label>
+              </div>
+
+              {/* Gallery Images */}
+              <div>
+                <label className="block text-sm font-medium text-jungle mb-2">Gallery Images (Optional, up to 4)</label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {[0, 1, 2, 3].map((index) => (
+                    <label key={index} className="flex flex-col items-center justify-center aspect-square border-2 border-border border-dashed rounded-xl cursor-pointer bg-cream/30 hover:bg-cream/50 transition-colors relative overflow-hidden">
+                      {galleryPreviews[index] ? (
+                        <div className="absolute inset-0 w-full h-full">
+                          <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${galleryPreviews[index]})` }} />
+                        </div>
+                      ) : (
+                        <Plus className="w-6 h-6 text-jungle/30" />
+                      )}
+                      <input type="file" className="hidden" accept="image/png, image/jpeg, image/webp" onChange={(e) => handleGalleryChange(index, e)} />
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Video */}
+              <div>
+                <label className="block text-sm font-medium text-jungle mb-2">Product Video (Optional)</label>
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-border border-dashed rounded-xl cursor-pointer bg-cream/30 hover:bg-cream/50 transition-colors relative overflow-hidden">
+                  {videoPreview ? (
+                    <div className="absolute inset-0 w-full h-full bg-jungle/10 flex items-center justify-center">
+                      <p className="font-medium text-jungle flex items-center gap-2"><CheckCircle className="w-5 h-5 text-emerald-500"/> Video Selected</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-jungle/50">
+                      <p className="text-sm font-medium">Upload Video (MP4, WebM)</p>
+                      <p className="text-xs mt-1 max-w-[200px] text-center">Max 50MB</p>
+                    </div>
+                  )}
+                  <input type="file" className="hidden" accept="video/mp4, video/webm" onChange={handleVideoChange} />
                 </label>
               </div>
             </div>
@@ -194,11 +286,34 @@ export default function NewProductPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-jungle mb-1.5">Category</label>
+                <label className="block text-sm font-medium text-jungle mb-1.5">Main Category</label>
                 <div className="relative">
                   <select 
-                    value={formData.category} 
-                    onChange={e => setFormData({ ...formData, category: e.target.value })} 
+                    value={formData.mainCategory} 
+                    onChange={e => setFormData({ ...formData, mainCategory: e.target.value })} 
+                    className="w-full px-4 py-2.5 border border-border rounded-xl appearance-none bg-white text-jungle focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all"
+                  >
+                    <option value="wwj">WWJ (Wildlife Wonder Jewellery)</option>
+                    <option value="wwa">WWA (Wildlife Wonder Art)</option>
+                    <option value="gift_cards">Gift Cards</option>
+                  </select>
+                  <ChevronLeft className="w-4 h-4 text-jungle/50 absolute right-4 top-1/2 -translate-y-1/2 -rotate-90 pointer-events-none" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-jungle mb-1.5">Sub-Category</label>
+                <div className="relative mb-3">
+                  <select 
+                    value={isCustomCategory ? "other" : formData.category} 
+                    onChange={e => {
+                      if (e.target.value === "other") {
+                        setIsCustomCategory(true);
+                      } else {
+                        setIsCustomCategory(false);
+                        setFormData({ ...formData, category: e.target.value });
+                      }
+                    }} 
                     className="w-full px-4 py-2.5 border border-border rounded-xl appearance-none bg-white text-jungle focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all"
                   >
                     <option value="necklaces">Necklaces</option>
@@ -207,9 +322,21 @@ export default function NewProductPage() {
                     <option value="bracelets">Bracelets</option>
                     <option value="accessories">Accessories</option>
                     <option value="gifting">Gifting</option>
+                    <option value="other">Other (Custom)</option>
                   </select>
                   <ChevronLeft className="w-4 h-4 text-jungle/50 absolute right-4 top-1/2 -translate-y-1/2 -rotate-90 pointer-events-none" />
                 </div>
+                
+                {isCustomCategory && (
+                  <input 
+                    required 
+                    type="text" 
+                    placeholder="Enter custom category name..."
+                    value={customCategory} 
+                    onChange={e => setCustomCategory(e.target.value)} 
+                    className="w-full px-4 py-2.5 border border-border rounded-xl text-jungle bg-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all" 
+                  />
+                )}
               </div>
             </div>
           </div>

@@ -19,7 +19,9 @@ export async function addProduct(data: {
   description: string;
   price: number;
   category: string;
+  mainCategory: string;
   images: string[];
+  video?: string;
   inStock: boolean;
   featured?: boolean;
 }) {

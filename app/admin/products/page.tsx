@@ -169,7 +169,7 @@ export default function AdminProductsPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-jungle/70 capitalize">
-                    {product.category}
+                    {product.mainCategory?.toUpperCase()} / {product.category}
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-jungle">
                     {formatINR(product.price)}

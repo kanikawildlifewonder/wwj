@@ -16,8 +16,10 @@ model Product {
   name        String
   description String
   price       Float
-  images      String[]
-  category    String
+  images       String[]
+  video        String?
+  mainCategory String   @default("wwj")
+  category     String
   inStock     Boolean  @default(true)
   featured    Boolean  @default(false)
   createdAt   DateTime @default(now())
