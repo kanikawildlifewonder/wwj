@@ -23,14 +23,33 @@ export default function ShopPage() {
   const [showBestsellers, setShowBestsellers] = useState(false);
   const [showNewArrivals, setShowNewArrivals] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [priceMax, setPriceMax] = useState(5000);
   
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const { minPriceLimit, maxPriceLimit } = useMemo(() => {
+    if (allProducts.length === 0) return { minPriceLimit: 0, maxPriceLimit: 5000 };
+    const prices = allProducts.map(p => p.price);
+    const min = Math.min(...prices);
+    const max = Math.max(...prices);
+    const minLimit = Math.max(0, Math.floor(min / 100) * 100);
+    const maxLimit = Math.max(minLimit + 100, Math.ceil(max / 100) * 100);
+    return { minPriceLimit: minLimit, maxPriceLimit: maxLimit };
+  }, [allProducts]);
+
+  const [priceMax, setPriceMax] = useState<number | null>(null);
+
   React.useEffect(() => {
     getProducts().then(data => {
       setAllProducts(data);
+      if (data && data.length > 0) {
+        const prices = data.map((p: any) => p.price);
+        const max = Math.max(...prices);
+        const limit = Math.ceil(max / 100) * 100;
+        setPriceMax(limit);
+      } else {
+        setPriceMax(5000);
+      }
       setIsLoading(false);
     });
   }, []);
@@ -43,7 +62,9 @@ export default function ShopPage() {
     if (showInStockOnly) products = products.filter((p) => p.inStock);
     if (showBestsellers) products = products.filter((p) => p.featured);
     if (showNewArrivals) products = products.filter((p) => p.isNewArrival);
-    products = products.filter((p) => p.price <= priceMax);
+    
+    const currentMaxPrice = priceMax ?? maxPriceLimit;
+    products = products.filter((p) => p.price <= currentMaxPrice);
 
     switch (sortBy) {
       case "price_asc": products.sort((a, b) => a.price - b.price); break;
@@ -53,7 +74,7 @@ export default function ShopPage() {
       default: break;
     }
     return products;
-  }, [allProducts, selectedCategory, selectedAnimal, sortBy, showInStockOnly, showBestsellers, showNewArrivals, priceMax]);
+  }, [allProducts, selectedCategory, selectedAnimal, sortBy, showInStockOnly, showBestsellers, showNewArrivals, priceMax, maxPriceLimit]);
 
   const FilterPanel = () => (
     <div className="space-y-8">
@@ -92,9 +113,18 @@ export default function ShopPage() {
       {/* Price Range */}
       <div>
         <h3 className="font-sans text-xs tracking-widest uppercase font-bold text-jungle mb-4">Max Price</h3>
-        <input type="range" min={299} max={5000} step={100} value={priceMax} onChange={(e) => setPriceMax(Number(e.target.value))} className="w-full accent-gold" />
+        <input 
+          type="range" 
+          min={minPriceLimit} 
+          max={maxPriceLimit} 
+          step={Math.max(1, Math.round((maxPriceLimit - minPriceLimit) / 50))} 
+          value={priceMax ?? maxPriceLimit} 
+          onChange={(e) => setPriceMax(Number(e.target.value))} 
+          className="w-full accent-gold" 
+        />
         <div className="flex justify-between text-xs text-jungle/60 mt-1">
-          <span>₹299</span><span className="font-bold text-jungle">₹{priceMax.toLocaleString("en-IN")}</span>
+          <span>₹{minPriceLimit.toLocaleString("en-IN")}</span>
+          <span className="font-bold text-jungle">₹{(priceMax ?? maxPriceLimit).toLocaleString("en-IN")}</span>
         </div>
       </div>
 
@@ -176,7 +206,7 @@ export default function ShopPage() {
               <div className="text-center py-24">
                 <p className="font-display text-2xl text-jungle/40">No products found</p>
                 <p className="text-sm text-jungle/30 mt-2">Try adjusting your filters</p>
-                <button onClick={() => { setSelectedCategory("All"); setSelectedAnimal("All"); setShowInStockOnly(false); setShowBestsellers(false); setShowNewArrivals(false); setPriceMax(5000); }} className="mt-6 border border-jungle/30 text-jungle px-6 py-2 text-xs font-bold tracking-widest uppercase rounded-btn hover:bg-jungle hover:text-ivory transition-colors">
+                <button onClick={() => { setSelectedCategory("All"); setSelectedAnimal("All"); setShowInStockOnly(false); setShowBestsellers(false); setShowNewArrivals(false); setPriceMax(maxPriceLimit); }} className="mt-6 border border-jungle/30 text-jungle px-6 py-2 text-xs font-bold tracking-widest uppercase rounded-btn hover:bg-jungle hover:text-ivory transition-colors">
                   Clear All Filters
                 </button>
               </div>
