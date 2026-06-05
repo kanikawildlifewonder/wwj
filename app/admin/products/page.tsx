@@ -188,9 +188,12 @@ export default function AdminProductsPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="p-2 text-jungle/50 hover:text-jungle hover:bg-cream rounded-md transition-colors">
+                      <Link 
+                        href={`/admin/products/${product.id}/edit`}
+                        className="p-2 text-jungle/50 hover:text-jungle hover:bg-cream rounded-md transition-colors"
+                      >
                         <Edit className="w-4 h-4" />
-                      </button>
+                      </Link>
                       <button onClick={() => handleDelete(product.id)} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors">
                         <Trash2 className="w-4 h-4" />
                       </button>
