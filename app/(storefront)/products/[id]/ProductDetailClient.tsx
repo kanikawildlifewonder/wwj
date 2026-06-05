@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { Star, Heart, ShoppingBag, ChevronLeft, ChevronRight, Package, RotateCcw, Shield, Truck } from "lucide-react";
+import { Star, Heart, ShoppingBag, ChevronLeft, ChevronRight, Package, RotateCcw, Shield, Truck, Play } from "lucide-react";
 import { motion } from "motion/react";
 import { useCartStore, useWishlistStore } from "@/store/cartStore";
 import { formatINR, calculateDiscount } from "@/lib/utils/currency";
 import { ProductCard } from "@/components/shop/ProductCard";
 
 export default function ProductDetailClient({ product, reviews, related }: { product: any, reviews: any[], related: any[] }) {
-  const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const { addItem, openCart } = useCartStore();
   const { toggle, hasItem } = useWishlistStore();
@@ -17,6 +17,14 @@ export default function ProductDetailClient({ product, reviews, related }: { pro
   const isWishlisted = hasItem(product.id);
   const discount = product.originalPrice ? calculateDiscount(product.originalPrice, product.price) : null;
   const inStock = product.inStock;
+
+  const mediaList = useMemo(() => {
+    const list = (product.images || []).map((img: string) => ({ type: 'image', url: img }));
+    if (product.video) {
+      list.push({ type: 'video', url: product.video });
+    }
+    return list;
+  }, [product.images, product.video]);
 
   const handleAddToCart = () => {
     for (let i = 0; i < quantity; i++) addItem(product);
@@ -42,17 +50,27 @@ export default function ProductDetailClient({ product, reviews, related }: { pro
           
           {/* Image Gallery */}
           <div className="space-y-4">
-            <div className="relative aspect-square rounded-xl overflow-hidden bg-cream">
-              <div
-                className="w-full h-full bg-cover bg-center transition-all duration-500"
-                style={{ backgroundImage: `url(${product.images[selectedImage] || '/images/products/placeholder.png'})` }}
-              />
-              {product.images.length > 1 && (
+            <div className="relative aspect-square rounded-xl overflow-hidden bg-cream flex items-center justify-center">
+              {mediaList[selectedMediaIndex]?.type === 'video' ? (
+                <video
+                  src={mediaList[selectedMediaIndex].url}
+                  controls
+                  playsInline
+                  className="w-full h-full object-contain bg-black"
+                  preload="metadata"
+                />
+              ) : (
+                <div
+                  className="w-full h-full bg-cover bg-center transition-all duration-500"
+                  style={{ backgroundImage: `url(${mediaList[selectedMediaIndex]?.url || '/images/products/placeholder.png'})` }}
+                />
+              )}
+              {mediaList.length > 1 && (
                 <>
-                  <button onClick={() => setSelectedImage((prev) => (prev - 1 + product.images.length) % product.images.length)} className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-ivory/80 backdrop-blur flex items-center justify-center text-jungle hover:bg-ivory transition-colors shadow">
+                  <button onClick={() => setSelectedMediaIndex((prev) => (prev - 1 + mediaList.length) % mediaList.length)} className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-ivory/80 backdrop-blur flex items-center justify-center text-jungle hover:bg-ivory transition-colors shadow z-10">
                     <ChevronLeft className="w-5 h-5" />
                   </button>
-                  <button onClick={() => setSelectedImage((prev) => (prev + 1) % product.images.length)} className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-ivory/80 backdrop-blur flex items-center justify-center text-jungle hover:bg-ivory transition-colors shadow">
+                  <button onClick={() => setSelectedMediaIndex((prev) => (prev + 1) % mediaList.length)} className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-ivory/80 backdrop-blur flex items-center justify-center text-jungle hover:bg-ivory transition-colors shadow z-10">
                     <ChevronRight className="w-5 h-5" />
                   </button>
                 </>
@@ -60,15 +78,25 @@ export default function ProductDetailClient({ product, reviews, related }: { pro
             </div>
 
             {/* Thumbnails */}
-            {product.images.length > 1 && (
-              <div className="flex gap-3">
-                {product.images.map((img: string, idx: number) => (
+            {mediaList.length > 1 && (
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-jungle/10">
+                {mediaList.map((media: any, idx: number) => (
                   <button
                     key={idx}
-                    onClick={() => setSelectedImage(idx)}
-                    className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors flex-shrink-0 ${selectedImage === idx ? "border-gold" : "border-transparent"}`}
+                    onClick={() => setSelectedMediaIndex(idx)}
+                    className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors flex-shrink-0 relative ${selectedMediaIndex === idx ? "border-gold" : "border-transparent"}`}
                   >
-                    <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${img})` }} />
+                    {media.type === 'video' ? (
+                      <div className="w-full h-full bg-black/80 flex flex-col items-center justify-center relative">
+                        {product.images?.[0] && (
+                          <div className="absolute inset-0 bg-cover bg-center opacity-40" style={{ backgroundImage: `url(${product.images[0]})` }} />
+                        )}
+                        <Play className="w-6 h-6 text-gold fill-current z-10" />
+                        <span className="text-[10px] text-ivory font-bold tracking-wider uppercase mt-1 z-10">Video</span>
+                      </div>
+                    ) : (
+                      <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${media.url})` }} />
+                    )}
                   </button>
                 ))}
               </div>
