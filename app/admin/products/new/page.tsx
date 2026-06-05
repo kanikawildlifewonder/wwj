@@ -19,7 +19,7 @@ const uploadMediaClient = async (file: File) => {
 
   const { error } = await supabase
     .storage
-    .from('PRODUCT')
+    .from('product')
     .upload(filename, file, { cacheControl: '3600', upsert: false });
 
   if (error) {
@@ -28,7 +28,7 @@ const uploadMediaClient = async (file: File) => {
 
   const { data: publicUrlData } = supabase
     .storage
-    .from('PRODUCT')
+    .from('product')
     .getPublicUrl(filename);
 
   return { success: true, url: publicUrlData.publicUrl };
