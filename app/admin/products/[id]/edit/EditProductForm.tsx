@@ -1,17 +1,27 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, Upload, Image as ImageIcon, Save, CheckCircle, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { updateProduct } from "@/app/actions/products";
-import { createClient } from "@supabase/supabase-js";
+import { getProductCategories } from "@/app/actions/categories";
+import { categoriesMatch } from "@/lib/categories";
+import { supabase } from "@/lib/supabase/client";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+type EditableProduct = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  mainCategory?: string;
+  category: string;
+  images: string[];
+  video?: string | null;
+  inStock: boolean;
+  featured?: boolean;
+};
 
 const uploadMediaClient = async (file: File) => {
   const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
@@ -34,26 +44,44 @@ const uploadMediaClient = async (file: File) => {
   return { success: true, url: publicUrlData.publicUrl };
 };
 
-export default function EditProductForm({ product }: { product: any }) {
+export default function EditProductForm({ product }: { product: EditableProduct }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Set up predefined categories list
-  const PREDEFINED_CATEGORIES = ["necklaces", "earrings", "rings", "bracelets", "accessories", "gifting"];
-  const isCustomCategoryVal = !PREDEFINED_CATEGORIES.includes(product.category.toLowerCase());
+  const [categoryOptions, setCategoryOptions] = useState<string[]>([]);
+
+  const productInList = (cats: string[]) =>
+    cats.some((c) => categoriesMatch(c, product.category));
+  const isCustomCategoryVal = categoryOptions.length > 0 && !productInList(categoryOptions);
 
   const [formData, setFormData] = useState({
     name: product.name,
     description: product.description,
     price: product.price.toString(),
     mainCategory: product.mainCategory || "wwj",
-    category: isCustomCategoryVal ? "other" : product.category.toLowerCase(),
+    category: product.category,
     inStock: product.inStock,
     featured: product.featured,
   });
 
-  const [isCustomCategory, setIsCustomCategory] = useState(isCustomCategoryVal);
-  const [customCategory, setCustomCategory] = useState(isCustomCategoryVal ? product.category : "");
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [customCategory, setCustomCategory] = useState(
+    isCustomCategoryVal ? product.category : ""
+  );
+
+  useEffect(() => {
+    getProductCategories().then((cats) => {
+      setCategoryOptions(cats);
+      const custom = !cats.some((c) => categoriesMatch(c, product.category));
+      setIsCustomCategory(custom);
+      if (custom) {
+        setCustomCategory(product.category);
+        setFormData((prev) => ({ ...prev, category: "other" }));
+      } else {
+        const match = cats.find((c) => categoriesMatch(c, product.category));
+        if (match) setFormData((prev) => ({ ...prev, category: match }));
+      }
+    });
+  }, [product.category]);
 
   // Media files states
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
@@ -128,7 +156,7 @@ export default function EditProductForm({ product }: { product: any }) {
     setIsSubmitting(true);
     let mainImageUrl = product.images[0] || "/images/products/placeholder.png";
     const finalGalleryUrls = [...galleryPreviews];
-    let videoUrl = product.video || undefined;
+    let videoUrl: string | null | undefined = product.video;
 
     try {
       toast.loading("Uploading new media...", { id: "upload" });
@@ -181,7 +209,7 @@ export default function EditProductForm({ product }: { product: any }) {
       }
 
       // Compile final images array (filter out empty/deleted gallery slots)
-      const allImages = [mainImageUrl, ...finalGalleryUrls.filter(Boolean)];
+      const allImages = [mainImageUrl, ...(finalGalleryUrls.filter(Boolean) as string[])];
 
       // 2. Update Product
       toast.loading("Updating product...", { id: "save" });
@@ -242,7 +270,7 @@ export default function EditProductForm({ product }: { product: any }) {
                   placeholder="e.g., Leopard Pendant Set"
                   value={formData.name} 
                   onChange={e => setFormData({ ...formData, name: e.target.value })} 
-                  className="w-full px-4 py-2.5 border border-border rounded-xl text-jungle bg-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all" 
+                  className="w-full px-4 py-2.5 border border-border rounded-xl text-jungle bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all" 
                 />
               </div>
               
@@ -253,7 +281,7 @@ export default function EditProductForm({ product }: { product: any }) {
                   placeholder="Describe the product details..."
                   value={formData.description} 
                   onChange={e => setFormData({ ...formData, description: e.target.value })} 
-                  className="w-full px-4 py-2.5 border border-border rounded-xl resize-none text-jungle bg-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all min-h-[120px]"
+                  className="w-full px-4 py-2.5 border border-border rounded-xl resize-none text-jungle bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all min-h-[120px]"
                 />
               </div>
             </div>
@@ -358,7 +386,7 @@ export default function EditProductForm({ product }: { product: any }) {
                     placeholder="0.00"
                     value={formData.price} 
                     onChange={e => setFormData({ ...formData, price: e.target.value })} 
-                    className="w-full pl-8 pr-4 py-2.5 border border-border rounded-xl text-jungle bg-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all" 
+                    className="w-full pl-8 pr-4 py-2.5 border border-border rounded-xl text-jungle bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all" 
                   />
                 </div>
               </div>
@@ -369,7 +397,7 @@ export default function EditProductForm({ product }: { product: any }) {
                   <select 
                     value={formData.mainCategory} 
                     onChange={e => setFormData({ ...formData, mainCategory: e.target.value })} 
-                    className="w-full px-4 py-2.5 border border-border rounded-xl appearance-none bg-white text-jungle focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all"
+                    className="w-full px-4 py-2.5 border border-border rounded-xl appearance-none bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 text-jungle focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all cursor-pointer"
                   >
                     <option value="wwj">WWJ (Wildlife Wonder Jewellery)</option>
                     <option value="wwa">WWA (Wildlife Wonder Art)</option>
@@ -392,14 +420,11 @@ export default function EditProductForm({ product }: { product: any }) {
                         setFormData({ ...formData, category: e.target.value });
                       }
                     }} 
-                    className="w-full px-4 py-2.5 border border-border rounded-xl appearance-none bg-white text-jungle focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all"
+                    className="w-full px-4 py-2.5 border border-border rounded-xl appearance-none bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 text-jungle focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all cursor-pointer"
                   >
-                    <option value="necklaces">Necklaces</option>
-                    <option value="earrings">Earrings</option>
-                    <option value="rings">Rings</option>
-                    <option value="bracelets">Bracelets</option>
-                    <option value="accessories">Accessories</option>
-                    <option value="gifting">Gifting</option>
+                    {categoryOptions.map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
                     <option value="other">Other (Custom)</option>
                   </select>
                   <ChevronLeft className="w-4 h-4 text-jungle/50 absolute right-4 top-1/2 -translate-y-1/2 -rotate-90 pointer-events-none" />
@@ -412,7 +437,7 @@ export default function EditProductForm({ product }: { product: any }) {
                     placeholder="Enter custom category name..."
                     value={customCategory} 
                     onChange={e => setCustomCategory(e.target.value)} 
-                    className="w-full px-4 py-2.5 border border-border rounded-xl text-jungle bg-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all" 
+                    className="w-full px-4 py-2.5 border border-border rounded-xl text-jungle bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all" 
                   />
                 )}
               </div>

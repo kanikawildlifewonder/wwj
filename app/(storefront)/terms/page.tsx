@@ -1,5 +1,4 @@
 import React from "react";
-import Link from "next/link";
 
 export const metadata = {
   title: "Terms of Service | WWJ",
@@ -16,7 +15,7 @@ export default function TermsPage() {
           <p className="text-jungle/50 italic">Last Updated: June 2026</p>
 
           <p>
-            Welcome to WildLife Jewellery (WWJ). These terms and conditions outline the rules and regulations for the use of WWJ's Website, located at wwj.com.
+            Welcome to WildLife Jewellery (WWJ). These terms and conditions outline the rules and regulations for the use of WWJ&apos;s Website, located at wwj.com.
           </p>
           <p>
             By accessing this website we assume you accept these terms and conditions. Do not continue to use WWJ if you do not agree to take all of the terms and conditions stated on this page.
@@ -24,7 +23,7 @@ export default function TermsPage() {
 
           <h2 className="font-display text-2xl text-jungle pt-4">1. Products and Services</h2>
           <p>
-            Certain products or services may be available exclusively online through the website. These products or services may have limited quantities and are subject to return or exchange only according to our Return Policy. We have made every effort to display as accurately as possible the colors and images of our products that appear at the store. We cannot guarantee that your computer monitor's display of any color will be accurate.
+            Certain products or services may be available exclusively online through the website. These products or services may have limited quantities and are subject to return or exchange only according to our Return Policy. We have made every effort to display as accurately as possible the colors and images of our products that appear at the store. We cannot guarantee that your computer monitor&apos;s display of any color will be accurate.
           </p>
 
           <h2 className="font-display text-2xl text-jungle pt-4">2. Pricing and Availability</h2>

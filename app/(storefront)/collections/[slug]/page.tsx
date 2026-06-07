@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { COLLECTIONS_LIST } from "@/lib/mock-data";
 import { ProductCard } from "@/components/shop/ProductCard";
+import { mapDbProductToUI } from "@/lib/utils/product-mapper";
 import prisma from "@/lib/prisma";
 
 const COLLECTION_MAP: Record<string, string> = {
@@ -12,9 +13,9 @@ const COLLECTION_MAP: Record<string, string> = {
 };
 
 const CATEGORY_MAP: Record<string, string[]> = {
-  jewellery: ["necklaces", "earrings", "rings", "bracelets"],
-  accessories: ["accessories", "bags"],
-  gifting: ["gifting"],
+  jewellery: ["Necklace", "Rings", "Earrings", "Bracelets", "Combo", "Sets"],
+  accessories: ["Keychains", "Magnets", "Hair Accessories"],
+  gifting: ["Gift Boxes", "Combo", "Sets", "Festive Collections"],
 };
 
 const COLLECTION_IMAGES: Record<string, string> = {
@@ -74,27 +75,9 @@ export default async function CollectionPage({ params }: PageProps) {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((p: any) => {
-              const uiProduct: any = {
-                ...p,
-                slug: p.id,
-                longDescription: p.description,
-                collection: collectionName,
-                animalInspiration: "Wildlife",
-                material: "Standard",
-                colors: [],
-                stockCount: p.inStock ? 10 : 0,
-                sku: p.id.substring(0, 8).toUpperCase(),
-                isBestseller: p.featured,
-                isNewArrival: false,
-                rating: 5,
-                reviewCount: 12,
-                features: [],
-                careInstructions: "",
-                tags: []
-              };
-              return <ProductCard key={p.id} product={uiProduct} />;
-            })}
+            {products.map((p) => (
+              <ProductCard key={p.id} product={mapDbProductToUI({ ...p, mainCategory: collectionName })} />
+            ))}
           </div>
         )}
       </div>

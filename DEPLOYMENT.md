@@ -1,51 +1,63 @@
 # Deployment Guide for WWJ
 
-This guide will walk you through deploying your Wildlife Wonder Jewellery (WWJ) Next.js storefront to Vercel. 
+This app is a Next.js 16 storefront deployed well on Vercel with Clerk, Supabase, and Prisma.
 
-## Prerequisites
+## Required Environment Variables
 
-1. A [Vercel](https://vercel.com/) account (you can sign up with your GitHub).
-2. A [Clerk](https://clerk.com/) account (already set up, but you'll need your keys).
-3. Your codebase pushed to a GitHub repository (already done!).
+Add these in Vercel before deploying:
 
----
+| Name | Purpose |
+|------|---------|
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk frontend auth |
+| `CLERK_SECRET_KEY` | Clerk server auth |
+| `NEXT_PUBLIC_CLERK_SIGN_IN_URL` | Usually `/login` |
+| `NEXT_PUBLIC_CLERK_SIGN_UP_URL` | Usually `/register` |
+| `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL` | Usually `/account` |
+| `NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL` | Usually `/account` |
+| `DATABASE_URL` | Supabase pooled runtime URL |
+| `DIRECT_URL` | Supabase direct build/migration URL |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Browser-safe Supabase key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-only Supabase admin key |
+| `NEXT_PUBLIC_SITE_URL` | Production site URL |
 
-## Step 1: Import Project to Vercel
+Optional:
 
-1. Go to your [Vercel Dashboard](https://vercel.com/dashboard).
-2. Click the **Add New...** button and select **Project**.
-3. Under the "Import Git Repository" section, locate your `kanikawildlifewonder/wwj` repository.
-4. Click **Import**.
+| Name | Purpose |
+|------|---------|
+| `PG_POOL_MAX` | Override app pool size |
+| `RAZORPAY_KEY_ID` | Razorpay backend |
+| `RAZORPAY_KEY_SECRET` | Razorpay backend |
+| `NEXT_PUBLIC_RAZORPAY_KEY_ID` | Razorpay frontend |
+| `RESEND_API_KEY` | Email sending |
 
-## Step 2: Configure Environment Variables
+## Important Prisma / Supabase Setup
 
-Before clicking deploy, you **must** configure your Environment Variables so that authentication and other services work correctly in production. 
+WWJ now uses two database URLs intentionally:
 
-In the Vercel deployment configuration screen, open the **Environment Variables** accordion and add the following keys exactly as they appear in your `.env.local` file:
+- `DATABASE_URL` is the pooled Supabase connection used by the running app.
+- `DIRECT_URL` is the direct Postgres connection used during build-time Prisma access.
 
-| Name | Value |
-|------|-------|
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | *(Your live Clerk publishable key)* |
-| `CLERK_SECRET_KEY` | *(Your live Clerk secret key)* |
-| `NEXT_PUBLIC_CLERK_SIGN_IN_URL` | `/login` |
-| `NEXT_PUBLIC_CLERK_SIGN_UP_URL` | `/register` |
+This matters because `next build` can fan out across many workers, and using the pooled transaction URL there can cause noisy Prisma read failures during prerender. The app’s Prisma setup automatically prefers `DIRECT_URL` during build and falls back to `DATABASE_URL` at runtime.
 
-*Note: Make sure to use your **Live** Clerk keys for production, not the Test keys.*
+## Deploy to Vercel
 
-## Step 3: Deploy
+1. Import the repo into Vercel.
+2. Add the environment variables above.
+3. Run a deploy.
+4. Confirm the build logs show a clean `next build`.
+5. Verify `/`, `/shop`, `/products/[id]`, `/admin`, and `/login`.
 
-1. Once the environment variables are added, click **Deploy**.
-2. Vercel will now build your project. This typically takes 1-2 minutes.
-3. Once finished, you will be redirected to a success screen with fireworks! Click **Continue to Dashboard**.
+## Post-Deploy Checks
 
-## Step 4: Verify the Live Site
+- Confirm Clerk sign-in opens correctly.
+- Confirm homepage content loads.
+- Confirm featured products render on the homepage.
+- Confirm `/shop` and product pages read live data.
+- Confirm product image uploads work if Supabase Storage is configured.
 
-1. On your Vercel project dashboard, click the **Visit** button to open your live `.vercel.app` URL.
-2. Verify that images load correctly.
-3. Verify that you can navigate to the `/login` route.
-4. If you have admin access, ensure you can access the `/admin` dashboard.
+## Notes
 
-## Next Steps
-
-- **Custom Domain:** When you're ready to use `wwj.com`, go to your Vercel Project Settings > Domains, and add your custom domain. Vercel will provide instructions on how to configure your DNS records.
-- **Supabase Integration:** When you are ready to move away from mock data to a real database (Phase 9/Post-Launch), you will add your Supabase connection strings to the Vercel Environment Variables.
+- If Prisma build-time reads fail again, check that `DIRECT_URL` is present in the deployment environment.
+- If runtime queries fail, validate `DATABASE_URL` first.
+- If storage uploads fail, check the Supabase bucket name and storage policies.

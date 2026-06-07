@@ -19,6 +19,7 @@ export async function updatePageContent(id: string, content: string) {
     revalidatePath('/')
     revalidatePath('/about')
     revalidatePath('/impact')
+    revalidatePath('/collections')
     
     return { success: true }
   } catch (error) {

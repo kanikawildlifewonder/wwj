@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Globe, Shield, Heart } from "lucide-react";
 
@@ -24,7 +23,7 @@ export default function ImpactPage() {
             Conservation First
           </h1>
           <p className="text-lg md:text-xl text-gold font-light leading-relaxed">
-            Beautiful jewellery shouldn't cost the earth. We are committed to protecting the creatures that inspire us.
+            Beautiful jewellery shouldn&apos;t cost the earth. We are committed to protecting the creatures that inspire us.
           </p>
         </div>
       </section>
@@ -35,7 +34,7 @@ export default function ImpactPage() {
           <h2 className="font-display text-4xl text-jungle">The WWJ Pledge</h2>
           <div className="w-16 h-1 bg-gold mx-auto"></div>
           <p className="text-xl text-jungle/80 leading-relaxed font-serif italic">
-            "For every piece of jewellery sold, WWJ donates 5% of the profits directly to grassroots wildlife conservation organizations in India and Africa."
+            &quot;For every piece of jewellery sold, WWJ donates 5% of the profits directly to grassroots wildlife conservation organizations in India and Africa.&quot;
           </p>
           <p className="text-jungle/60 leading-relaxed max-w-2xl mx-auto">
             We believe that businesses have a fundamental responsibility to the planet. Our inspiration comes from the majestic beauty of animals, and it is our duty to ensure these species thrive for generations to come.

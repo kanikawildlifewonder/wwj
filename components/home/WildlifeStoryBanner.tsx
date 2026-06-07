@@ -32,7 +32,7 @@ export function WildlifeStoryBanner({
             </p>
             <div className="pt-4">
               <Link 
-                href="/wildlife-impact" 
+                href="/impact" 
                 className="border border-gold text-gold px-6 py-3 text-xs uppercase tracking-widest font-bold hover:bg-gold hover:text-jungle transition-all rounded-btn inline-block"
               >
                 DISCOVER INSPIRATION

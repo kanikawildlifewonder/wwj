@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { PawPrint, MapPin, Mail, Phone } from "lucide-react";
+import { PawPrint } from "lucide-react";
 
 export function Footer() {
   return (
@@ -19,10 +19,10 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm leading-relaxed max-w-xs">
-              WWJ - Wildlife Wonder Jewellery is more than just a brand. It's a movement to celebrate wildlife, creativity and craftsmanship.
+              WWJ - Wildlife Wonder Jewellery is more than just a brand. It&apos;s a movement to celebrate wildlife, creativity and craftsmanship.
             </p>
             <div className="flex items-center gap-4 pt-2">
-              <a href="#" className="hover:text-gold transition-colors" aria-label="Instagram">
+              <a href="https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-colors" aria-label="Instagram">
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
               </a>
               <a href="#" className="hover:text-gold transition-colors" aria-label="Facebook">
@@ -80,12 +80,22 @@ export function Footer() {
 
           {/* Instagram Feed (Placeholder) */}
           <div className="space-y-6">
-            <h4 className="font-sans text-sm tracking-widest font-bold text-ivory uppercase">Instagram Feed</h4>
+            <h4 className="font-sans text-sm tracking-widest font-bold text-ivory uppercase hover:text-gold transition-colors">
+              <a href="https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" target="_blank" rel="noopener noreferrer">
+                Instagram Feed
+              </a>
+            </h4>
             <div className="grid grid-cols-3 gap-2">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="aspect-square bg-forest rounded overflow-hidden">
+                <a 
+                  key={i} 
+                  href="https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="aspect-square bg-forest rounded overflow-hidden block"
+                >
                   <div className="w-full h-full bg-border/20 hover:bg-border/40 transition-colors cursor-pointer" />
-                </div>
+                </a>
               ))}
             </div>
           </div>

@@ -1,5 +1,4 @@
 import React from "react";
-import Link from "next/link";
 
 export const metadata = {
   title: "Privacy Policy | WWJ",
@@ -16,7 +15,7 @@ export default function PrivacyPage() {
           <p className="text-jungle/50 italic">Last Updated: June 2026</p>
 
           <p>
-            At WildLife Jewellery ("WWJ", "we", "us", or "our"), we respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our website (regardless of where you visit it from) and tell you about your privacy rights and how the law protects you.
+            At WildLife Jewellery (&quot;WWJ&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;), we respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our website (regardless of where you visit it from) and tell you about your privacy rights and how the law protects you.
           </p>
 
           <h2 className="font-display text-2xl text-jungle pt-4">1. Information We Collect</h2>

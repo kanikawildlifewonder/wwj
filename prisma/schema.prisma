@@ -57,3 +57,29 @@ model PageContent {
   content   String   // JSON string containing text, image URLs, etc.
   updatedAt DateTime @updatedAt
 }
+
+model Event {
+  id               String   @id @default(cuid())
+  title            String
+  slug             String   @unique
+  category         String   // Event, Collaboration, Exhibition, Press Feature, Conservation Initiative, Other
+  status           String   @default("DRAFT") // DRAFT, PUBLISHED
+  featuredImage    String   @map("featured_image")
+  galleryImages    String[] @map("gallery_images")
+  shortDescription String   @map("short_description")
+  fullDescription  String   @map("full_description")
+  eventDate        DateTime @map("event_date")
+  location         String?
+  partnerName      String?  @map("partner_name")
+  partnerLogo      String?  @map("partner_logo")
+  partnerWebsite   String?  @map("partner_website")
+  videoUrl         String?  @map("video_url")
+  relatedProducts  String[] @map("related_products") // Array of Product IDs
+  seoTitle         String?  @map("seo_title")
+  seoDescription   String?  @map("seo_description")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("events")
+}
+

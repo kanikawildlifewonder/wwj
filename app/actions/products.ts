@@ -3,6 +3,20 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 
+type ProductInput = {
+  name: string
+  description: string
+  price: number
+  category: string
+  mainCategory: string
+  images: string[]
+  video?: string | null
+  inStock: boolean
+  featured?: boolean
+}
+
+type ProductUpdateInput = Partial<ProductInput>
+
 export async function getProducts() {
   try {
     return await prisma.product.findMany({
@@ -14,17 +28,20 @@ export async function getProducts() {
   }
 }
 
-export async function addProduct(data: {
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  mainCategory: string;
-  images: string[];
-  video?: string;
-  inStock: boolean;
-  featured?: boolean;
-}) {
+export async function getFeaturedProducts() {
+  try {
+    return await prisma.product.findMany({
+      where: { featured: true },
+      orderBy: { updatedAt: 'desc' },
+      take: 12,
+    })
+  } catch (error) {
+    console.error('Failed to get featured products:', error)
+    return []
+  }
+}
+
+export async function addProduct(data: ProductInput) {
   try {
     await prisma.product.create({
       data
@@ -32,6 +49,7 @@ export async function addProduct(data: {
     revalidatePath('/admin/products')
     revalidatePath('/collections')
     revalidatePath('/')
+    revalidatePath('/shop')
     return { success: true }
   } catch (error) {
     console.error('Failed to add product:', error)
@@ -39,7 +57,7 @@ export async function addProduct(data: {
   }
 }
 
-export async function updateProduct(id: string, data: any) {
+export async function updateProduct(id: string, data: ProductUpdateInput) {
   try {
     await prisma.product.update({
       where: { id },
@@ -48,10 +66,50 @@ export async function updateProduct(id: string, data: any) {
     revalidatePath('/admin/products')
     revalidatePath('/collections')
     revalidatePath('/')
+    revalidatePath('/shop')
     return { success: true }
   } catch (error) {
     console.error('Failed to update product:', error)
     return { success: false, error: 'Failed to update product' }
+  }
+}
+
+export type BulkUpdatePayload = {
+  inStock?: boolean
+  featured?: boolean
+  price?: number
+  category?: string
+}
+
+export async function bulkUpdateProducts(ids: string[], data: BulkUpdatePayload) {
+  try {
+    await prisma.product.updateMany({
+      where: { id: { in: ids } },
+      data,
+    })
+    revalidatePath('/admin/products')
+    revalidatePath('/collections')
+    revalidatePath('/')
+    revalidatePath('/shop')
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to bulk update products:', error)
+    return { success: false, error: 'Failed to bulk update' }
+  }
+}
+
+export async function bulkDeleteProducts(ids: string[]) {
+  try {
+    await prisma.product.deleteMany({
+      where: { id: { in: ids } },
+    })
+    revalidatePath('/admin/products')
+    revalidatePath('/collections')
+    revalidatePath('/')
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to bulk delete products:', error)
+    return { success: false, error: 'Failed to bulk delete' }
   }
 }
 
@@ -89,7 +147,7 @@ export async function seedMockProducts() {
     }
     revalidatePath('/admin/products')
     return { success: true }
-  } catch (err) {
+  } catch {
     return { success: false }
   }
 }

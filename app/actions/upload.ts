@@ -33,7 +33,7 @@ export async function uploadImage(formData: FormData) {
       }
     }
 
-    let { data, error } = await supabase
+    let { error } = await supabase
       .storage
       .from(targetBucket)
       .upload(filename, file, {
@@ -45,7 +45,6 @@ export async function uploadImage(formData: FormData) {
       console.log("Bucket not found, trying lowercase 'product'...");
       targetBucket = targetBucket.toLowerCase();
       const retryResult = await supabase.storage.from(targetBucket).upload(filename, file, { cacheControl: '3600', upsert: false });
-      data = retryResult.data;
       error = retryResult.error;
     }
 

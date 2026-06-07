@@ -28,6 +28,10 @@
 }
 
 :root {
+  --font-playfair: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  --font-cormorant: Garamond, Baskerville, "Times New Roman", serif;
+  --font-inter: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+
   /* Brand Colours */
   --wwj-jungle: #071D16;
   --wwj-forest: #102C22;

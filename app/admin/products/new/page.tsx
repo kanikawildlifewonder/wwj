@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, Upload, Image as ImageIcon, Save, CheckCircle, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { addProduct } from "@/app/actions/products";
+import { getProductCategories } from "@/app/actions/categories";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -43,13 +44,18 @@ export default function NewProductPage() {
     description: "",
     price: "",
     mainCategory: "wwj",
-    category: "necklaces",
+    category: "Necklace",
     inStock: true,
     featured: false,
   });
 
   const [isCustomCategory, setIsCustomCategory] = useState(false);
   const [customCategory, setCustomCategory] = useState("");
+  const [categoryOptions, setCategoryOptions] = useState<string[]>([]);
+
+  useEffect(() => {
+    getProductCategories().then(setCategoryOptions);
+  }, []);
 
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
@@ -200,7 +206,7 @@ export default function NewProductPage() {
                   placeholder="e.g., Leopard Pendant Set"
                   value={formData.name} 
                   onChange={e => setFormData({ ...formData, name: e.target.value })} 
-                  className="w-full px-4 py-2.5 border border-border rounded-xl text-jungle bg-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all" 
+                  className="w-full px-4 py-2.5 border border-border rounded-xl text-jungle bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all" 
                 />
               </div>
               
@@ -211,7 +217,7 @@ export default function NewProductPage() {
                   placeholder="Describe the product details..."
                   value={formData.description} 
                   onChange={e => setFormData({ ...formData, description: e.target.value })} 
-                  className="w-full px-4 py-2.5 border border-border rounded-xl resize-none text-jungle bg-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all min-h-[120px]"
+                  className="w-full px-4 py-2.5 border border-border rounded-xl resize-none text-jungle bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all min-h-[120px]"
                 />
               </div>
             </div>
@@ -300,7 +306,7 @@ export default function NewProductPage() {
                     placeholder="0.00"
                     value={formData.price} 
                     onChange={e => setFormData({ ...formData, price: e.target.value })} 
-                    className="w-full pl-8 pr-4 py-2.5 border border-border rounded-xl text-jungle bg-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all" 
+                    className="w-full pl-8 pr-4 py-2.5 border border-border rounded-xl text-jungle bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all" 
                   />
                 </div>
               </div>
@@ -311,7 +317,7 @@ export default function NewProductPage() {
                   <select 
                     value={formData.mainCategory} 
                     onChange={e => setFormData({ ...formData, mainCategory: e.target.value })} 
-                    className="w-full px-4 py-2.5 border border-border rounded-xl appearance-none bg-white text-jungle focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all"
+                    className="w-full px-4 py-2.5 border border-border rounded-xl appearance-none bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 text-jungle focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all cursor-pointer"
                   >
                     <option value="wwj">WWJ (Wildlife Wonder Jewellery)</option>
                     <option value="wwa">WWA (Wildlife Wonder Art)</option>
@@ -334,14 +340,11 @@ export default function NewProductPage() {
                         setFormData({ ...formData, category: e.target.value });
                       }
                     }} 
-                    className="w-full px-4 py-2.5 border border-border rounded-xl appearance-none bg-white text-jungle focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all"
+                    className="w-full px-4 py-2.5 border border-border rounded-xl appearance-none bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 text-jungle focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all cursor-pointer"
                   >
-                    <option value="necklaces">Necklaces</option>
-                    <option value="earrings">Earrings</option>
-                    <option value="rings">Rings</option>
-                    <option value="bracelets">Bracelets</option>
-                    <option value="accessories">Accessories</option>
-                    <option value="gifting">Gifting</option>
+                    {categoryOptions.map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
                     <option value="other">Other (Custom)</option>
                   </select>
                   <ChevronLeft className="w-4 h-4 text-jungle/50 absolute right-4 top-1/2 -translate-y-1/2 -rotate-90 pointer-events-none" />
@@ -354,7 +357,7 @@ export default function NewProductPage() {
                     placeholder="Enter custom category name..."
                     value={customCategory} 
                     onChange={e => setCustomCategory(e.target.value)} 
-                    className="w-full px-4 py-2.5 border border-border rounded-xl text-jungle bg-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all" 
+                    className="w-full px-4 py-2.5 border border-border rounded-xl text-jungle bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all" 
                   />
                 )}
               </div>

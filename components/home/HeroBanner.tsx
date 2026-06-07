@@ -57,7 +57,7 @@ export function HeroBanner({
               {buttonText}
             </Link>
             <Link 
-              href="/wildlife-impact" 
+              href="/about" 
               className="border border-gold text-gold px-8 py-3 text-sm font-bold tracking-widest uppercase hover:bg-gold/10 transition-colors text-center"
             >
               Explore Our Story

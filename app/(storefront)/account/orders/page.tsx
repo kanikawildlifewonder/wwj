@@ -54,7 +54,7 @@ export default function OrdersPage() {
             <div className="bg-white p-12 text-center rounded-lg border border-border shadow-sm flex flex-col items-center">
               <Box className="w-12 h-12 text-jungle/20 mb-4" />
               <p className="text-lg font-serif text-jungle">No orders yet</p>
-              <p className="text-jungle/60 mb-6">You haven't placed any orders.</p>
+              <p className="text-jungle/60 mb-6">You haven&apos;t placed any orders.</p>
               <Link href="/shop" className="bg-jungle text-gold px-6 py-2 text-sm font-bold tracking-widest uppercase rounded-btn hover:bg-charcoal transition-colors">
                 Start Shopping
               </Link>

@@ -2,14 +2,14 @@
 
 import React from "react";
 import Link from "next/link";
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Tag } from "lucide-react";
+import { Trash2, ShoppingBag, ArrowRight, Tag } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { formatINR } from "@/lib/utils/currency";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { MOCK_PRODUCTS } from "@/lib/mock-data";
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, subtotal, clearCart } = useCartStore();
+  const { items, removeItem, updateQuantity, subtotal } = useCartStore();
   const shippingFee = subtotal() >= 1499 ? 0 : 99;
   const total = subtotal() + shippingFee;
   const suggested = MOCK_PRODUCTS.filter((p) => !items.some((i) => i.product.id === p.id)).slice(0, 4);
@@ -26,7 +26,7 @@ export default function CartPage() {
           <div className="text-center py-24 flex flex-col items-center gap-4">
             <ShoppingBag className="w-16 h-16 text-jungle/20" />
             <p className="font-display text-2xl text-jungle/40">Your cart is empty</p>
-            <p className="text-sm text-jungle/30">Looks like you haven't added anything yet.</p>
+            <p className="text-sm text-jungle/30">Looks like you haven&apos;t added anything yet.</p>
             <Link href="/shop" className="mt-4 bg-jungle text-gold px-8 py-3 text-sm font-bold tracking-widest uppercase rounded-btn hover:bg-charcoal transition-colors">
               Start Shopping
             </Link>

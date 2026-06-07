@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
@@ -44,7 +43,7 @@ export default function AboutPage() {
               <h2 className="font-display text-4xl text-jungle">Meet Kanika</h2>
               <div className="w-12 h-1 bg-gold"></div>
               <p className="text-jungle/70 leading-relaxed text-lg">
-                "I founded WildLife Jewellery (WWJ) with a singular vision: to capture the fierce, delicate, and awe-inspiring essence of nature in wearable art."
+                &quot;I founded WildLife Jewellery (WWJ) with a singular vision: to capture the fierce, delicate, and awe-inspiring essence of nature in wearable art.&quot;
               </p>
               <p className="text-jungle/70 leading-relaxed">
                 Growing up surrounded by the rich biodiversity of India, Kanika developed a deep reverence for wildlife. Combining this passion with formal training in fine jewellery design, she launched WWJ to offer pieces that are more than just accessories—they are statements of strength, grace, and environmental consciousness.

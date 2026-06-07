@@ -14,7 +14,7 @@ export const MOCK_PRODUCTS: Product[] = [
       "/images/products/leopard_pendant.png",
       "/images/products/peacock_necklace.png",
     ],
-    category: "Necklace Sets",
+    category: "Necklace",
     collection: "WWJ Jewellery",
     animalInspiration: "Leopard",
     material: "Antique Gold Plated Alloy",
@@ -93,7 +93,7 @@ export const MOCK_PRODUCTS: Product[] = [
     images: [
       "/images/products/deer_necklace.png",
     ],
-    category: "Necklace Sets",
+    category: "Necklace",
     collection: "WWJ Jewellery",
     animalInspiration: "Deer",
     material: "Gold Plated Brass",
@@ -254,14 +254,17 @@ export const MOCK_REVIEWS: Review[] = [
 
 export const PRODUCT_CATEGORIES = [
   "All",
-  "Necklace Sets",
+  "Necklace",
+  "Combo",
+  "Sets",
   "Rings",
   "Earrings",
   "Bracelets",
   "Hair Accessories",
   "Keychains",
   "Gift Boxes",
-  "Combo Sets",
+  "Magnets",
+  "Festive Collections",
 ];
 
 export const ANIMAL_INSPIRATIONS = [

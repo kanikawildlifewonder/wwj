@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Search, ShoppingBag, Menu, X, Heart } from "lucide-react";
 import { UserButton, SignInButton, Show } from "@clerk/nextjs";
+import { useHydrated } from "@/lib/hooks/useHydrated";
 import { cn } from "@/lib/utils";
 import { useCartStore, useWishlistStore } from "@/store/cartStore";
 
@@ -11,25 +13,34 @@ const NAV_LINKS = [
   { label: "HOME", href: "/" },
   { label: "SHOP", href: "/shop" },
   { label: "COLLECTIONS", href: "/collections" },
-  { label: "CATALOG", href: "/catalogue" },
-  { label: "STYLING TIPS", href: "/styling-tips" },
+  { label: "CATALOG", href: "/shop" },
+  { label: "STYLING TIPS", href: "/faq" },
+  { label: "EVENTS & COLLABORATIONS", href: "/events" },
   { label: "ABOUT US", href: "/about" },
-  { label: "FOUNDER", href: "/founder" },
+  { label: "FOUNDER", href: "/about" },
   { label: "CONTACT US", href: "/contact" },
 ];
 
-export function Header() {
+type HeaderProps = {
+  logoImageUrl?: string;
+  logoText?: string;
+  logoTagline?: string;
+};
+
+export function Header({
+  logoImageUrl,
+  logoText = "WWJ",
+  logoTagline = "Wildlife Wonder Jewellery",
+}: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { openCart, totalItems } = useCartStore();
   const { items: wishlistItems } = useWishlistStore();
+  const isHydrated = useHydrated();
   const cartCount = totalItems();
   const wishlistCount = wishlistItems.length;
 
-  const [isMounted, setIsMounted] = useState(false);
-
   useEffect(() => {
-    setIsMounted(true);
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -44,8 +55,11 @@ export function Header() {
           : "bg-jungle border-transparent"
       )}
     >
-      <div className="container mx-auto px-4 lg:px-8 h-20 flex items-center justify-between">
-        
+      <div
+        className="container mx-auto px-4 lg:px-8 flex items-center justify-between transition-all duration-300"
+        style={{ height: isScrolled ? "70px" : "140px" }}
+      >
+
         {/* Mobile Menu Toggle */}
         <button
           className="lg:hidden text-ivory p-2 -ml-2"
@@ -57,12 +71,37 @@ export function Header() {
 
         {/* Logo */}
         <Link href="/" className="flex flex-col items-center justify-center -space-y-1 group">
-          <span className="font-display text-3xl font-bold text-ivory tracking-widest group-hover:text-gold transition-colors">
-            WWJ
-          </span>
-          <span className="font-sans text-[0.55rem] tracking-[0.2em] text-gold uppercase whitespace-nowrap">
-            Wildlife Wonder Jewellery
-          </span>
+          {logoImageUrl ? (
+            <div
+              className="w-auto flex items-center justify-center transition-all duration-300"
+              style={{ height: isScrolled ? "54px" : "120px" }}
+            >
+              <Image
+                src={logoImageUrl}
+                alt={logoText ?? "WWJ"}
+                width={512}
+                height={512}
+                className="w-auto object-contain group-hover:opacity-90 transition-opacity transition-all duration-300"
+                style={{ height: isScrolled ? "54px" : "120px" }}
+                unoptimized
+              />
+            </div>
+          ) : (
+            <>
+              <span className={cn(
+                "font-display font-bold text-ivory tracking-widest group-hover:text-gold transition-colors transition-all duration-300",
+                isScrolled ? "text-2xl" : "text-5xl"
+              )}>
+                {logoText}
+              </span>
+              <span className={cn(
+                "font-sans tracking-[0.2em] text-gold uppercase whitespace-nowrap transition-all duration-300",
+                isScrolled ? "text-[0.5rem]" : "text-[0.7rem]"
+              )}>
+                {logoTagline}
+              </span>
+            </>
+          )}
         </Link>
 
         {/* Desktop Navigation */}
@@ -88,9 +127,7 @@ export function Header() {
             <Show when="signed-in">
               <UserButton
                 appearance={{
-                  elements: {
-                    userButtonAvatarBox: "w-6 h-6",
-                  },
+                  elements: { userButtonAvatarBox: "w-6 h-6" },
                 }}
               />
             </Show>
@@ -107,7 +144,7 @@ export function Header() {
 
           <Link href="/account/wishlist" aria-label="Wishlist" className="hover:text-gold transition-colors p-1 relative hidden sm:block">
             <Heart className="w-5 h-5" />
-            {isMounted && wishlistCount > 0 && (
+            {isHydrated && wishlistCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-gold text-jungle text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                 {wishlistCount}
               </span>
@@ -120,7 +157,7 @@ export function Header() {
             className="hover:text-gold transition-colors p-1 relative"
           >
             <ShoppingBag className="w-5 h-5" />
-            {isMounted && cartCount > 0 && (
+            {isHydrated && cartCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-gold text-jungle text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                 {cartCount > 9 ? "9+" : cartCount}
               </span>

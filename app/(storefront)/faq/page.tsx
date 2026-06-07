@@ -88,7 +88,7 @@ export default function FAQPage() {
         <div className="mt-20 bg-jungle text-ivory rounded-xl p-8 text-center">
           <h2 className="font-display text-2xl text-gold mb-4">Still have questions?</h2>
           <p className="text-ivory/80 mb-6 max-w-lg mx-auto">
-            If you couldn't find the answer you were looking for, our customer care team is here to help.
+            If you couldn&apos;t find the answer you were looking for, our customer care team is here to help.
           </p>
           <Link 
             href="/contact" 

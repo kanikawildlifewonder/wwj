@@ -1,20 +1,17 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { User, Package, Heart, MapPin, SearchX } from "lucide-react";
+import { useHydrated } from "@/lib/hooks/useHydrated";
 import { useWishlistStore } from "@/store/cartStore";
 import { ProductCard } from "@/components/shop/ProductCard";
 
 export default function WishlistPage() {
   const { items } = useWishlistStore();
-  const [mounted, setMounted] = useState(false);
+  const isHydrated = useHydrated();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null; // Hydration fix
+  if (!isHydrated) return null;
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-6xl">
