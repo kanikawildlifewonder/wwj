@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ChevronLeft, Upload, Image as ImageIcon, Save, CheckCircle, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { updateProduct } from "@/app/actions/products";
-import { getProductCategories } from "@/app/actions/categories";
+import { getGroupedProductCategories } from "@/app/actions/categories";
 import { categoriesMatch } from "@/lib/categories";
 import { supabase } from "@/lib/supabase/client";
 
@@ -47,11 +47,6 @@ const uploadMediaClient = async (file: File) => {
 export default function EditProductForm({ product }: { product: EditableProduct }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [categoryOptions, setCategoryOptions] = useState<string[]>([]);
-
-  const productInList = (cats: string[]) =>
-    cats.some((c) => categoriesMatch(c, product.category));
-  const isCustomCategoryVal = categoryOptions.length > 0 && !productInList(categoryOptions);
 
   const [formData, setFormData] = useState({
     name: product.name,
@@ -63,25 +58,35 @@ export default function EditProductForm({ product }: { product: EditableProduct 
     featured: product.featured,
   });
 
+  const [groupedCategories, setGroupedCategories] = useState<Record<string, string[]>>({
+    wwj: [],
+    wwa: [],
+    gift_cards: [],
+  });
+  // Derived: options depend on the currently selected mainCategory
+  const categoryOptions = groupedCategories[formData.mainCategory] ?? [];
+
   const [isCustomCategory, setIsCustomCategory] = useState(false);
-  const [customCategory, setCustomCategory] = useState(
-    isCustomCategoryVal ? product.category : ""
-  );
+  const [customCategory, setCustomCategory] = useState("");
 
   useEffect(() => {
-    getProductCategories().then((cats) => {
-      setCategoryOptions(cats);
+    getGroupedProductCategories().then((grouped) => {
+      setGroupedCategories(grouped);
+      const cats = Object.values(grouped).flat();
       const custom = !cats.some((c) => categoriesMatch(c, product.category));
       setIsCustomCategory(custom);
       if (custom) {
         setCustomCategory(product.category);
         setFormData((prev) => ({ ...prev, category: "other" }));
       } else {
-        const match = cats.find((c) => categoriesMatch(c, product.category));
+        // find the canonical match in the product's own collection group
+        const groupList = grouped[formData.mainCategory] ?? cats;
+        const match = groupList.find((c) => categoriesMatch(c, product.category))
+          ?? cats.find((c) => categoriesMatch(c, product.category));
         if (match) setFormData((prev) => ({ ...prev, category: match }));
       }
     });
-  }, [product.category]);
+  }, [product.category, formData.mainCategory]);
 
   // Media files states
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
@@ -396,12 +401,17 @@ export default function EditProductForm({ product }: { product: EditableProduct 
                 <div className="relative">
                   <select 
                     value={formData.mainCategory} 
-                    onChange={e => setFormData({ ...formData, mainCategory: e.target.value })} 
+                    onChange={e => {
+                      const newMain = e.target.value;
+                      const firstOpt = (groupedCategories[newMain] ?? [])[0] ?? "";
+                      setIsCustomCategory(false);
+                      setFormData({ ...formData, mainCategory: newMain, category: firstOpt });
+                    }} 
                     className="w-full px-4 py-2.5 border border-border rounded-xl appearance-none bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 text-jungle focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all cursor-pointer"
                   >
                     <option value="wwj">WWJ (Wildlife Wonder Jewellery)</option>
-                    <option value="wwa">WWA (Wildlife Wonder Art)</option>
-                    <option value="gift_cards">Gift Cards</option>
+                    <option value="wwa">WWA (Wildlife Wonder Accessories)</option>
+                    <option value="gift_cards">Gifting Collection</option>
                   </select>
                   <ChevronLeft className="w-4 h-4 text-jungle/50 absolute right-4 top-1/2 -translate-y-1/2 -rotate-90 pointer-events-none" />
                 </div>

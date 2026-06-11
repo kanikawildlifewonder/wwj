@@ -13,11 +13,10 @@ const NAV_LINKS = [
   { label: "HOME", href: "/" },
   { label: "SHOP", href: "/shop" },
   { label: "COLLECTIONS", href: "/collections" },
-  { label: "CATALOG", href: "/shop" },
   { label: "STYLING TIPS", href: "/faq" },
   { label: "EVENTS & COLLABORATIONS", href: "/events" },
-  { label: "ABOUT US", href: "/about" },
-  { label: "FOUNDER", href: "/about" },
+  { label: "ABOUT BRAND", href: "/about/brand" },
+  { label: "FOUNDER", href: "/about/founder" },
   { label: "CONTACT US", href: "/contact" },
 ];
 
@@ -56,8 +55,12 @@ export function Header({
       )}
     >
       <div
-        className="container mx-auto px-4 lg:px-8 flex items-center justify-between transition-all duration-300"
-        style={{ height: isScrolled ? "70px" : "140px" }}
+        className={cn(
+          "container mx-auto px-3 sm:px-4 lg:px-8 flex items-center justify-between transition-all duration-300",
+          isScrolled
+            ? "h-[60px] md:h-[70px]"
+            : "h-[80px] md:h-[120px] lg:h-[140px]"
+        )}
       >
 
         {/* Mobile Menu Toggle */}
@@ -73,16 +76,20 @@ export function Header({
         <Link href="/" className="flex flex-col items-center justify-center -space-y-1 group">
           {logoImageUrl ? (
             <div
-              className="w-auto flex items-center justify-center transition-all duration-300"
-              style={{ height: isScrolled ? "54px" : "120px" }}
+              className={cn(
+                "w-auto flex items-center justify-center transition-all duration-300",
+                isScrolled ? "h-[44px] md:h-[54px]" : "h-[56px] md:h-[90px] lg:h-[120px]"
+              )}
             >
               <Image
                 src={logoImageUrl}
                 alt={logoText ?? "WWJ"}
                 width={512}
                 height={512}
-                className="w-auto object-contain group-hover:opacity-90 transition-opacity transition-all duration-300"
-                style={{ height: isScrolled ? "54px" : "120px" }}
+                className={cn(
+                  "w-auto object-contain group-hover:opacity-90 transition-all duration-300",
+                  isScrolled ? "h-[44px] md:h-[54px]" : "h-[56px] md:h-[90px] lg:h-[120px]"
+                )}
                 unoptimized
               />
             </div>
@@ -90,13 +97,13 @@ export function Header({
             <>
               <span className={cn(
                 "font-display font-bold text-ivory tracking-widest group-hover:text-gold transition-colors transition-all duration-300",
-                isScrolled ? "text-2xl" : "text-5xl"
+                isScrolled ? "text-xl md:text-2xl" : "text-3xl md:text-4xl lg:text-5xl"
               )}>
                 {logoText}
               </span>
               <span className={cn(
-                "font-sans tracking-[0.2em] text-gold uppercase whitespace-nowrap transition-all duration-300",
-                isScrolled ? "text-[0.5rem]" : "text-[0.7rem]"
+                "font-sans tracking-[0.2em] text-gold uppercase whitespace-nowrap transition-all duration-300 hidden sm:block",
+                isScrolled ? "text-[0.45rem] md:text-[0.5rem]" : "text-[0.55rem] md:text-[0.7rem]"
               )}>
                 {logoTagline}
               </span>
@@ -167,20 +174,31 @@ export function Header({
       </div>
 
       {/* Mobile Navigation Menu */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 w-full bg-jungle/95 backdrop-blur-md border-b border-border shadow-xl py-4 flex flex-col z-50">
+      <div
+        className={cn(
+          "lg:hidden absolute top-full left-0 w-full bg-jungle/95 backdrop-blur-md border-b border-border shadow-xl flex flex-col z-50 transition-all duration-300 overflow-hidden",
+          mobileMenuOpen ? "max-h-[80vh] py-4 opacity-100" : "max-h-0 py-0 opacity-0 border-b-0"
+        )}
+      >
+        <div className="overflow-y-auto max-h-[70vh]">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className="px-6 py-3 text-sm font-medium text-ivory/80 hover:text-gold hover:bg-forest/50 transition-colors tracking-widest"
+              className="px-6 py-3.5 text-sm font-medium text-ivory/80 hover:text-gold hover:bg-forest/50 transition-colors tracking-widest block"
               onClick={() => setMobileMenuOpen(false)}
             >
               {link.label}
             </Link>
           ))}
+
+          {/* Mobile-only: Wishlist & Account links */}
+          <div className="border-t border-border mt-2 pt-2 px-6 pb-2 flex items-center gap-6">
+            <Link href="/account" className="text-ivory/60 hover:text-gold text-xs tracking-widest uppercase py-2" onClick={() => setMobileMenuOpen(false)}>My Account</Link>
+            <Link href="/account/wishlist" className="text-ivory/60 hover:text-gold text-xs tracking-widest uppercase py-2" onClick={() => setMobileMenuOpen(false)}>Wishlist</Link>
+          </div>
         </div>
-      )}
+      </div>
     </header>
   );
 }

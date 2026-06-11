@@ -8,12 +8,14 @@ import { EventsSection } from "@/components/home/EventsSection";
 import { TrustStrip } from "@/components/home/TrustStrip";
 
 import { getPageContent } from "@/app/actions/content";
+import { getGroupedProductCategories } from "@/app/actions/categories";
 
 export default async function HomePage() {
-  const [heroContentStr, aboutContentStr, collectionsStr] = await Promise.all([
+  const [heroContentStr, aboutContentStr, collectionsStr, groupedCategories] = await Promise.all([
     getPageContent("home-hero"),
     getPageContent("home-about"),
     getPageContent("home-collections"),
+    getGroupedProductCategories(),
   ]);
 
   let heroProps = {};
@@ -31,7 +33,7 @@ export default async function HomePage() {
     <>
       <HeroBanner {...heroProps} />
       <BrandValueStrip />
-      <ExploreCollections collections={collectionsData} />
+      <ExploreCollections collections={collectionsData} groupedCategories={groupedCategories} />
       <WildlifeStoryBanner {...aboutProps} />
       <BestsellersCarousel />
       <EventsSection />

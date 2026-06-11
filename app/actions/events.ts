@@ -38,7 +38,7 @@ export async function getEvents() {
 
 export async function getPublishedEvents(category?: string) {
   try {
-    const whereClause: any = { status: 'PUBLISHED' };
+    const whereClause: { status: string; category?: { equals: string; mode: 'insensitive' } } = { status: 'PUBLISHED' };
     if (category && category !== 'all') {
       whereClause.category = {
         equals: category,
@@ -99,7 +99,7 @@ export async function addEvent(data: EventInput) {
 
 export async function updateEvent(id: string, data: EventUpdateInput) {
   try {
-    const updateData: any = { ...data };
+    const updateData: EventUpdateInput = { ...data };
     if (data.eventDate) {
       updateData.eventDate = new Date(data.eventDate);
     }

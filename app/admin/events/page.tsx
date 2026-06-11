@@ -45,7 +45,17 @@ export default function AdminEventsPage() {
   }, []);
 
   useEffect(() => {
-    void loadEvents();
+    let mounted = true;
+    const fetchEvents = async () => {
+      setIsLoading(true);
+      const data = await getEvents();
+      if (mounted) {
+        setEvents(data);
+        setIsLoading(false);
+      }
+    };
+    fetchEvents();
+    return () => { mounted = false; };
   }, [loadEvents]);
 
   const filteredEvents = useMemo(() => {

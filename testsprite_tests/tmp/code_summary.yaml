@@ -1,0 +1,85 @@
+version: "2"
+type: frontend
+tech_stack:
+  - TypeScript
+  - Next.js (App Router)
+  - React 19
+  - TailwindCSS 4
+  - Clerk
+  - Supabase
+  - Prisma
+routes:
+  - path: /
+    file: app/(storefront)/page.tsx
+    auth_required: false
+    description: Home page with banner and bestsellers carousel.
+  - path: /about
+    file: app/(storefront)/about/page.tsx
+    auth_required: false
+    description: About Wildlife Wonder Jewelry page.
+  - path: /shop
+    file: app/(storefront)/shop/page.tsx
+    auth_required: false
+    description: Shop catalog displaying all jewelry.
+  - path: /products/[id]
+    file: app/(storefront)/products/[id]/page.tsx
+    auth_required: false
+    description: Product details page showing images and option selectors.
+  - path: /cart
+    file: app/(storefront)/cart/page.tsx
+    auth_required: false
+    description: Shopping cart page to modify item quantities.
+  - path: /checkout
+    file: app/(storefront)/checkout/page.tsx
+    auth_required: true
+    description: Checkout page for delivery details and payments.
+  - path: /admin
+    file: app/admin/page.tsx
+    auth_required: true
+    description: Admin panel dashboard.
+features:
+  - name: Browse Jewelry Products
+    description: Browse categories, search products, and view jewelry details.
+    files:
+      - app/(storefront)/shop/page.tsx
+      - app/(storefront)/products/[id]/page.tsx
+    entry_route: /shop
+    user_interactions:
+      - View shop product list
+      - Click product card to open product details page
+      - Change quantity select field
+    api_calls: []
+    auth_required: false
+  - name: Manage Shopping Cart
+    description: Add, view, update, and remove items from the cart.
+    files:
+      - app/(storefront)/cart/page.tsx
+    entry_route: /cart
+    user_interactions:
+      - Click Add to Cart button on product details page
+      - Open cart page to see item list and total price
+      - Click remove item or edit item count
+    api_calls: []
+    auth_required: false
+  - name: User Login & Profile
+    description: Authenticate users and manage profile using Clerk.
+    files:
+      - app/layout.tsx
+    entry_route: /
+    user_interactions:
+      - Click sign in button
+      - Complete login using Clerk credentials
+    api_calls: []
+    auth_required: false
+  - name: Admin Dashboard
+    description: Manage products, customers, and orders.
+    files:
+      - app/admin/page.tsx
+      - app/admin/orders/page.tsx
+    entry_route: /admin
+    user_interactions:
+      - View total sales and order charts
+      - Click orders list tab
+    api_calls: []
+    auth_required: true
+known_limitations: []

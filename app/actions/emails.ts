@@ -1,6 +1,21 @@
 'use server'
 
 import { Resend } from 'resend';
+import prisma from '@/lib/prisma';
+
+/** Read the admin-configured contact email from store-settings, fall back to default. */
+async function getStoreContactEmail(): Promise<string> {
+  try {
+    const row = await prisma.pageContent.findUnique({ where: { id: 'store-settings' } });
+    if (row?.content) {
+      const s = JSON.parse(row.content);
+      if (typeof s.contactEmail === 'string' && s.contactEmail.trim()) {
+        return s.contactEmail.trim();
+      }
+    }
+  } catch { /* fall through */ }
+  return 'kanika.wildlifewonder9@gmail.com';
+}
 
 interface ContactEmailData {
   name: string;
@@ -21,6 +36,7 @@ interface OrderEmailData {
   subtotal: number;
   shippingFee: number;
   total: number;
+  discount?: number;
 }
 
 export async function sendContactSubmissionEmail(data: ContactEmailData) {
@@ -34,9 +50,10 @@ export async function sendContactSubmissionEmail(data: ContactEmailData) {
       return { success: true };
     }
 
+    const toEmail = await getStoreContactEmail();
     await resend.emails.send({
       from: 'onboarding@resend.dev',
-      to: 'kanika.wildlifewonder9@gmail.com',
+      to: toEmail,
       subject: `New Contact Submission: ${data.subject}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
@@ -80,9 +97,10 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData) {
       `)
       .join('');
 
+    const toEmail = await getStoreContactEmail();
     await resend.emails.send({
       from: 'onboarding@resend.dev',
-      to: 'kanika.wildlifewonder9@gmail.com',
+      to: toEmail,
       subject: `New Order Placed - Total ₹${data.total.toLocaleString('en-IN')}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
@@ -115,6 +133,7 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData) {
 
           <div style="margin-top: 20px; border-top: 2px solid #eee; padding-top: 15px; text-align: right; line-height: 1.6;">
             <p style="margin: 5px 0;">Subtotal: ₹${data.subtotal.toLocaleString('en-IN')}</p>
+            ${data.discount ? `<p style="margin: 5px 0; color: #b91c1c;">Discount: -₹${data.discount.toLocaleString('en-IN')}</p>` : ''}
             <p style="margin: 5px 0;">Shipping Fee: ${data.shippingFee === 0 ? 'FREE' : `₹${data.shippingFee.toLocaleString('en-IN')}`}</p>
             <p style="margin: 5px 0; font-size: 18px; font-weight: bold; color: #D6B87A;">Total Amount: ₹${data.total.toLocaleString('en-IN')}</p>
           </div>

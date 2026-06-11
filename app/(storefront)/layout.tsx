@@ -3,6 +3,7 @@ import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import { WhatsAppWidget } from "@/components/common/WhatsAppWidget";
 import { getPageContent } from "@/app/actions/content";
 
 export default async function StorefrontLayout({
@@ -10,10 +11,22 @@ export default async function StorefrontLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const logoRaw = await getPageContent("brand-logo");
+  const [logoRaw, storeRaw] = await Promise.all([
+    getPageContent("brand-logo"),
+    getPageContent("store-settings"),
+  ]);
+
   let logoProps: { imageUrl?: string; text?: string; tagline?: string } = {};
   if (logoRaw) {
     try { logoProps = JSON.parse(logoRaw); } catch { /* use defaults */ }
+  }
+
+  let shippingThreshold = 1499;
+  if (storeRaw) {
+    try {
+      const s = JSON.parse(storeRaw);
+      if (typeof s.shippingThreshold === "number") shippingThreshold = s.shippingThreshold;
+    } catch { /* use default */ }
   }
 
   return (
@@ -22,7 +35,8 @@ export default async function StorefrontLayout({
       <Header logoImageUrl={logoProps.imageUrl} logoText={logoProps.text} logoTagline={logoProps.tagline} />
       <main className="flex-grow">{children}</main>
       <Footer />
-      <CartDrawer />
+      <CartDrawer threshold={shippingThreshold} />
+      <WhatsAppWidget />
     </div>
   );
 }

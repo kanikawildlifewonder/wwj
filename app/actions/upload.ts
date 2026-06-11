@@ -20,7 +20,7 @@ export async function uploadImage(formData: FormData) {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
     const filename = `${uniqueSuffix}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
 
-    let targetBucket = 'PRODUCT';
+    let targetBucket = 'product';
 
     const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
     if (!bucketsError && buckets && buckets.length > 0) {

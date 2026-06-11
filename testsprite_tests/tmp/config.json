@@ -1,0 +1,19 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3000/",
+  "loginUser": "vinayjawai82@gmail.com",
+  "loginPassword": "Vvinay@2025#0143",
+  "executionArgs": {
+    "projectName": "wwj",
+    "projectPath": "v:/website/kanika website/wwj",
+    "testIds": [],
+    "additionalInstruction": "",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-xQCvjoRT6gots9veGqjS7pwEqjFxbQ0Fkm_6LoeOGPMtyh8flRTFXjnjvgtnd-w6dcgtTLABCf1fgip_b4WgFIRelTqn_HFqvjUcm3O38unP2HHivJ5cGoElMoDsWovJ9l4"
+    }
+  },
+  "serverPort": 57253
+}

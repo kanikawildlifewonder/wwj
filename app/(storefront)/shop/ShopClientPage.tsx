@@ -68,7 +68,7 @@ function FilterPanel({
       </div>
 
       <div>
-        <h3 className="font-sans text-xs tracking-widest uppercase font-bold text-jungle mb-4">Max Price</h3>
+        <h3 className="font-sans text-xs tracking-widest uppercase font-bold text-jungle mb-4">Max Range</h3>
         <input
           type="range"
           min={minPriceLimit}
@@ -203,11 +203,11 @@ export default function ShopClientPage({
           <span className="text-gold text-xs tracking-widest uppercase font-bold">WWJ Store</span>
           <span className="w-12 h-[1px] bg-gold/40" />
         </div>
-        <h1 className="font-display text-4xl md:text-5xl text-ivory">Shop All</h1>
+        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-ivory">Shop All</h1>
         <p className="font-sans text-sm text-ivory/60 mt-3">Handcrafted Wildlife-Inspired Jewellery &amp; Accessories</p>
       </div>
 
-      <div className="container mx-auto px-4 lg:px-8 py-12">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-8 py-8 sm:py-12">
         <div className="flex gap-10">
           <aside className="hidden lg:block w-60 flex-shrink-0 sticky top-28 h-fit">
             <h2 className="font-sans text-xs tracking-widest uppercase font-bold text-jungle mb-6 border-b border-jungle/10 pb-3">Filters</h2>
@@ -269,7 +269,7 @@ export default function ShopClientPage({
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
                 {filtered.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

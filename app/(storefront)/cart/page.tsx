@@ -1,16 +1,30 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Trash2, ShoppingBag, ArrowRight, Tag } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { formatINR } from "@/lib/utils/currency";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { MOCK_PRODUCTS } from "@/lib/mock-data";
+import { getPageContent } from "@/app/actions/content";
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, subtotal } = useCartStore();
-  const shippingFee = subtotal() >= 1499 ? 0 : 99;
+  const [shippingThreshold, setShippingThreshold] = useState(1499);
+
+  useEffect(() => {
+    getPageContent("store-settings").then((raw) => {
+      if (raw) {
+        try {
+          const s = JSON.parse(raw);
+          if (typeof s.shippingThreshold === "number") setShippingThreshold(s.shippingThreshold);
+        } catch { /* keep default */ }
+      }
+    });
+  }, []);
+
+  const shippingFee = subtotal() >= shippingThreshold ? 0 : 99;
   const total = subtotal() + shippingFee;
   const suggested = MOCK_PRODUCTS.filter((p) => !items.some((i) => i.product.id === p.id)).slice(0, 4);
 
@@ -93,9 +107,9 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                {subtotal() < 1499 && (
+                {subtotal() < shippingThreshold && (
                   <div className="bg-gold/10 border border-gold/20 rounded-btn px-4 py-3 text-xs text-jungle/80">
-                    Add <span className="font-bold text-gold">{formatINR(1499 - subtotal())}</span> more to get <span className="font-bold text-gold">FREE SHIPPING</span>!
+                    Add <span className="font-bold text-gold">{formatINR(shippingThreshold - subtotal())}</span> more to get <span className="font-bold text-gold">FREE SHIPPING</span>!
                   </div>
                 )}
 

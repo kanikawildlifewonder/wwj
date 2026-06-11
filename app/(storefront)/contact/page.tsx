@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Mail, Phone, MapPin, Send, CheckCircle2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { sendContactSubmissionEmail } from "@/app/actions/emails";
+import { getPageContent } from "@/app/actions/content";
 
 type ContactFormData = {
   name: string;
@@ -16,6 +17,18 @@ type ContactFormData = {
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [contactEmail, setContactEmail] = useState("hello@wwj.com");
+
+  useEffect(() => {
+    getPageContent("store-settings").then((raw) => {
+      if (raw) {
+        try {
+          const s = JSON.parse(raw);
+          if (s.contactEmail) setContactEmail(s.contactEmail);
+        } catch { /* keep default */ }
+      }
+    });
+  }, []);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ContactFormData>();
 
@@ -33,10 +46,10 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-cream min-h-screen py-20">
+    <div className="bg-cream min-h-screen py-12 sm:py-20">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="text-center mb-16">
-          <h1 className="font-display text-4xl md:text-5xl text-jungle mb-4">Contact Us</h1>
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-jungle mb-4">Contact Us</h1>
           <p className="text-jungle/60 text-lg max-w-2xl mx-auto">
             Have a question about a piece, an order, or our conservation efforts? We&apos;d love to hear from you.
           </p>
@@ -59,7 +72,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-display text-lg text-jungle">Email</h3>
-                  <a href="mailto:hello@wwj.com" className="text-jungle/60 hover:text-gold transition-colors">hello@wwj.com</a>
+                  <a href={`mailto:${contactEmail}`} className="text-jungle/60 hover:text-gold transition-colors">{contactEmail}</a>
                   <p className="text-sm text-jungle/40 mt-1">For general inquiries</p>
                 </div>
               </div>
@@ -114,7 +127,7 @@ export default function ContactPage() {
 
           {/* Contact Form */}
           <div className="md:col-span-7">
-            <div className="bg-ivory rounded-xl border border-jungle/10 p-8 shadow-sm">
+            <div className="bg-ivory rounded-xl border border-jungle/10 p-5 sm:p-8 shadow-sm">
               {isSubmitted ? (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">

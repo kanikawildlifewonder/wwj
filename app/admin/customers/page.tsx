@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
-import { Search, Filter, Mail, Users, AlertCircle, Loader2 } from "lucide-react";
+import { Search, Mail, Users, AlertCircle, Loader2 } from "lucide-react";
 import { getAdminCustomers } from "@/app/actions/orders";
 import { toast } from "sonner";
 

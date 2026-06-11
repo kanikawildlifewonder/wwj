@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, Upload, Image as ImageIcon, Save, CheckCircle, Plus, Search, HelpCircle } from "lucide-react";
+import { ChevronLeft, Upload, Image as ImageIcon, Save, Plus, Search, HelpCircle } from "lucide-react";
 import { toast } from "sonner";
 import { addEvent } from "@/app/actions/events";
 import { getProducts } from "@/app/actions/products";

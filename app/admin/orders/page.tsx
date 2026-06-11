@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Search, Filter, Eye, ChevronDown, Loader2 } from "lucide-react";
 import { formatINR } from "@/lib/utils/currency";
-import { getOrders } from "@/app/actions/orders";
+import { getOrders, updateOrderStatus } from "@/app/actions/orders";
 import { toast } from "sonner";
 
 interface OrderItem {
@@ -35,6 +35,25 @@ export default function AdminOrdersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const handleStatusChange = async (orderId: string, newStatus: string) => {
+    try {
+      const res = await updateOrderStatus(orderId, newStatus);
+      if (res.success) {
+        setOrders((prev) =>
+          prev.map((order) =>
+            order.id === orderId ? { ...order, status: newStatus } : order
+          )
+        );
+        toast.success(`Order #${orderId.slice(-8).toUpperCase()} updated to ${newStatus}`);
+      } else {
+        toast.error(res.error || "Failed to update status");
+      }
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      toast.error("An unexpected error occurred.");
+    }
+  };
+
   useEffect(() => {
     async function loadOrders() {
       try {
@@ -60,23 +79,6 @@ export default function AdminOrdersPage() {
     order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     order.customerEmail.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const getStatusBadge = (status: string) => {
-    const statusLower = status.toLowerCase();
-    switch (statusLower) {
-      case "processing":
-      case "pending":
-        return <span className="bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full text-xs font-medium capitalize">{statusLower}</span>;
-      case "shipped":
-        return <span className="bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-full text-xs font-medium capitalize">{statusLower}</span>;
-      case "delivered":
-        return <span className="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full text-xs font-medium capitalize">{statusLower}</span>;
-      case "cancelled":
-        return <span className="bg-red-100 text-red-800 px-2.5 py-0.5 rounded-full text-xs font-medium capitalize">{statusLower}</span>;
-      default:
-        return <span className="bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full text-xs font-medium capitalize">{statusLower}</span>;
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -145,7 +147,29 @@ export default function AdminOrdersPage() {
                         {formatINR(order.totalAmount)}
                         <span className="text-xs font-normal text-jungle/50 block">{itemCount} {itemCount === 1 ? "item" : "items"}</span>
                       </td>
-                      <td className="px-6 py-4">{getStatusBadge(order.status)}</td>
+                      <td className="px-6 py-4">
+                        <select
+                          value={order.status}
+                          onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                          className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg border outline-none cursor-pointer transition-colors ${
+                            order.status.toLowerCase() === "delivered"
+                              ? "bg-emerald-100 text-emerald-800 border-emerald-200 focus:border-emerald-400"
+                              : order.status.toLowerCase() === "shipped"
+                              ? "bg-blue-100 text-blue-800 border-blue-200 focus:border-blue-400"
+                              : order.status.toLowerCase() === "processing" || order.status.toLowerCase() === "pending"
+                              ? "bg-amber-100 text-amber-800 border-amber-200 focus:border-amber-400"
+                              : order.status.toLowerCase() === "cancelled"
+                              ? "bg-red-100 text-red-800 border-red-200 focus:border-red-400"
+                              : "bg-gray-100 text-gray-800 border-gray-200 focus:border-gray-400"
+                          }`}
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Processing">Processing</option>
+                          <option value="Shipped">Shipped</option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                      </td>
                       <td className="px-6 py-4 text-right">
                         <button 
                           onClick={() => {

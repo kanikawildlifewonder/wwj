@@ -1,8 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
 import { DynamicFavicon } from "@/components/layout/DynamicFavicon";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#071D16",
+};
 
 export const metadata: Metadata = {
   title: "WWJ - Wildlife Wonder Jewellery",

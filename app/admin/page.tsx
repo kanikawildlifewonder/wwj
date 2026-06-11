@@ -6,7 +6,6 @@ import {
   IndianRupee,
   ShoppingBag,
   Users,
-  TrendingUp,
   PackageOpen,
   Calendar,
   AlertTriangle,

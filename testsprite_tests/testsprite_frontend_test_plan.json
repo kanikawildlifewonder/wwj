@@ -1,0 +1,597 @@
+[
+  {
+    "id": "TC001",
+    "title": "Proceed to checkout after signing in",
+    "description": "A returning customer can sign in, complete checkout details, and receive an order confirmation.",
+    "category": "User Login & Profile",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign in form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /checkout"
+      },
+      {
+        "type": "action",
+        "description": "Fill the delivery details fields with valid information"
+      },
+      {
+        "type": "action",
+        "description": "Submit the payment"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an order confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Complete checkout with delivery details and payment",
+    "description": "A signed-in customer can enter delivery details, submit checkout, and see an order completion confirmation.",
+    "category": "Checkout",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /checkout"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the delivery details form with valid information"
+      },
+      {
+        "type": "action",
+        "description": "Submit the checkout form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an order completion confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "Add a product to the cart from its detail page",
+    "description": "A shopper can add a product from its detail page and see it appear in the cart.",
+    "category": "Manage Shopping Cart",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /shop"
+      },
+      {
+        "type": "action",
+        "description": "Click a product card to open its detail page"
+      },
+      {
+        "type": "action",
+        "description": "Add the product to the cart"
+      },
+      {
+        "type": "action",
+        "description": "Open the cart page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the item appears in the cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the cart total is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "Sign in from checkout and continue purchasing",
+    "description": "An anonymous shopper who reaches checkout can sign in and continue without losing access to checkout.",
+    "category": "User Login & Profile",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /checkout"
+      },
+      {
+        "type": "action",
+        "description": "Start the sign in flow"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign in form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the checkout page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify delivery details can be entered"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "Require sign in before checkout",
+    "description": "An anonymous shopper who opens checkout is prompted to sign in before completing the purchase.",
+    "category": "User Login & Profile",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /checkout"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a sign in prompt is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify checkout is not available until sign in"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "Review cart contents before checkout",
+    "description": "A shopper can open the cart and confirm the selected items and total are visible before purchasing.",
+    "category": "Manage Shopping Cart",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify cart line items are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the cart total is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC007",
+    "title": "Update cart quantity and see totals recalculate",
+    "description": "A shopper can change an item quantity in the cart and see the cart totals update accordingly.",
+    "category": "Manage Shopping Cart",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /cart"
+      },
+      {
+        "type": "action",
+        "description": "Change an item quantity"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated quantity is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the cart total is updated"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC008",
+    "title": "Remove an item from the cart",
+    "description": "A shopper can remove an item from the cart and see the cart update without that line item.",
+    "category": "Manage Shopping Cart",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /cart"
+      },
+      {
+        "type": "action",
+        "description": "Remove an item from the cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the item is removed from the cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the cart updates accordingly"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC009",
+    "title": "Browse products from the shop catalog",
+    "description": "A shopper can open the shop catalog, review the product listing, and reach a product detail page.",
+    "category": "Browse Jewelry Products",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /shop"
+      },
+      {
+        "type": "action",
+        "description": "Click a product card to open its detail page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify product images are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify option selectors are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC010",
+    "title": "Review a product before buying",
+    "description": "A shopper can open a product detail page from the catalog and inspect the product presentation before purchase.",
+    "category": "Browse Jewelry Products",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /shop"
+      },
+      {
+        "type": "action",
+        "description": "Click a product card to open its detail page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the product detail page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify product details are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC011",
+    "title": "Choose a quantity on a product page",
+    "description": "A shopper can change the quantity selection on a product page and see the selection update.",
+    "category": "Browse Jewelry Products",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /shop"
+      },
+      {
+        "type": "action",
+        "description": "Click a product card to open its detail page"
+      },
+      {
+        "type": "action",
+        "description": "Change the quantity selection"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated quantity selection is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC012",
+    "title": "Show validation when checkout details are incomplete",
+    "description": "A signed-in customer who submits checkout with missing delivery details sees validation feedback and cannot complete checkout.",
+    "category": "User Login & Profile",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign in form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /checkout"
+      },
+      {
+        "type": "action",
+        "description": "Submit the payment with incomplete delivery details"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify delivery validation feedback is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the order confirmation is not shown"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC013",
+    "title": "Review the admin dashboard",
+    "description": "An admin can sign in and open the dashboard to inspect summary sales data and charts.",
+    "category": "Admin Dashboard Review",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign in form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify total sales data is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify sales charts are displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC014",
+    "title": "Review total sales and charts in the admin dashboard",
+    "description": "An authorized admin can open the dashboard and inspect sales totals and charts.",
+    "category": "Admin Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify total sales data is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify sales charts are displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC015",
+    "title": "Open the admin orders list and review order records",
+    "description": "An authorized admin can navigate from the dashboard to the orders list and review order records.",
+    "category": "Admin Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin"
+      },
+      {
+        "type": "action",
+        "description": "Open the orders list tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify order records are displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC016",
+    "title": "Open the admin orders list",
+    "description": "An admin can navigate from the dashboard to the orders list and review order records.",
+    "category": "Admin Dashboard Review",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign in form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin"
+      },
+      {
+        "type": "action",
+        "description": "Open the orders list tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify order records are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the orders list is available"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC017",
+    "title": "Block access to admin while signed out",
+    "description": "An anonymous user who opens the admin area is prevented from viewing admin content.",
+    "category": "Admin Dashboard Review",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify admin content is not visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a sign in prompt or access restriction is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC018",
+    "title": "Show validation feedback for incomplete checkout details",
+    "description": "A signed-in customer who tries to continue with incomplete delivery details sees validation feedback and cannot proceed.",
+    "category": "Checkout",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /checkout"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to continue with incomplete delivery details"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify delivery validation feedback is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify checkout does not continue"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC019",
+    "title": "Block unauthorized access to the admin area",
+    "description": "A signed-out shopper who opens the admin area is prevented from viewing admin data.",
+    "category": "Admin Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify admin content is not visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a sign-in prompt or access restriction is visible"
+      }
+    ],
+    "priority": "Low"
+  }
+]

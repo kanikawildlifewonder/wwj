@@ -35,7 +35,7 @@ export function TrustStrip() {
       </div>
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {TRUST_FEATURES.map((feature, idx) => (
             <div key={idx} className="flex items-center gap-4 text-jungle">
               <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center">

@@ -9,6 +9,9 @@ interface OrderDataInput {
   customerName: string;
   customerEmail: string;
   totalAmount: number;
+  razorpayPaymentId?: string;
+  razorpayOrderId?: string;
+  razorpaySignature?: string;
 }
 
 interface OrderItemInput {
@@ -69,7 +72,10 @@ export async function createOrder(orderData: OrderDataInput, items: OrderItemInp
         customerName: orderData.customerName,
         customerEmail: orderData.customerEmail,
         totalAmount: orderData.totalAmount,
-        status: "Processing", // Default status upon successful payment
+        status: "Processing",
+        razorpayPaymentId: orderData.razorpayPaymentId,
+        razorpayOrderId: orderData.razorpayOrderId,
+        razorpaySignature: orderData.razorpaySignature,
         items: {
           create: items.map((item) => ({
             productId: item.productId,
@@ -280,4 +286,30 @@ export async function getAdminCustomers() {
     };
   }
 }
+
+/**
+ * Updates an order status in the database
+ */
+export async function updateOrderStatus(orderId: string, status: string) {
+  try {
+    const updatedOrder = await prisma.order.update({
+      where: {
+        id: orderId,
+      },
+      data: {
+        status: status,
+      },
+    });
+
+    revalidatePath("/admin/orders");
+    return { success: true, order: updatedOrder };
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to update order status",
+    };
+  }
+}
+
 

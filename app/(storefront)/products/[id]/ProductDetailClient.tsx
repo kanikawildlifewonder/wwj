@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Star,
@@ -24,6 +24,7 @@ import { useCartStore, useWishlistStore } from "@/store/cartStore";
 import { Product, Review } from "@/types/product";
 import { calculateDiscount, formatINR } from "@/lib/utils/currency";
 import { mapDbProductToUI } from "@/lib/utils/product-mapper";
+import { getPageContent } from "@/app/actions/content";
 
 type ProductDetailRecord = {
   id: string;
@@ -66,6 +67,18 @@ export default function ProductDetailClient({
   const videoRef = useRef<HTMLVideoElement>(null);
   const { addItem, openCart } = useCartStore();
   const { toggle, hasItem } = useWishlistStore();
+  const [shippingThreshold, setShippingThreshold] = useState(1499);
+
+  useEffect(() => {
+    getPageContent("store-settings").then((raw) => {
+      if (raw) {
+        try {
+          const s = JSON.parse(raw);
+          if (typeof s.shippingThreshold === "number") setShippingThreshold(s.shippingThreshold);
+        } catch { /* keep default */ }
+      }
+    });
+  }, []);
 
   const mediaList = useMemo<MediaItem[]>(() => {
     const list: MediaItem[] = (product.images || []).map((image) => ({
@@ -147,7 +160,7 @@ export default function ProductDetailClient({
   return (
     <div className="bg-ivory min-h-screen">
       <div className="bg-cream border-b border-jungle/10 py-3">
-        <div className="container mx-auto px-4 lg:px-8 flex items-center gap-2 text-xs text-jungle/50">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-8 flex items-center gap-2 text-xs text-jungle/50 overflow-x-auto hide-scrollbar">
           <Link href="/" className="hover:text-jungle">
             Home
           </Link>
@@ -156,11 +169,11 @@ export default function ProductDetailClient({
             Shop
           </Link>
           <span>/</span>
-          <span className="text-jungle font-medium">{product.name}</span>
+          <span className="text-jungle font-medium truncate max-w-[200px] sm:max-w-none">{product.name}</span>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 lg:px-8 py-12">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-8 py-6 sm:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-20">
           <div className="space-y-4">
             <div className="relative aspect-square rounded-xl overflow-hidden bg-cream flex items-center justify-center">
@@ -317,7 +330,7 @@ export default function ProductDetailClient({
               <p className="text-xs text-gold uppercase tracking-widest font-medium mb-1">
                 {product.animalInspiration || "Wildlife"} / {product.category}
               </p>
-              <h1 className="font-display text-3xl md:text-4xl text-charcoal leading-tight">
+              <h1 className="font-display text-2xl sm:text-3xl md:text-4xl text-charcoal leading-tight">
                 {product.name}
               </h1>
               <p className="text-xs text-jungle/40 mt-1">
@@ -340,7 +353,7 @@ export default function ProductDetailClient({
             </div>
 
             <div className="flex items-baseline gap-3">
-              <span className="font-display text-3xl text-jungle">
+              <span className="font-display text-2xl sm:text-3xl text-jungle">
                 {formatINR(product.price)}
               </span>
               {product.originalPrice && (
@@ -403,9 +416,9 @@ export default function ProductDetailClient({
               </motion.button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               {[
-                { icon: Truck, title: "Free Shipping", desc: "On orders above Rs. 1499" },
+                { icon: Truck, title: "Free Shipping", desc: `On orders above ₹${shippingThreshold}` },
                 { icon: RotateCcw, title: "Easy Returns", desc: "Within 7 days" },
                 { icon: Shield, title: "Secure Payment", desc: "100% safe checkout" },
                 { icon: Package, title: "Artisan Made", desc: "Handcrafted in India" },
@@ -470,7 +483,7 @@ export default function ProductDetailClient({
             <h2 className="font-display text-2xl text-jungle mb-8">
               You May Also Like
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
               {related.map((relatedProduct) => (
                 <ProductCard
                   key={relatedProduct.id}

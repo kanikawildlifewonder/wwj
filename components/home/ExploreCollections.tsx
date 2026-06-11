@@ -1,16 +1,27 @@
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, Sparkles, Gem, Link as LinkIcon, Gift } from "lucide-react";
+import { ArrowRight, Sparkles, Gem, Link as LinkIcon, Gift, Star } from "lucide-react";
 
 export type CollectionCard = {
   title: string;
   description: string;
   image: string;
   link: string;
-  subLinks: { name: string; icon: "Sparkles" | "Gem" | "LinkIcon" | "Gift" }[];
+  subLinks: { name: string; icon: "Sparkles" | "Gem" | "LinkIcon" | "Gift" | "Star" }[];
 };
 
-const ICON_MAP = { Sparkles, Gem, LinkIcon, Gift };
+const ICON_MAP = { Sparkles, Gem, LinkIcon, Gift, Star };
+
+/** Pick the best icon for a given category name */
+function iconForCategory(name: string): "Sparkles" | "Gem" | "LinkIcon" | "Gift" | "Star" {
+  const n = name.toLowerCase();
+  if (n.includes("necklace") || n.includes("earring") || n.includes("stud")) return "Sparkles";
+  if (n.includes("ring")) return "Gem";
+  if (n.includes("bracelet") || n.includes("keychain") || n.includes("chain")) return "LinkIcon";
+  if (n.includes("gift") || n.includes("combo") || n.includes("set") || n.includes("festive")) return "Gift";
+  if (n.includes("hair") || n.includes("mug") || n.includes("magnet") || n.includes("bookmark")) return "Star";
+  return "Sparkles";
+}
 
 const DEFAULT_COLLECTIONS: CollectionCard[] = [
   {
@@ -49,25 +60,47 @@ const DEFAULT_COLLECTIONS: CollectionCard[] = [
   },
 ];
 
+/** Collection key → which card index it maps to */
+const COLLECTION_KEY_INDEX: Record<string, number> = {
+  wwj: 0,
+  wwa: 1,
+  gift_cards: 2,
+};
+
+/** Max badges to show per card */
+const MAX_BADGES = 6;
+
 export function ExploreCollections({
   collections = DEFAULT_COLLECTIONS,
+  groupedCategories,
 }: {
   collections?: CollectionCard[];
+  groupedCategories?: Record<string, string[]>;
 }) {
-  // Merge DB-overrides into defaults (image/title/description only; keep subLinks from default)
+  // Merge DB-overrides into defaults (image/title/description only; subLinks come from grouped categories or default)
   const merged = DEFAULT_COLLECTIONS.map((def, i) => {
     const override = collections[i];
-    if (!override) return def;
-    return {
+    const base = {
       ...def,
-      title: override.title || def.title,
-      description: override.description || def.description,
-      image: override.image || def.image,
+      title: override?.title || def.title,
+      description: override?.description || def.description,
+      image: override?.image || def.image,
     };
+
+    // Find which collection key maps to this index
+    const collectionKey = Object.entries(COLLECTION_KEY_INDEX).find(([, idx]) => idx === i)?.[0];
+    if (collectionKey && groupedCategories && groupedCategories[collectionKey]?.length > 0) {
+      // Build sub-links dynamically from saved categories (up to MAX_BADGES)
+      base.subLinks = groupedCategories[collectionKey]
+        .slice(0, MAX_BADGES)
+        .map((name) => ({ name, icon: iconForCategory(name) }));
+    }
+
+    return base;
   });
 
   return (
-    <section className="bg-jungle py-20 border-b border-border">
+    <section className="bg-jungle py-12 sm:py-20 border-b border-border">
       <div className="container mx-auto px-4 lg:px-8">
 
         <div className="text-center mb-12 flex flex-col items-center">
@@ -84,7 +117,7 @@ export function ExploreCollections({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {merged.map((col, idx) => {
             return (
-              <div key={idx} className="group relative rounded-card overflow-hidden border border-border bg-forest h-[450px] flex flex-col justify-between">
+              <div key={idx} className="group relative rounded-card overflow-hidden border border-border bg-forest h-[350px] sm:h-[400px] md:h-[450px] flex flex-col justify-between">
 
                 {/* Background Image */}
                 <div
@@ -94,8 +127,8 @@ export function ExploreCollections({
                 <div className="absolute inset-0 z-0 bg-gradient-to-b from-jungle/80 via-transparent to-jungle/90 group-hover:opacity-70 transition-opacity duration-700" />
 
                 {/* Top Content */}
-                <div className="relative z-10 p-8 flex flex-col items-start">
-                  <h3 className="font-display text-3xl text-ivory mb-2 tracking-tight group-hover:text-gold transition-colors">{col.title}</h3>
+                <div className="relative z-10 p-5 sm:p-8 flex flex-col items-start">
+                  <h3 className="font-display text-2xl sm:text-3xl text-ivory mb-2 tracking-tight group-hover:text-gold transition-colors">{col.title}</h3>
                   <p className="font-sans text-sm text-ivory/80 mb-6">{col.description}</p>
 
                   <Link
@@ -106,8 +139,8 @@ export function ExploreCollections({
                   </Link>
                 </div>
 
-                {/* Bottom Sub-links */}
-                <div className="relative z-10 p-6 pt-0 mt-auto flex justify-center gap-6 border-t border-border/30 w-full pt-4 opacity-80 group-hover:opacity-100 transition-opacity">
+                {/* Bottom Sub-links (dynamic from categories) */}
+                <div className="relative z-10 p-4 sm:p-6 pt-0 mt-auto flex flex-wrap justify-center gap-4 sm:gap-6 border-t border-border/30 w-full pt-4 opacity-80 group-hover:opacity-100 transition-opacity">
                   {col.subLinks.map((sub, sidx) => {
                     const Icon = ICON_MAP[sub.icon] ?? Sparkles;
                     return (

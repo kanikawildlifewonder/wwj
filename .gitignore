@@ -50,3 +50,5 @@ next-env.d.ts
 /.clerk/
 
 /lib/generated/prisma
+
+testsprite_tests\tmp\config.json

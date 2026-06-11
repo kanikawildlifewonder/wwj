@@ -4,12 +4,12 @@ import { PawPrint } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="bg-jungle text-ivory/80 pt-16 pb-8 border-t border-border">
+    <footer className="bg-jungle text-ivory/80 pt-10 sm:pt-16 pb-6 sm:pb-8 border-t border-border">
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 mb-12">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-12 lg:gap-8 mb-10 sm:mb-12">
           
           {/* Brand & About */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6 col-span-2 sm:col-span-2 lg:col-span-1">
             <Link href="/" className="flex flex-col items-start -space-y-1 group">
               <span className="font-display text-3xl font-bold text-ivory tracking-widest group-hover:text-gold transition-colors">
                 WWJ
@@ -38,10 +38,10 @@ export function Footer() {
           </div>
 
           {/* Newsletter / Community */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6 col-span-2 sm:col-span-2 lg:col-span-1">
             <h4 className="font-sans text-sm tracking-widest font-bold text-ivory uppercase">Join the Wild Community</h4>
             <p className="text-sm">Get exclusive updates, new launches, styling tips & wildlife stories.</p>
-            <form className="flex max-w-sm">
+            <form className="flex flex-col sm:flex-row max-w-sm">
               <input 
                 type="email" 
                 placeholder="Enter your email" 
@@ -85,7 +85,7 @@ export function Footer() {
                 Instagram Feed
               </a>
             </h4>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <a 
                   key={i} 

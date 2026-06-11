@@ -11,7 +11,7 @@ import {
 
 /* ─────────────────────── types ──────────────────────── */
 type CollectionSlot = { title: string; description: string; image: string };
-type Section = "hero" | "collections" | "about" | "announcement";
+type Section = "hero" | "collections" | "about" | "announcement" | "aboutBrand" | "aboutFounder";
 
 const DEFAULT_COLLECTIONS: CollectionSlot[] = [
   { title: "WWJ JEWELLERY",       description: "Handcrafted animal-inspired fashion pieces.", image: "/images/products/peacock_necklace.png" },
@@ -166,16 +166,45 @@ export default function AdminPagesCMS() {
   // Announcement
   const [announcementText, setAnnouncementText] = useState("FREE SHIPPING ON ORDERS ABOVE ₹1499");
 
+  // About Brand
+  const [brandHeroTitle,     setBrandHeroTitle]     = useState("Our Story");
+  const [brandHeroSubtitle,  setBrandHeroSubtitle]  = useState("Where high-end craftsmanship meets untamed beauty.");
+  const [brandHeroImage,     setBrandHeroImage]     = useState("");
+  const [brandMissionTitle,  setBrandMissionTitle]  = useState("A Brand Born From the Wild");
+  const [brandMission1,      setBrandMission1]      = useState("");
+  const [brandMission2,      setBrandMission2]      = useState("");
+  const [brandMissionImage,  setBrandMissionImage]  = useState("");
+
+  // About Founder
+  const [founderName,        setFounderName]        = useState("Kanika");
+  const [founderRole,        setFounderRole]        = useState("Founder & Creative Director, WWJ");
+  const [founderImage,       setFounderImage]       = useState("");
+  const [founderQuote,       setFounderQuote]       = useState("");
+  const [founderBio1,        setFounderBio1]        = useState("");
+  const [founderBio2,        setFounderBio2]        = useState("");
+  const [founderInstagram,   setFounderInstagram]   = useState("@wildlifewonderjewellery");
+  const [founderEmail,       setFounderEmail]       = useState("");
+  const [founderM1Num,       setFounderM1Num]       = useState("5+");
+  const [founderM1Label,     setFounderM1Label]     = useState("Years of Craft");
+  const [founderM2Num,       setFounderM2Num]       = useState("200+");
+  const [founderM2Label,     setFounderM2Label]     = useState("Unique Designs");
+  const [founderM3Num,       setFounderM3Num]       = useState("10K+");
+  const [founderM3Label,     setFounderM3Label]     = useState("Happy Customers");
+  const [founderM4Num,       setFounderM4Num]       = useState("15+");
+  const [founderM4Label,     setFounderM4Label]     = useState("Artisan Partners");
+
   /* ── load ── */
   useEffect(() => {
     async function load() {
       setIsLoading(true);
       try {
-        const [heroRes, aboutRes, colRes, annRes] = await Promise.all([
+        const [heroRes, aboutRes, colRes, annRes, brandRes, founderRes] = await Promise.all([
           getPageContent("home-hero"),
           getPageContent("home-about"),
           getPageContent("home-collections"),
           getPageContent("announcement-bar"),
+          getPageContent("about-brand"),
+          getPageContent("about-founder"),
         ]);
 
         if (heroRes) {
@@ -204,6 +233,35 @@ export default function AdminPagesCMS() {
           const c = JSON.parse(annRes);
           setAnnouncementText(c.text ?? announcementText);
         }
+        if (brandRes) {
+          const c = JSON.parse(brandRes);
+          setBrandHeroTitle(c.heroTitle ?? brandHeroTitle);
+          setBrandHeroSubtitle(c.heroSubtitle ?? brandHeroSubtitle);
+          setBrandHeroImage(c.heroImage ?? "");
+          setBrandMissionTitle(c.missionTitle ?? brandMissionTitle);
+          setBrandMission1(c.missionParagraph1 ?? "");
+          setBrandMission2(c.missionParagraph2 ?? "");
+          setBrandMissionImage(c.missionImage ?? "");
+        }
+        if (founderRes) {
+          const c = JSON.parse(founderRes);
+          setFounderName(c.founderName ?? founderName);
+          setFounderRole(c.founderRole ?? founderRole);
+          setFounderImage(c.founderImage ?? "");
+          setFounderQuote(c.quote ?? "");
+          setFounderBio1(c.bio1 ?? "");
+          setFounderBio2(c.bio2 ?? "");
+          setFounderInstagram(c.instagramHandle ?? founderInstagram);
+          setFounderEmail(c.email ?? "");
+          setFounderM1Num(c.milestone1Number ?? founderM1Num);
+          setFounderM1Label(c.milestone1Label ?? founderM1Label);
+          setFounderM2Num(c.milestone2Number ?? founderM2Num);
+          setFounderM2Label(c.milestone2Label ?? founderM2Label);
+          setFounderM3Num(c.milestone3Number ?? founderM3Num);
+          setFounderM3Label(c.milestone3Label ?? founderM3Label);
+          setFounderM4Num(c.milestone4Number ?? founderM4Num);
+          setFounderM4Label(c.milestone4Label ?? founderM4Label);
+        }
       } catch { /* ignore */ }
       setIsLoading(false);
     }
@@ -222,6 +280,22 @@ export default function AdminPagesCMS() {
         res = await updatePageContent("home-collections", JSON.stringify(collections));
       } else if (activeSection === "about") {
         res = await updatePageContent("home-about", JSON.stringify({ subtitle: aboutSubtitle, title: aboutTitle, paragraph: aboutParagraph }));
+      } else if (activeSection === "aboutBrand") {
+        res = await updatePageContent("about-brand", JSON.stringify({
+          heroTitle: brandHeroTitle, heroSubtitle: brandHeroSubtitle, heroImage: brandHeroImage,
+          missionTitle: brandMissionTitle, missionParagraph1: brandMission1, missionParagraph2: brandMission2,
+          missionImage: brandMissionImage,
+        }));
+      } else if (activeSection === "aboutFounder") {
+        res = await updatePageContent("about-founder", JSON.stringify({
+          founderName, founderRole, founderImage,
+          quote: founderQuote, bio1: founderBio1, bio2: founderBio2,
+          instagramHandle: founderInstagram, email: founderEmail,
+          milestone1Number: founderM1Num, milestone1Label: founderM1Label,
+          milestone2Number: founderM2Num, milestone2Label: founderM2Label,
+          milestone3Number: founderM3Num, milestone3Label: founderM3Label,
+          milestone4Number: founderM4Num, milestone4Label: founderM4Label,
+        }));
       } else {
         res = await updatePageContent("announcement-bar", JSON.stringify({ text: announcementText }));
       }
@@ -242,6 +316,8 @@ export default function AdminPagesCMS() {
     { id: "collections",  icon: Layout,    label: "Collection Thumbnails", description: "Images & text for 3 collection cards" },
     { id: "about",        icon: FileText,  label: "Story / About Section", description: "Wildlife story banner text" },
     { id: "announcement", icon: Megaphone, label: "Announcement Bar",      description: "Top-of-page strip message" },
+    { id: "aboutBrand",   icon: FileText,  label: "About Brand Page",      description: "Hero, mission, images for /about/brand" },
+    { id: "aboutFounder", icon: FileText,  label: "About Founder Page",    description: "Founder photo, bio, quote, milestones" },
   ];
 
   if (isLoading) {
@@ -394,6 +470,53 @@ export default function AdminPagesCMS() {
                   <input value={announcementText} onChange={(e) => setAnnouncementText(e.target.value)} placeholder="e.g. FREE SHIPPING ON ORDERS ABOVE ₹1499" className={INPUT_CLS} />
                   <p className="text-xs text-jungle/40 mt-1">Keep it short — ideally under 60 characters.</p>
                 </FormField>
+              )}
+
+              {/* ── ABOUT BRAND ── */}
+              {activeSection === "aboutBrand" && (
+                <div className="space-y-6">
+                  <p className="text-xs text-jungle/50 -mt-2">Edit content for the <strong>/about/brand</strong> page.</p>
+                  <FormField label="Hero Title"><input value={brandHeroTitle} onChange={(e) => setBrandHeroTitle(e.target.value)} placeholder="Our Story" className={INPUT_CLS} /></FormField>
+                  <FormField label="Hero Subtitle"><input value={brandHeroSubtitle} onChange={(e) => setBrandHeroSubtitle(e.target.value)} placeholder="Born from a passion for wildlife…" className={INPUT_CLS} /></FormField>
+                  <ImageUploader label="Hero Background Image" value={brandHeroImage} onChange={setBrandHeroImage} />
+                  <FormField label="Mission Section Title"><input value={brandMissionTitle} onChange={(e) => setBrandMissionTitle(e.target.value)} placeholder="A Brand Born From the Wild" className={INPUT_CLS} /></FormField>
+                  <FormField label="Mission Paragraph 1"><textarea value={brandMission1} onChange={(e) => setBrandMission1(e.target.value)} rows={3} className={TEXTAREA_CLS} placeholder="WWJ was founded with…" /></FormField>
+                  <FormField label="Mission Paragraph 2"><textarea value={brandMission2} onChange={(e) => setBrandMission2(e.target.value)} rows={3} className={TEXTAREA_CLS} placeholder="We believe jewellery should tell a story…" /></FormField>
+                  <ImageUploader label="Mission Section Image (right side)" value={brandMissionImage} onChange={setBrandMissionImage} />
+                </div>
+              )}
+
+              {/* ── ABOUT FOUNDER ── */}
+              {activeSection === "aboutFounder" && (
+                <div className="space-y-6">
+                  <p className="text-xs text-jungle/50 -mt-2">Edit content for the <strong>/about/founder</strong> page.</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField label="Founder Name"><input value={founderName} onChange={(e) => setFounderName(e.target.value)} placeholder="Kanika" className={INPUT_CLS} /></FormField>
+                    <FormField label="Founder Role"><input value={founderRole} onChange={(e) => setFounderRole(e.target.value)} placeholder="Founder & Creative Director" className={INPUT_CLS} /></FormField>
+                  </div>
+                  <ImageUploader label="Founder Photo" value={founderImage} onChange={setFounderImage} />
+                  <FormField label="Pull Quote" hint="Shown in italic beside the photo"><textarea value={founderQuote} onChange={(e) => setFounderQuote(e.target.value)} rows={3} className={TEXTAREA_CLS} placeholder="I founded WWJ with a singular vision…" /></FormField>
+                  <FormField label="Bio Paragraph 1"><textarea value={founderBio1} onChange={(e) => setFounderBio1(e.target.value)} rows={3} className={TEXTAREA_CLS} /></FormField>
+                  <FormField label="Bio Paragraph 2"><textarea value={founderBio2} onChange={(e) => setFounderBio2(e.target.value)} rows={3} className={TEXTAREA_CLS} /></FormField>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField label="Instagram Handle"><input value={founderInstagram} onChange={(e) => setFounderInstagram(e.target.value)} placeholder="@wildlifewonderjewellery" className={INPUT_CLS} /></FormField>
+                    <FormField label="Email Address"><input value={founderEmail} onChange={(e) => setFounderEmail(e.target.value)} placeholder="kanika@wwj.com" className={INPUT_CLS} /></FormField>
+                  </div>
+                  <p className="text-xs font-semibold text-jungle/50 uppercase tracking-wider">Milestone Stats</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { num: founderM1Num, setNum: setFounderM1Num, label: founderM1Label, setLabel: setFounderM1Label },
+                      { num: founderM2Num, setNum: setFounderM2Num, label: founderM2Label, setLabel: setFounderM2Label },
+                      { num: founderM3Num, setNum: setFounderM3Num, label: founderM3Label, setLabel: setFounderM3Label },
+                      { num: founderM4Num, setNum: setFounderM4Num, label: founderM4Label, setLabel: setFounderM4Label },
+                    ].map((m, i) => (
+                      <div key={i} className="p-3 border border-border rounded-lg space-y-2">
+                        <input value={m.num} onChange={(e) => m.setNum(e.target.value)} placeholder="5+" className={INPUT_CLS} />
+                        <input value={m.label} onChange={(e) => m.setLabel(e.target.value)} placeholder="Years of Craft" className={INPUT_CLS} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
 
             </div>

@@ -71,7 +71,6 @@ export default function AdminProductsPage() {
 
   /* ── load ── */
   const loadProducts = useCallback(async () => {
-    setIsLoading(true);
     const [data, cats] = await Promise.all([getProducts(), getProductCategories()]);
     setProducts(data);
     setCategories(cats);
@@ -79,7 +78,21 @@ export default function AdminProductsPage() {
     setIsLoading(false);
   }, []);
 
-  useEffect(() => { void loadProducts(); }, [loadProducts]);
+  useEffect(() => {
+    let mounted = true;
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      const [data, cats] = await Promise.all([getProducts(), getProductCategories()]);
+      if (mounted) {
+        setProducts(data);
+        setCategories(cats);
+        setSelected(new Set());
+        setIsLoading(false);
+      }
+    };
+    fetchProducts();
+    return () => { mounted = false; };
+  }, [loadProducts]);
 
   /* ── filter + search ── */
   const filteredProducts = useMemo(() => {
@@ -110,7 +123,11 @@ export default function AdminProductsPage() {
   const toggleSelect = (id: string) => {
     setSelected((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
       return next;
     });
   };

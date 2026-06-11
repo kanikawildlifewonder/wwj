@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ChevronLeft, Upload, Image as ImageIcon, Save, CheckCircle, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { addProduct } from "@/app/actions/products";
-import { getProductCategories } from "@/app/actions/categories";
+import { getGroupedProductCategories } from "@/app/actions/categories";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -51,10 +51,17 @@ export default function NewProductPage() {
 
   const [isCustomCategory, setIsCustomCategory] = useState(false);
   const [customCategory, setCustomCategory] = useState("");
-  const [categoryOptions, setCategoryOptions] = useState<string[]>([]);
+  const [groupedCategories, setGroupedCategories] = useState<Record<string, string[]>>({
+    wwj: [],
+    wwa: [],
+    gift_cards: [],
+  });
+
+  // The options shown in the sub-category dropdown depend on the selected mainCategory
+  const categoryOptions = groupedCategories[formData.mainCategory] ?? [];
 
   useEffect(() => {
-    getProductCategories().then(setCategoryOptions);
+    getGroupedProductCategories().then(setGroupedCategories);
   }, []);
 
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
@@ -316,12 +323,18 @@ export default function NewProductPage() {
                 <div className="relative">
                   <select 
                     value={formData.mainCategory} 
-                    onChange={e => setFormData({ ...formData, mainCategory: e.target.value })} 
+                    onChange={e => {
+                      const newMain = e.target.value;
+                      // Reset sub-category to first option in the new collection
+                      const firstOpt = (groupedCategories[newMain] ?? [])[0] ?? "";
+                      setIsCustomCategory(false);
+                      setFormData({ ...formData, mainCategory: newMain, category: firstOpt });
+                    }} 
                     className="w-full px-4 py-2.5 border border-border rounded-xl appearance-none bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 text-jungle focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all cursor-pointer"
                   >
                     <option value="wwj">WWJ (Wildlife Wonder Jewellery)</option>
-                    <option value="wwa">WWA (Wildlife Wonder Art)</option>
-                    <option value="gift_cards">Gift Cards</option>
+                    <option value="wwa">WWA (Wildlife Wonder Accessories)</option>
+                    <option value="gift_cards">Gifting Collection</option>
                   </select>
                   <ChevronLeft className="w-4 h-4 text-jungle/50 absolute right-4 top-1/2 -translate-y-1/2 -rotate-90 pointer-events-none" />
                 </div>

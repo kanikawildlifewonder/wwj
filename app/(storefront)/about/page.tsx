@@ -11,7 +11,7 @@ export default function AboutPage() {
   return (
     <div className="bg-cream min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[60vh] min-h-[400px] flex items-center justify-center overflow-hidden">
+      <section id="brand" className="relative h-[45vh] sm:h-[50vh] md:h-[60vh] min-h-[300px] sm:min-h-[400px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-jungle z-0">
           <div 
             className="absolute inset-0 opacity-40 bg-cover bg-center"
@@ -19,8 +19,8 @@ export default function AboutPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-jungle via-jungle/50 to-transparent" />
         </div>
-        <div className="relative z-10 text-center px-4 max-w-3xl mx-auto mt-20">
-          <h1 className="font-display text-5xl md:text-7xl text-gold mb-6 tracking-wide">
+        <div className="relative z-10 text-center px-4 max-w-3xl mx-auto mt-12 sm:mt-20">
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-7xl text-gold mb-4 sm:mb-6 tracking-wide">
             Our Story
           </h1>
           <p className="text-lg md:text-xl text-ivory/90 font-light leading-relaxed">
@@ -30,10 +30,10 @@ export default function AboutPage() {
       </section>
 
       {/* The Founder Section */}
-      <section className="py-20 px-4">
+      <section id="founder" className="py-12 sm:py-20 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row items-center gap-16">
-            <div className="w-full md:w-1/2 aspect-[4/5] relative rounded-t-full overflow-hidden border-8 border-ivory shadow-xl">
+            <div className="w-full md:w-1/2 aspect-[4/5] md:aspect-[4/5] max-h-[400px] md:max-h-none relative rounded-t-full overflow-hidden border-4 sm:border-8 border-ivory shadow-xl">
               <div 
                 className="absolute inset-0 bg-cover bg-center"
                 style={{ backgroundImage: "url('https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?q=80&w=800&auto=format&fit=crop')" }}
@@ -57,10 +57,10 @@ export default function AboutPage() {
       </section>
 
       {/* Core Values */}
-      <section className="py-20 bg-ivory border-y border-jungle/5">
+      <section className="py-12 sm:py-20 bg-ivory border-y border-jungle/5">
         <div className="container mx-auto px-4 max-w-6xl">
-          <h2 className="font-display text-4xl text-jungle text-center mb-16">Our Philosophy</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+          <h2 className="font-display text-3xl sm:text-4xl text-jungle text-center mb-10 sm:mb-16">Our Philosophy</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-12 text-center">
             <div className="space-y-4">
               <div className="w-16 h-16 mx-auto rounded-full bg-jungle flex items-center justify-center text-gold text-2xl font-serif">I</div>
               <h3 className="font-display text-xl text-jungle">Artisanal Craftsmanship</h3>
@@ -87,7 +87,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 text-center px-4">
+      <section className="py-16 sm:py-24 text-center px-4">
         <h2 className="font-display text-3xl md:text-4xl text-jungle mb-6">Wear Your Wild Side</h2>
         <p className="text-jungle/60 mb-8 max-w-xl mx-auto">
           Explore our collections and find the spirit animal that resonates with your unique style.

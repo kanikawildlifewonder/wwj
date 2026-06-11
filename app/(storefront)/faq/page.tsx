@@ -58,10 +58,10 @@ const FAQS = [
 
 export default function FAQPage() {
   return (
-    <div className="bg-cream min-h-screen py-20">
+    <div className="bg-cream min-h-screen py-12 sm:py-20">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="text-center mb-16">
-          <h1 className="font-display text-4xl md:text-5xl text-jungle mb-4">Frequently Asked Questions</h1>
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-jungle mb-4">Frequently Asked Questions</h1>
           <p className="text-jungle/60 text-lg">
             Find answers to common questions about our pieces, shipping, and policies.
           </p>
@@ -75,7 +75,7 @@ export default function FAQPage() {
               </h2>
               <div className="space-y-6">
                 {section.questions.map((faq, fIdx) => (
-                  <div key={fIdx} className="bg-ivory rounded-xl p-6 border border-jungle/10 shadow-sm">
+                  <div key={fIdx} className="bg-ivory rounded-xl p-4 sm:p-6 border border-jungle/10 shadow-sm">
                     <h3 className="font-sans font-bold text-lg text-jungle mb-2">{faq.q}</h3>
                     <p className="text-jungle/70 leading-relaxed text-sm md:text-base">{faq.a}</p>
                   </div>
@@ -85,7 +85,7 @@ export default function FAQPage() {
           ))}
         </div>
 
-        <div className="mt-20 bg-jungle text-ivory rounded-xl p-8 text-center">
+        <div className="mt-12 sm:mt-20 bg-jungle text-ivory rounded-xl p-6 sm:p-8 text-center">
           <h2 className="font-display text-2xl text-gold mb-4">Still have questions?</h2>
           <p className="text-ivory/80 mb-6 max-w-lg mx-auto">
             If you couldn&apos;t find the answer you were looking for, our customer care team is here to help.

@@ -29,16 +29,19 @@ model Product {
 }
 
 model Order {
-  id            String   @id @default(cuid())
-  clerkUserId   String?  // Optional, if user is guest
-  customerName  String
-  customerEmail String
-  totalAmount   Float
-  status        String   @default("PENDING") // PENDING, PROCESSING, SHIPPED, DELIVERED
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                String   @id @default(cuid())
+  clerkUserId       String?  // Optional, if user is guest
+  customerName      String
+  customerEmail     String
+  totalAmount       Float
+  status            String   @default("PENDING") // PENDING, PROCESSING, SHIPPED, DELIVERED
+  razorpayPaymentId String?  @map("razorpay_payment_id")
+  razorpayOrderId   String?  @map("razorpay_order_id")
+  razorpaySignature String?  @map("razorpay_signature")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
-  items         OrderItem[]
+  items             OrderItem[]
 }
 
 model OrderItem {

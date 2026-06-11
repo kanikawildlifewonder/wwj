@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useCartStore } from "@/store/cartStore";
 import { formatINR } from "@/lib/utils/currency";
 
-export function CartDrawer() {
+export function CartDrawer({ threshold = 1499 }: { threshold?: number }) {
   const { items, isOpen, closeCart, removeItem, updateQuantity, subtotal } = useCartStore();
 
   return (
@@ -32,7 +32,7 @@ export function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed top-0 right-0 h-full w-full max-w-[420px] bg-jungle border-l border-border z-[101] flex flex-col"
+            className="fixed top-0 right-0 h-full w-full sm:max-w-[420px] bg-jungle border-l border-border z-[101] flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-5 border-b border-border">
@@ -126,9 +126,9 @@ export function CartDrawer() {
             {/* Footer */}
             {items.length > 0 && (
               <div className="border-t border-border px-6 py-6 space-y-4 bg-forest/40">
-                {subtotal() < 1499 && (
+                {subtotal() < threshold && (
                   <p className="text-xs text-ivory/60 text-center bg-gold/10 border border-gold/20 rounded px-3 py-2">
-                    Add {formatINR(1499 - subtotal())} more for <span className="text-gold font-bold">FREE SHIPPING</span>
+                    Add {formatINR(threshold - subtotal())} more for <span className="text-gold font-bold">FREE SHIPPING</span>
                   </p>
                 )}
                 <div className="flex justify-between items-center">

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -12,6 +12,29 @@ import Link from "next/link";
 import { sendOrderConfirmationEmail } from "@/app/actions/emails";
 import { useUser } from "@clerk/nextjs";
 import { createRazorpayOrder, createOrder } from "@/app/actions/orders";
+import { getPageContent } from "@/app/actions/content";
+
+interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  image: string;
+  order_id: string;
+  handler: (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => void;
+  modal: {
+    ondismiss: () => void;
+  };
+}
+
+declare global {
+  interface Window {
+    Razorpay: {
+      new (options: RazorpayOptions): { open: () => void };
+    };
+  }
+}
 
 const checkoutSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
@@ -33,8 +56,63 @@ export default function CheckoutPage() {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [whatsappUrl, setWhatsappUrl] = useState("");
 
-  const shippingFee = subtotal() >= 1499 ? 0 : 99;
-  const total = subtotal() + shippingFee;
+  // Coupon states
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState(0);
+  const [couponError, setCouponError] = useState("");
+  const [shippingThreshold, setShippingThreshold] = useState(1499);
+
+  useEffect(() => {
+    getPageContent("store-settings").then((raw) => {
+      if (raw) {
+        try {
+          const s = JSON.parse(raw);
+          if (typeof s.shippingThreshold === "number") setShippingThreshold(s.shippingThreshold);
+        } catch { /* keep default */ }
+      }
+    });
+  }, []);
+
+  const applyCoupon = () => {
+    setCouponError("");
+    const code = couponCode.trim().toUpperCase();
+    if (!code) {
+      setCouponError("Please enter a coupon code");
+      return;
+    }
+
+    const currentSubtotal = subtotal();
+    let discount = 0;
+
+    if (code === "SAVE10") {
+      discount = currentSubtotal * 0.1;
+    } else if (code === "WILD15") {
+      discount = currentSubtotal * 0.15;
+    } else if (code === "GOLD20") {
+      discount = currentSubtotal * 0.2;
+    } else if (code === "FREE500") {
+      discount = Math.min(500, currentSubtotal);
+    } else {
+      setCouponError("Invalid coupon code");
+      return;
+    }
+
+    setAppliedCoupon(code);
+    setAppliedDiscount(discount);
+    toast.success(`Coupon "${code}" applied successfully!`);
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon("");
+    setAppliedDiscount(0);
+    setCouponCode("");
+    setCouponError("");
+    toast.info("Coupon code removed");
+  };
+
+  const shippingFee = subtotal() >= shippingThreshold ? 0 : 99;
+  const total = Math.max(0, subtotal() + shippingFee - appliedDiscount);
 
   const {
     register,
@@ -74,15 +152,22 @@ export default function CheckoutPage() {
     }
 
     // 3. Open Razorpay payment modal
-    const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+    const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+    if (!razorpayKey) {
+      toast.error("Razorpay key not configured. Please contact support.");
+      setIsProcessing(false);
+      return;
+    }
+
+    const options: RazorpayOptions = {
+      key: razorpayKey,
       amount: rzpOrderRes.amount,
       currency: rzpOrderRes.currency,
       name: "WWJ",
       description: "Wildlife Wonder Jewellery",
       image: "https://dslwgbtaxwyotsyjqwhd.supabase.co/storage/v1/object/public/product/1780860334194-66750211-logo1.png",
       order_id: rzpOrderRes.id,
-      handler: async function (response: any) {
+      handler: async function (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) {
         try {
           // On payment success:
           // Call server action to create the order in the database
@@ -98,6 +183,9 @@ export default function CheckoutPage() {
               customerName: `${values.firstName} ${values.lastName}`,
               customerEmail: values.email,
               totalAmount: total,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature,
             },
             dbOrderItems
           );
@@ -125,6 +213,7 @@ export default function CheckoutPage() {
             subtotal: subtotal(),
             shippingFee: shippingFee,
             total: total,
+            discount: appliedDiscount,
           });
 
           // Clear Cart and set confirmation view
@@ -132,7 +221,6 @@ export default function CheckoutPage() {
           setOrderPlaced(true);
           toast.success("Payment successful! Order placed.");
 
-          // Generate and open WhatsApp message automatically
           // Generate and open WhatsApp message automatically
           const orderItemsText = items
             .map((item) => `• *${item.product.name}* x ${item.quantity} (${formatINR(item.product.price * item.quantity)})`)
@@ -149,6 +237,7 @@ export default function CheckoutPage() {
             `*Shipping Address:*\n${shippingAddressText}\n\n` +
             `*Items Ordered:*\n${orderItemsText}\n\n` +
             `*Subtotal:* ${formatINR(subtotal())}\n` +
+            (appliedDiscount > 0 ? `*Discount:* -${formatINR(appliedDiscount)} (${appliedCoupon})\n` : "") +
             `*Shipping:* ${shippingFee === 0 ? "FREE" : formatINR(shippingFee)}\n` +
             `*Total Paid:* ${formatINR(total)}\n\n` +
             `_Payment processed successfully via Razorpay._`;
@@ -185,7 +274,7 @@ export default function CheckoutPage() {
       },
     };
 
-    const rzp = new (window as any).Razorpay(options);
+    const rzp = new window.Razorpay(options);
     rzp.open();
   };
 
@@ -245,8 +334,8 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="bg-cream min-h-screen py-12">
-      <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+    <div className="bg-cream min-h-screen py-8 sm:py-12">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-8 max-w-6xl">
         <h1 className="font-display text-3xl text-jungle mb-8">Checkout</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -336,7 +425,7 @@ export default function CheckoutPage() {
 
           {/* Order Summary Sidebar */}
           <div className="lg:col-span-5">
-            <div className="bg-jungle text-ivory rounded-xl p-6 md:p-8 sticky top-28">
+            <div className="bg-jungle text-ivory rounded-xl p-5 sm:p-6 md:p-8 sticky top-28">
               <h2 className="font-display text-xl mb-6 text-gold">Order Summary</h2>
               
               <div className="space-y-4 mb-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
@@ -358,10 +447,53 @@ export default function CheckoutPage() {
               </div>
 
               <div className="border-t border-ivory/10 pt-6 space-y-3 text-sm">
-                <div className="flex justify-between text-ivory/70">
+                {/* Coupon Code Input */}
+                <div className="pb-4 border-b border-ivory/10">
+                  <label className="block text-xs font-bold text-gold uppercase tracking-wider mb-2">Discount Code</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={couponCode}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value);
+                        setCouponError("");
+                      }}
+                      placeholder="e.g. WILD15"
+                      className="flex-grow bg-cream/10 border border-ivory/20 px-3 py-1.5 rounded-lg text-sm text-ivory placeholder-ivory/30 focus:outline-none focus:border-gold uppercase"
+                    />
+                    <button
+                      type="button"
+                      onClick={applyCoupon}
+                      className="bg-gold text-jungle px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white transition-colors"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  {couponError && <p className="text-red-400 text-[11px] mt-1.5 font-medium">{couponError}</p>}
+                  {appliedDiscount > 0 && (
+                    <div className="flex justify-between items-center bg-gold/10 text-gold rounded-lg p-2.5 mt-3 text-xs border border-gold/20">
+                      <span className="font-semibold">Applied: {appliedCoupon} (-{formatINR(appliedDiscount)})</span>
+                      <button 
+                        type="button" 
+                        onClick={removeCoupon}
+                        className="text-ivory hover:text-gold transition-colors font-bold underline cursor-pointer"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-between text-ivory/70 pt-2">
                   <span>Subtotal</span>
                   <span className="text-ivory">{formatINR(subtotal())}</span>
                 </div>
+                {appliedDiscount > 0 && (
+                  <div className="flex justify-between text-gold">
+                    <span>Discount ({appliedCoupon})</span>
+                    <span>-{formatINR(appliedDiscount)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-ivory/70">
                   <span>Shipping</span>
                   <span className="text-ivory">{shippingFee === 0 ? "FREE" : formatINR(shippingFee)}</span>
@@ -371,7 +503,7 @@ export default function CheckoutPage() {
                     <span className="font-bold text-lg">Total</span>
                     <p className="text-xs text-ivory/40">Including GST</p>
                   </div>
-                  <span className="font-display text-3xl text-gold">{formatINR(total)}</span>
+                  <span className="font-display text-2xl sm:text-3xl text-gold">{formatINR(total)}</span>
                 </div>
               </div>
             </div>

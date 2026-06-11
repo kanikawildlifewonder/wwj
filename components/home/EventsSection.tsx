@@ -10,7 +10,7 @@ export async function EventsSection() {
   if (latestEvents.length === 0) return null; // Hide if no events are published
 
   return (
-    <section className="bg-cream py-20 border-b border-jungle/10 text-jungle relative overflow-hidden">
+    <section className="bg-cream py-12 sm:py-20 border-b border-jungle/10 text-jungle relative overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">

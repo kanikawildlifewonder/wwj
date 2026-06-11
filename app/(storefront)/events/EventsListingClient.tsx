@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { Calendar, MapPin, Search, Grid, Users, ArrowRight } from "lucide-react";
+import { Calendar, MapPin, Search, Users, ArrowRight } from "lucide-react";
 
 type EventRecord = {
   id: string;

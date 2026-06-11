@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import NextLink from "next/link";
-import { Calendar, MapPin, Share2, ArrowLeft, ExternalLink, Globe, Play, X, Heart, ShoppingBag } from "lucide-react";
+import Image from "next/image";
+import { Calendar, MapPin, Share2, ArrowLeft, ExternalLink, Globe, Play, X } from "lucide-react";
 import { toast } from "sonner";
 import { formatINR } from "@/lib/utils/currency";
 
@@ -88,8 +89,8 @@ export default function EventDetailClient({
   return (
     <div className="bg-ivory min-h-screen pb-24 text-jungle">
       {/* Dynamic Header / Back navigation */}
-      <div className="bg-cream border-b border-jungle/10 py-4">
-        <div className="container mx-auto px-4 lg:px-8 flex items-center justify-between">
+      <div className="bg-cream border-b border-jungle/10 py-3 sm:py-4">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-8 flex items-center justify-between">
           <NextLink
             href="/events"
             className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-jungle/60 hover:text-gold transition-colors"
@@ -103,13 +104,13 @@ export default function EventDetailClient({
       </div>
 
       {/* Hero Banner Header */}
-      <div className="relative aspect-[21/9] md:aspect-[24/8] w-full overflow-hidden bg-jungle">
+      <div className="relative aspect-[16/9] sm:aspect-[21/9] md:aspect-[24/8] w-full overflow-hidden bg-jungle">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-40 scale-100"
           style={{ backgroundImage: `url(${event.featuredImage})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-jungle via-jungle/40 to-transparent" />
-        <div className="absolute bottom-0 left-0 w-full p-6 md:p-12 text-ivory">
+        <div className="absolute bottom-0 left-0 w-full p-4 sm:p-6 md:p-12 text-ivory">
           <div className="container mx-auto px-4 lg:px-8 space-y-4">
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs md:text-sm text-gold">
               <span className="flex items-center gap-2 font-bold tracking-wider uppercase">
@@ -127,7 +128,7 @@ export default function EventDetailClient({
                 </span>
               )}
             </div>
-            <h1 className="font-serif text-3xl md:text-5xl lg:text-6xl tracking-tight leading-tight max-w-4xl">
+            <h1 className="font-serif text-2xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight leading-tight max-w-4xl">
               {event.title}
             </h1>
           </div>
@@ -135,7 +136,7 @@ export default function EventDetailClient({
       </div>
 
       {/* Main Grid Content */}
-      <div className="container mx-auto px-4 lg:px-8 py-12">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-8 py-8 sm:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 xl:gap-16">
           
           {/* Left Columns - Rich Text and Media details */}
@@ -330,7 +331,7 @@ export default function EventDetailClient({
       {activeImageIndex !== null && (
         <div
           onClick={() => setActiveImageIndex(null)}
-          className="fixed inset-0 bg-jungle/95 backdrop-blur-md z-50 flex items-center justify-center p-4 cursor-zoom-out animate-fade-in"
+          className="fixed inset-0 bg-jungle/95 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-4 cursor-zoom-out animate-fade-in"
         >
           <button
             onClick={() => setActiveImageIndex(null)}
@@ -342,10 +343,13 @@ export default function EventDetailClient({
             onClick={(e) => e.stopPropagation()}
             className="max-w-5xl max-h-[85vh] aspect-auto relative"
           >
-            <img
+            <Image
               src={allGalleryImages[activeImageIndex]}
               alt="Gallery Preview Zoomed"
-              className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl border border-white/10"
+              fill
+              className="object-contain rounded-xl shadow-2xl border border-white/10"
+              sizes="100vw"
+              priority
             />
           </div>
         </div>
