@@ -16,13 +16,21 @@ import { getPageContent } from "@/app/actions/content";
 
 interface RazorpayOptions {
   key: string;
-  amount: number;
+  amount: number | string;
   currency: string;
   name: string;
   description: string;
   image: string;
   order_id: string;
   handler: (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => void;
+  prefill: {
+    name: string;
+    email: string;
+    contact: string;
+  };
+  theme: {
+    color: string;
+  };
   modal: {
     ondismiss: () => void;
   };
