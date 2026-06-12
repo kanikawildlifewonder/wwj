@@ -169,7 +169,7 @@ export default function CheckoutPage() {
 
     const options: RazorpayOptions = {
       key: razorpayKey,
-      amount: rzpOrderRes.amount,
+      amount: Number(rzpOrderRes.amount),
       currency: rzpOrderRes.currency,
       name: "WWJ",
       description: "Wildlife Wonder Jewellery",
