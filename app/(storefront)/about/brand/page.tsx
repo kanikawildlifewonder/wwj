@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, Leaf, Globe, Shield, Heart, Star } from "lucide-react";
+import { ArrowRight, Leaf, Globe, Shield, Heart, Star, Sparkles } from "lucide-react";
 import { getPageContent } from "@/app/actions/content";
 
 export const metadata = {
@@ -278,7 +278,9 @@ export default async function AboutBrandPage() {
                   key={i} 
                   className="bg-cream/20 border border-jungle/10 rounded-2xl p-6 hover:border-gold/40 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex gap-4"
                 >
-                  <span className="text-3xl flex-shrink-0 mt-1">{item.emoji}</span>
+                  <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Sparkles className="w-4 h-4 text-gold" />
+                  </div>
                   <div className="space-y-1.5">
                     <h3 className="font-display text-base text-jungle font-semibold">{item.title}</h3>
                     <p className="text-jungle/70 text-xs leading-relaxed">{item.desc}</p>
