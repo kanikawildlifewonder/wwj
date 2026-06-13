@@ -88,16 +88,40 @@ export function Footer() {
             </h4>
             <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
               {[
-                { src: "/images/wildlife/tiger.png", alt: "Tiger Wildlife" },
-                { src: "/images/products/peacock_necklace.png", alt: "Peacock Necklace" },
-                { src: "/images/wildlife/deer.png", alt: "Deer Wildlife" },
-                { src: "/images/products/butterfly_earrings.png", alt: "Butterfly Earrings" },
-                { src: "/images/wildlife/peacock.png", alt: "Peacock Wildlife" },
-                { src: "/images/products/leopard_pendant.png", alt: "Leopard Pendant" },
+                { 
+                  src: "/images/wildlife/tiger.png", 
+                  alt: "Tiger Wildlife",
+                  href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" // Replace with Tiger post URL
+                },
+                { 
+                  src: "/images/products/peacock_necklace.png", 
+                  alt: "Peacock Necklace",
+                  href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" // Replace with Peacock Necklace post URL
+                },
+                { 
+                  src: "/images/wildlife/deer.png", 
+                  alt: "Deer Wildlife",
+                  href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" // Replace with Deer post URL
+                },
+                { 
+                  src: "/images/products/butterfly_earrings.png", 
+                  alt: "Butterfly Earrings",
+                  href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" // Replace with Butterfly Earrings post URL
+                },
+                { 
+                  src: "/images/wildlife/peacock.png", 
+                  alt: "Peacock Wildlife",
+                  href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" // Replace with Peacock post URL
+                },
+                { 
+                  src: "/images/products/leopard_pendant.png", 
+                  alt: "Leopard Pendant",
+                  href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" // Replace with Leopard Pendant post URL
+                },
               ].map((img, idx) => (
                 <a 
                   key={idx} 
-                  href="https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" 
+                  href={img.href} 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="aspect-square bg-forest rounded overflow-hidden block relative group"
