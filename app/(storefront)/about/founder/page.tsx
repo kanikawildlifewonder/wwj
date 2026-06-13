@@ -36,6 +36,126 @@ const DEFAULT = {
   milestone4Label: "Artisan Partners",
 };
 
+interface ParsedFounderStory {
+  introduction: string[];
+  achievements: string[];
+  vision: string;
+  mission: string;
+  coreValues: string[];
+  message: string;
+  motto: string;
+}
+
+function parseFounderStory(text: string): ParsedFounderStory {
+  const result: ParsedFounderStory = {
+    introduction: [],
+    achievements: [],
+    vision: "",
+    mission: "",
+    coreValues: [],
+    message: "",
+    motto: "",
+  };
+
+  if (!text) return result;
+
+  const idxFounder = text.indexOf("FOUNDER");
+  const idxAchievements = text.indexOf("Achievements");
+  const idxVision = text.indexOf("Vision");
+  const idxMission = text.indexOf("Mission");
+  const idxValues = text.indexOf("Core Values");
+  const idxMessage = text.indexOf("Founder's Message");
+  const idxMotto = text.indexOf("Motto");
+
+  const cleanParagraphs = (str: string) => {
+    return str
+      .split(/(?:\r?\n)+/)
+      .map(p => p.trim())
+      .filter(p => p.length > 0);
+  };
+
+  // 1. Introduction
+  let introText = "";
+  if (idxAchievements !== -1) {
+    introText = text.substring(0, idxAchievements).trim();
+  } else if (idxVision !== -1) {
+    introText = text.substring(0, idxVision).trim();
+  } else {
+    introText = text;
+  }
+  
+  if (introText.startsWith("FOUNDER:")) {
+    introText = introText.substring(8).trim();
+  } else if (introText.startsWith("FOUNDER")) {
+    introText = introText.substring(7).trim();
+  }
+  result.introduction = cleanParagraphs(introText);
+
+  // 2. Achievements
+  if (idxAchievements !== -1) {
+    const end = idxVision !== -1 ? idxVision : (idxMission !== -1 ? idxMission : text.length);
+    let achText = text.substring(idxAchievements + 12, end).trim();
+    if (achText.startsWith(":") || achText.startsWith("-")) {
+      achText = achText.substring(1).trim();
+    }
+    result.achievements = cleanParagraphs(achText);
+  }
+
+  // 3. Vision
+  if (idxVision !== -1) {
+    const end = idxMission !== -1 ? idxMission : (idxValues !== -1 ? idxValues : text.length);
+    let visText = text.substring(idxVision + 6, end).trim();
+    if (visText.startsWith(":") || visText.startsWith("-")) {
+      visText = visText.substring(1).trim();
+    }
+    result.vision = visText;
+  }
+
+  // 4. Mission
+  if (idxMission !== -1) {
+    const end = idxValues !== -1 ? idxValues : (idxMessage !== -1 ? idxMessage : text.length);
+    let misText = text.substring(idxMission + 7, end).trim();
+    if (misText.startsWith(":") || misText.startsWith("-")) {
+      misText = misText.substring(1).trim();
+    }
+    result.mission = misText;
+  }
+
+  // 5. Core Values
+  if (idxValues !== -1) {
+    const end = idxMessage !== -1 ? idxMessage : (idxMotto !== -1 ? idxMotto : text.length);
+    let valText = text.substring(idxValues + 11, end).trim();
+    if (valText.startsWith(":") || valText.startsWith("-")) {
+      valText = valText.substring(1).trim();
+    }
+    result.coreValues = valText
+      .split(/•|-|\||\.|\*/g)
+      .map(v => v.trim())
+      .filter(v => v.length > 2);
+  }
+
+  // 6. Message
+  if (idxMessage !== -1) {
+    const end = idxMotto !== -1 ? idxMotto : text.length;
+    let msgText = text.substring(idxMessage + 17, end).trim();
+    if (msgText.startsWith(":") || msgText.startsWith("-")) {
+      msgText = msgText.substring(1).trim();
+    }
+    result.message = msgText.replace(/^["'\s]+|["'\s]+$/g, "");
+  }
+
+  // 7. Motto
+  if (idxMotto !== -1) {
+    let motText = text.substring(idxMotto + 5).trim();
+    if (motText.startsWith(":") || motText.startsWith("-")) {
+      motText = motText.substring(1).trim();
+    }
+    result.motto = motText.replace(/^["'\s]+|["'\s]+$/g, "");
+  }
+
+  return result;
+}
+
 export default async function AboutFounderPage() {
   let d = { ...DEFAULT };
   try {
@@ -45,6 +165,11 @@ export default async function AboutFounderPage() {
       d = { ...DEFAULT, ...saved };
     }
   } catch { /* use defaults */ }
+
+  const combinedBio = [d.bio1, d.bio2, d.bio3].filter(Boolean).join("\n\n");
+  const parsed = parseFounderStory(combinedBio);
+
+  const displayQuote = parsed.message || d.quote;
 
   return (
     <div className="bg-cream min-h-screen">
@@ -70,12 +195,11 @@ export default async function AboutFounderPage() {
       {/* ─── Founder intro ─── */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
 
             {/* Photo */}
-            <div className="relative">
+            <div className="lg:col-span-5 relative lg:sticky lg:top-28">
               <div className="relative w-full max-w-sm mx-auto">
-                {/* Decorative ring */}
                 <div className="absolute -inset-3 rounded-[40%_60%_60%_40%_/_40%_40%_60%_60%] border-2 border-gold/30" />
                 <div className="relative aspect-[4/5] rounded-[40%_60%_60%_40%_/_40%_40%_60%_60%] overflow-hidden border-4 border-ivory shadow-2xl">
                   <div
@@ -83,51 +207,97 @@ export default async function AboutFounderPage() {
                     style={{ backgroundImage: `url('${d.founderImage}')` }}
                   />
                 </div>
-                {/* Name badge */}
                 <div className="absolute -bottom-4 -right-4 bg-jungle text-ivory px-5 py-3 rounded-xl shadow-lg border border-gold/20">
                   <p className="font-display text-lg text-gold">{d.founderName}</p>
-                  <p className="text-xs text-ivory/60 mt-0.5">Founder & Creative Director</p>
+                  <p className="text-xs text-ivory/60 mt-0.5">{d.founderRole}</p>
                 </div>
               </div>
             </div>
 
             {/* Content */}
-            <div className="space-y-6">
-              <div className="relative pl-6 border-l-2 border-gold">
-                <Quote className="absolute -left-3 -top-1 w-5 h-5 text-gold bg-cream p-0.5" />
-                <p className="font-display text-xl text-jungle/80 italic leading-relaxed">{d.quote}</p>
-              </div>
+            <div className="lg:col-span-7 space-y-8">
+              {displayQuote && (
+                <div className="relative pl-6 border-l-2 border-gold">
+                  <Quote className="absolute -left-3 -top-1 w-5 h-5 text-gold bg-cream p-0.5" />
+                  <p className="font-display text-xl text-jungle/80 italic leading-relaxed">
+                    &quot;{displayQuote}&quot;
+                  </p>
+                </div>
+              )}
 
-              <div className="space-y-4">
-                <p className="text-jungle/70 leading-relaxed">{d.bio1}</p>
-                <p className="text-jungle/70 leading-relaxed">{d.bio2}</p>
-                <p className="text-jungle/70 leading-relaxed">{d.bio3}</p>
-              </div>
+              {parsed.introduction.length > 0 ? (
+                <div className="space-y-4 text-jungle/80 leading-relaxed">
+                  {parsed.introduction.map((p, idx) => (
+                    <p key={idx} className={idx === 0 ? "text-lg text-jungle font-medium" : "text-sm"}>
+                      {p}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4 text-jungle/80 leading-relaxed">
+                  <p className="text-lg text-jungle font-medium">{d.bio1}</p>
+                  {d.bio2 && <p className="text-sm">{d.bio2}</p>}
+                  {d.bio3 && <p className="text-sm">{d.bio3}</p>}
+                </div>
+              )}
+
+              {/* Achievements */}
+              {parsed.achievements.length > 0 && (
+                <div className="space-y-3 pt-6 border-t border-jungle/10">
+                  <span className="text-[10px] tracking-[0.2em] font-bold text-gold uppercase block">Key Achievements</span>
+                  <div className="space-y-2 text-jungle/80 text-sm leading-relaxed">
+                    {parsed.achievements.map((ach, idx) => (
+                      <p key={idx} className="relative pl-4">
+                        <span className="absolute left-0 text-gold">•</span> {ach}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Vision & Mission Card */}
+              {(parsed.vision || parsed.mission) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gold/5 border border-gold/20 rounded-2xl p-6 md:p-8 mt-8">
+                  {parsed.vision && (
+                    <div className="space-y-2">
+                      <span className="text-[10px] tracking-[0.2em] font-bold text-gold uppercase block">Vision</span>
+                      <p className="text-jungle text-xs leading-relaxed">{parsed.vision}</p>
+                    </div>
+                  )}
+                  {parsed.mission && (
+                    <div className="space-y-2 border-t md:border-t-0 md:border-l border-jungle/10 pt-4 md:pt-0 md:pl-6">
+                      <span className="text-[10px] tracking-[0.2em] font-bold text-gold uppercase block">Mission</span>
+                      <p className="text-jungle text-xs leading-relaxed">{parsed.mission}</p>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Social links */}
-              <div className="flex items-center gap-4 pt-2">
+              <div className="flex items-center gap-6 pt-4 border-t border-jungle/10">
                 {d.instagramHandle && (
                   <a
                     href={`https://instagram.com/${d.instagramHandle.replace("@", "")}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-jungle/60 hover:text-gold transition-colors font-medium"
+                    className="flex items-center gap-2 text-sm text-jungle/60 hover:text-gold transition-colors font-semibold"
                   >
-                    <AtSign className="w-4 h-4" />
+                    <AtSign className="w-4 h-4 text-gold" />
                     {d.instagramHandle}
                   </a>
                 )}
                 {d.email && (
                   <a
                     href={`mailto:${d.email}`}
-                    className="flex items-center gap-2 text-sm text-jungle/60 hover:text-gold transition-colors font-medium"
+                    className="flex items-center gap-2 text-sm text-jungle/60 hover:text-gold transition-colors font-semibold"
                   >
-                    <Mail className="w-4 h-4" />
+                    <Mail className="w-4 h-4 text-gold" />
                     {d.email}
                   </a>
                 )}
               </div>
             </div>
+
           </div>
         </div>
       </section>
@@ -151,45 +321,84 @@ export default async function AboutFounderPage() {
         </div>
       </section>
 
-      {/* ─── Values from the founder ─── */}
+      {/* ─── Principles / Values from the founder ─── */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl">
           <div className="text-center mb-12">
             <p className="text-gold text-xs tracking-[0.3em] uppercase font-bold mb-3">Words to Live By</p>
             <h2 className="font-display text-3xl md:text-4xl text-jungle">The Principles Behind Every Piece</h2>
+            <div className="w-12 h-[1px] bg-gold/50 mx-auto mt-4" />
           </div>
 
-          <div className="space-y-6">
-            {[
-              {
-                star: true,
-                title: "Nature First",
-                text: "Every design begins with careful study of the animal it represents — its movement, its habitat, its spirit. We never compromise on authenticity.",
-              },
-              {
-                star: true,
-                title: "Community & Craft",
-                text: "We work exclusively with local artisan families who have practised their craft for generations. Their livelihood is as important to us as our products.",
-              },
-              {
-                star: true,
-                title: "Purpose Over Profit",
-                text: "A portion of every sale goes to wildlife conservation organisations. Because without the wild, there is no WWJ.",
-              },
-            ].map((v, i) => (
-              <div key={i} className="flex gap-5 p-5 bg-ivory rounded-xl border border-jungle/5 hover:border-gold/20 transition-colors">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-jungle flex items-center justify-center">
-                  <Star className="w-4 h-4 text-gold fill-gold" />
+          {parsed.coreValues.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {parsed.coreValues.map((val, i) => {
+                let title = "Principle";
+                let text = val;
+                const separatorIdx = val.indexOf("—") !== -1 ? val.indexOf("—") : val.indexOf(":");
+                if (separatorIdx !== -1) {
+                  title = val.substring(0, separatorIdx).trim();
+                  text = val.substring(separatorIdx + 1).trim();
+                }
+                return (
+                  <div key={i} className="flex gap-4 p-5 bg-ivory rounded-xl border border-jungle/5 hover:border-gold/20 hover:shadow-md transition-all duration-300">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-jungle flex items-center justify-center">
+                      <Star className="w-3.5 h-3.5 text-gold fill-gold" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-sm text-jungle font-semibold mb-1">{title}</h3>
+                      <p className="text-jungle/60 text-[11px] leading-relaxed">{text}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {[
+                {
+                  star: true,
+                  title: "Nature First",
+                  text: "Every design begins with careful study of the animal it represents — its movement, its habitat, its spirit. We never compromise on authenticity.",
+                },
+                {
+                  star: true,
+                  title: "Community & Craft",
+                  text: "We work exclusively with local artisan families who have practised their craft for generations. Their livelihood is as important to us as our products.",
+                },
+                {
+                  star: true,
+                  title: "Purpose Over Profit",
+                  text: "A portion of every sale goes to wildlife conservation organisations. Because without the wild, there is no WWJ.",
+                },
+              ].map((v, i) => (
+                <div key={i} className="flex gap-5 p-5 bg-ivory rounded-xl border border-jungle/5 hover:border-gold/20 transition-colors">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-jungle flex items-center justify-center">
+                    <Star className="w-4 h-4 text-gold fill-gold" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-lg text-jungle mb-1">{v.title}</h3>
+                    <p className="text-jungle/60 text-sm leading-relaxed">{v.text}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-display text-lg text-jungle mb-1">{v.title}</h3>
-                  <p className="text-jungle/60 text-sm leading-relaxed">{v.text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
+
+      {/* ─── Motto / Core Statement Callout ─── */}
+      {parsed.motto && (
+        <section className="py-24 bg-cream text-center px-4 relative overflow-hidden border-t border-border">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[14rem] font-serif text-jungle/5 pointer-events-none select-none leading-none">“</div>
+          <div className="relative z-10 max-w-3xl mx-auto space-y-4">
+            <span className="text-gold text-xs tracking-[0.3em] uppercase font-bold">Our Philosophy Motto</span>
+            <p className="font-display text-2xl md:text-3xl text-jungle leading-relaxed italic font-light">
+              &quot;{parsed.motto}&quot;
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* ─── CTA ─── */}
       <section className="py-20 bg-jungle text-center px-4">
