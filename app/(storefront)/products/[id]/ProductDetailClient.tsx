@@ -2,6 +2,7 @@
 
 import React, { useMemo, useRef, useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Star,
   Heart,
@@ -61,7 +62,7 @@ export default function ProductDetailClient({
 }: ProductDetailClientProps) {
   const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [videoProgress, setVideoProgress] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -100,7 +101,7 @@ export default function ProductDetailClient({
     : null;
 
   const resetVideoState = () => {
-    setIsPlaying(true);
+    setIsPlaying(false);
     setIsMuted(true);
     setVideoProgress(0);
   };
@@ -187,11 +188,10 @@ export default function ProductDetailClient({
                     src={currentMedia.url}
                     loop
                     muted={isMuted}
-                    autoPlay
                     playsInline
                     onTimeUpdate={handleTimeUpdate}
                     className="w-full h-full object-contain"
-                    preload="metadata"
+                    preload="none"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 opacity-0 group-hover/video:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
@@ -244,11 +244,13 @@ export default function ProductDetailClient({
                   </div>
                 </div>
               ) : (
-                <div
-                  className="w-full h-full bg-cover bg-center transition-all duration-500"
-                  style={{
-                    backgroundImage: `url(${currentMedia?.url || "/images/products/placeholder.png"})`,
-                  }}
+                <Image
+                  src={currentMedia?.url || "/images/products/placeholder.png"}
+                  alt={product.name}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  priority={selectedMediaIndex === 0}
+                  className="object-cover transition-all duration-500"
                 />
               )}
 
@@ -285,9 +287,12 @@ export default function ProductDetailClient({
                     {media.type === "video" ? (
                       <div className="w-full h-full bg-black/80 flex flex-col items-center justify-center relative">
                         {product.images?.[0] && (
-                          <div
-                            className="absolute inset-0 bg-cover bg-center opacity-40"
-                            style={{ backgroundImage: `url(${product.images[0]})` }}
+                          <Image
+                            src={product.images[0]}
+                            alt="Video thumbnail background"
+                            fill
+                            sizes="80px"
+                            className="object-cover opacity-40"
                           />
                         )}
                         <Play className="w-6 h-6 text-gold fill-current z-10" />
@@ -296,9 +301,12 @@ export default function ProductDetailClient({
                         </span>
                       </div>
                     ) : (
-                      <div
-                        className="w-full h-full bg-cover bg-center"
-                        style={{ backgroundImage: `url(${media.url})` }}
+                      <Image
+                        src={media.url}
+                        alt={`${product.name} thumbnail ${index}`}
+                        fill
+                        sizes="80px"
+                        className="object-cover"
                       />
                     )}
                   </button>

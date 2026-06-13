@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatINR } from "@/lib/utils/currency";
 import { mapDbProductToUI } from "@/lib/utils/product-mapper";
@@ -121,9 +122,13 @@ export function BestsellersCarouselClient({ products }: { products: Product[] })
                 <div className="absolute top-3 left-3 z-10 bg-gold/90 backdrop-blur px-2 py-0.5 text-[9px] font-bold tracking-widest text-jungle rounded">
                   BESTSELLER
                 </div>
-                <div
-                  className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover/card:scale-105"
-                  style={{ backgroundImage: `url(${product.images[0] ?? "/images/products/placeholder.png"})` }}
+                <Image
+                  src={product.images[0] ?? "/images/products/placeholder.png"}
+                  alt={product.name}
+                  fill
+                  sizes="(max-width: 640px) 200px, 260px"
+                  className="object-cover transition-transform duration-700 group-hover/card:scale-105"
+                  loading="lazy"
                 />
               </div>
 

@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "motion/react";
 
 export function HeroBanner({
@@ -16,9 +17,12 @@ export function HeroBanner({
   return (
     <section className="relative w-full h-[70vh] sm:h-[80vh] md:h-[85vh] min-h-[500px] sm:min-h-[600px] flex items-center justify-center overflow-hidden bg-jungle">
       {/* Background Image Placeholder */}
-      <div 
-        className="absolute inset-0 z-0 opacity-60 bg-cover bg-center bg-no-repeat transition-transform duration-[10s] ease-out hover:scale-105"
-        style={{ backgroundImage: "url('/images/hero_leopard.png')" }}
+      <Image
+        src="/images/hero_leopard.png"
+        alt="Hero Banner Leopard"
+        fill
+        priority
+        className="absolute inset-0 z-0 opacity-60 object-cover object-center transition-transform duration-[10s] ease-out hover:scale-105"
       />
       
       {/* Dark overlay for text readability */}

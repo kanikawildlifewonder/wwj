@@ -9,6 +9,7 @@ import { useCartStore } from "@/store/cartStore";
 import { formatINR } from "@/lib/utils/currency";
 import { Lock, ArrowRight, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { sendOrderConfirmationEmail } from "@/app/actions/emails";
 import { useUser } from "@clerk/nextjs";
 import { createRazorpayOrder, createOrder } from "@/app/actions/orders";
@@ -440,7 +441,13 @@ export default function CheckoutPage() {
                 {items.map((item) => (
                   <div key={item.product.id} className="flex gap-4">
                     <div className="w-16 h-16 rounded bg-forest flex-shrink-0 relative overflow-hidden">
-                      <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${item.product.images[0]})` }} />
+                      <Image
+                        src={item.product.images[0]}
+                        alt={item.product.name}
+                        fill
+                        sizes="64px"
+                        className="object-cover"
+                      />
                       <div className="absolute -top-2 -right-2 w-5 h-5 bg-gold text-jungle text-[10px] font-bold rounded-full flex items-center justify-center">
                         {item.quantity}
                       </div>

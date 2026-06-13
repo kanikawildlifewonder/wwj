@@ -30,7 +30,7 @@ const uploadMediaClient = async (file: File) => {
   const { error } = await supabase
     .storage
     .from('product')
-    .upload(filename, file, { cacheControl: '3600', upsert: false });
+    .upload(filename, file, { cacheControl: '31536000', upsert: false });
 
   if (error) {
     return { success: false, url: null, error: error.message };

@@ -20,6 +20,7 @@ const COLLECTION_IMAGES: Record<string, string> = {
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ category?: string | string[] }>;
 }
 
 type DbProduct = {
@@ -37,8 +38,13 @@ type DbProduct = {
   updatedAt: Date;
 };
 
-export default async function CollectionPage({ params }: PageProps) {
+export const dynamic = "force-dynamic";
+
+export default async function CollectionPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
+  const { category } = await searchParams;
+  const categoryQuery = typeof category === "string" ? category : Array.isArray(category) ? category[0] : undefined;
+
   const collectionName = COLLECTION_MAP[slug];
   if (!collectionName) notFound();
 
@@ -50,7 +56,7 @@ export default async function CollectionPage({ params }: PageProps) {
         mainCategory: "wwj",
         // Exclude specific accessory categories to avoid mix-matching
         category: {
-          notIn: ["Keychains", "Magnets", "Coffee Mugs", "Customise your own pet", "Hair Accessories"]
+          notIn: ["Keychains", "Magnets", "Coffee Mugs", "Customise your own pet", "Hair Accessories", "Bookmarks"]
         }
       },
       orderBy: { createdAt: 'desc' }
@@ -60,7 +66,7 @@ export default async function CollectionPage({ params }: PageProps) {
       where: {
         OR: [
           { mainCategory: "wwa" },
-          { category: { in: ["Keychains", "Magnets", "Hair Accessories", "Coffee Mugs", "Customise your own pet"] } }
+          { category: { in: ["Keychains", "Magnets", "Hair Accessories", "Coffee Mugs", "Customise your own pet", "Bookmarks"] } }
         ]
       },
       orderBy: { createdAt: 'desc' }
@@ -123,21 +129,33 @@ export default async function CollectionPage({ params }: PageProps) {
   } else if (slug === "accessories") {
     // 1. Keychains & Charms
     const keychains = rawProducts.filter(p => checkCategory(p.category, ["keychain", "charm"]));
-    // 2. Hair Accessories
+    // 2. Fridge Magnets
+    const magnets = rawProducts.filter(p => checkCategory(p.category, ["magnet"]));
+    // 3. Hair Accessories
     const hair = rawProducts.filter(p => checkCategory(p.category, ["hair", "clip", "headband", "hairband", "band"]));
-    // 3. Coffee Mugs
+    // 4. Coffee Mugs
     const mugs = rawProducts.filter(p => checkCategory(p.category, ["mug", "mugs", "coffee"]));
+    // 5. Bookmarks
+    const bookmarks = rawProducts.filter(p => checkCategory(p.category, ["bookmark"]));
+    // 6. Custom Pet Portraits
+    const customPet = rawProducts.filter(p => checkCategory(p.category, ["pet", "customise"]));
     
     const groupedIds = new Set([
       ...keychains.map(p => p.id),
+      ...magnets.map(p => p.id),
       ...hair.map(p => p.id),
-      ...mugs.map(p => p.id)
+      ...mugs.map(p => p.id),
+      ...bookmarks.map(p => p.id),
+      ...customPet.map(p => p.id),
     ]);
     const others = rawProducts.filter(p => !groupedIds.has(p.id));
 
     if (keychains.length > 0) sections.push({ title: "Keychains & Charms", products: mapProducts(keychains) });
+    if (magnets.length > 0) sections.push({ title: "Fridge Magnets", products: mapProducts(magnets) });
     if (hair.length > 0) sections.push({ title: "Hair Accessories", products: mapProducts(hair) });
     if (mugs.length > 0) sections.push({ title: "Coffee Mugs", products: mapProducts(mugs) });
+    if (bookmarks.length > 0) sections.push({ title: "Bookmarks", products: mapProducts(bookmarks) });
+    if (customPet.length > 0) sections.push({ title: "Custom Pet Portraits", products: mapProducts(customPet) });
     if (others.length > 0) sections.push({ title: "Other Collectibles", products: mapProducts(others) });
 
   } else if (slug === "gifting") {
@@ -163,6 +181,21 @@ export default async function CollectionPage({ params }: PageProps) {
 
   const collectionInfo = COLLECTIONS_LIST.find((c) => c.slug === slug);
 
+  // Filter sections by category query if present
+  let filteredSections = sections;
+  if (categoryQuery) {
+    const queryLower = categoryQuery.toLowerCase().trim();
+    filteredSections = sections.filter(sec => {
+      const titleLower = sec.title.toLowerCase();
+      if (titleLower.includes(queryLower)) return true;
+      if (queryLower === "magnets" && titleLower.includes("magnet")) return true;
+      if (queryLower === "keychains" && titleLower.includes("keychain")) return true;
+      if (queryLower === "hair accessories" && titleLower.includes("hair")) return true;
+      if (queryLower === "customise your own pet" && titleLower.includes("pet")) return true;
+      return false;
+    });
+  }
+
   return (
     <div className="bg-ivory min-h-screen">
       {/* Hero */}
@@ -182,6 +215,20 @@ export default async function CollectionPage({ params }: PageProps) {
 
       {/* Products */}
       <div className="container mx-auto px-4 lg:px-8 py-16">
+        {categoryQuery && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-gold/10 border border-gold/20 rounded-card p-4 mb-8 gap-4">
+            <p className="text-sm text-jungle">
+              Showing only <span className="font-bold uppercase tracking-wider">{categoryQuery}</span> in {collectionName}
+            </p>
+            <Link
+              href={`/collections/${slug}`}
+              className="inline-block text-center text-xs font-bold text-jungle hover:text-gold uppercase tracking-widest border border-jungle/20 px-4 py-2 hover:border-gold hover:bg-jungle hover:text-ivory transition-all rounded-btn"
+            >
+              Clear Filter / Show All
+            </Link>
+          </div>
+        )}
+
         <p className="text-sm text-jungle/50 mb-8">
           Showing <span className="font-bold text-jungle">{rawProducts.length}</span> pieces in this collection
         </p>
@@ -193,9 +240,16 @@ export default async function CollectionPage({ params }: PageProps) {
               Browse All Products
             </Link>
           </div>
+        ) : filteredSections.length === 0 ? (
+          <div className="text-center py-24">
+            <p className="font-display text-2xl text-jungle/30">No products found in this category yet</p>
+            <Link href={`/collections/${slug}`} className="mt-6 inline-block border border-jungle/30 text-jungle px-6 py-2 text-xs font-bold tracking-widest uppercase rounded-btn hover:bg-jungle hover:text-ivory transition-colors">
+              View All {collectionName}
+            </Link>
+          </div>
         ) : (
           <div className="space-y-16">
-            {sections.map((section, idx) => (
+            {filteredSections.map((section, idx) => (
               <div key={idx} className="space-y-6">
                 <div className="flex items-center gap-4">
                   <h2 className="font-display text-2xl text-jungle tracking-wide whitespace-nowrap">{section.title}</h2>

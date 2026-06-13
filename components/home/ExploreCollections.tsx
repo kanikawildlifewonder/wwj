@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Sparkles, Gem, Link as LinkIcon, Gift, Star } from "lucide-react";
 
 export type CollectionCard = {
@@ -120,9 +121,13 @@ export function ExploreCollections({
               <div key={idx} className="group relative rounded-card overflow-hidden border border-border bg-forest h-[350px] sm:h-[400px] md:h-[450px] flex flex-col justify-between">
 
                 {/* Background Image */}
-                <div
-                  className="absolute inset-0 z-0 bg-cover bg-center transition-all duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100"
-                  style={{ backgroundImage: `url(${col.image})` }}
+                <Image
+                  src={col.image}
+                  alt={col.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover transition-all duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 z-0 bg-gradient-to-b from-jungle/80 via-transparent to-jungle/90 group-hover:opacity-70 transition-opacity duration-700" />
 

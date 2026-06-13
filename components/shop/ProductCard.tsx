@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Star, Heart, ShoppingBag } from "lucide-react";
 import { motion } from "motion/react";
 import { useCartStore, useWishlistStore } from "@/store/cartStore";
@@ -63,9 +64,13 @@ export function ProductCard({ product }: ProductCardProps) {
         </button>
 
         {/* Image */}
-        <div
-          className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-          style={{ backgroundImage: `url(${product.images[0]})` }}
+        <Image
+          src={product.images[0] || "/images/products/placeholder.png"}
+          alt={product.name}
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          loading="lazy"
         />
 
         {/* Quick Add */}

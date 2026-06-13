@@ -10,6 +10,8 @@ import { TrustStrip } from "@/components/home/TrustStrip";
 import { getPageContent } from "@/app/actions/content";
 import { getGroupedProductCategories } from "@/app/actions/categories";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [heroContentStr, aboutContentStr, collectionsStr, groupedCategories] = await Promise.all([
     getPageContent("home-hero"),
