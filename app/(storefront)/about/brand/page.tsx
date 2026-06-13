@@ -262,7 +262,7 @@ export default async function AboutBrandPage() {
                 </div>
               )}
 
-              {d.missionParagraph2 && (
+              {d.missionParagraph2 && parsed.creationItems.length === 0 && (
                 <p className="text-jungle/70 leading-relaxed text-sm pt-2">{d.missionParagraph2}</p>
               )}
 
