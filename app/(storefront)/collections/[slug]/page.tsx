@@ -200,34 +200,42 @@ export default async function CollectionPage({ params, searchParams }: PageProps
   return (
     <div className="bg-ivory min-h-screen">
       {/* Hero */}
-      <div className="relative h-[40vh] min-h-[260px] sm:min-h-[320px] md:h-[50vh] overflow-hidden flex items-center justify-center">
-        {COLLECTION_IMAGES[slug] ? (
-          <Image
-            src={COLLECTION_IMAGES[slug]}
-            alt={collectionName}
-            fill
-            priority
-            className="object-cover"
-          />
-        ) : null}
-        
-        {slug === "gifting" ? (
-          <>
-            <div className="absolute inset-0 bg-jungle/70" />
-            <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4 py-8">
-              <div className="flex items-center gap-4 mb-4">
-                <span className="w-8 h-[1px] bg-gold/50" />
-                <Link href="/collections" className="text-gold text-xs tracking-widest uppercase">Collections</Link>
-                <span className="w-8 h-[1px] bg-gold/50" />
-              </div>
-              <h1 className="font-display text-4xl md:text-6xl text-ivory">{collectionName}</h1>
-              <p className="text-ivory/70 mt-4 text-sm font-sans max-w-lg">{collectionInfo?.description}</p>
+      {slug === "gifting" ? (
+        <div className="relative h-[40vh] min-h-[300px] overflow-hidden">
+          {COLLECTION_IMAGES[slug] ? (
+            <Image
+              src={COLLECTION_IMAGES[slug]}
+              alt={collectionName}
+              fill
+              priority
+              className="object-cover"
+            />
+          ) : null}
+          <div className="absolute inset-0 bg-jungle/70" />
+          <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4 py-8">
+            <div className="flex items-center gap-4 mb-4">
+              <span className="w-8 h-[1px] bg-gold/50" />
+              <Link href="/collections" className="text-gold text-xs tracking-widest uppercase">Collections</Link>
+              <span className="w-8 h-[1px] bg-gold/50" />
             </div>
-          </>
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-t from-jungle/30 to-transparent pointer-events-none" />
-        )}
-      </div>
+            <h1 className="font-display text-4xl md:text-6xl text-ivory">{collectionName}</h1>
+            <p className="text-ivory/70 mt-4 text-sm font-sans max-w-lg">{collectionInfo?.description}</p>
+          </div>
+        </div>
+      ) : (
+        <div className="w-full relative aspect-[16/9] overflow-hidden bg-ivory">
+          {COLLECTION_IMAGES[slug] ? (
+            <Image
+              src={COLLECTION_IMAGES[slug]}
+              alt={collectionName}
+              fill
+              priority
+              className="object-cover"
+            />
+          ) : null}
+          <div className="absolute inset-0 bg-gradient-to-t from-jungle/10 to-transparent pointer-events-none" />
+        </div>
+      )}
 
       {/* Products */}
       <div className="container mx-auto px-4 lg:px-8 py-16">
