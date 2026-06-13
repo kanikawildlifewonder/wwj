@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { PawPrint } from "lucide-react";
 
 export function Footer() {
@@ -78,23 +79,44 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Instagram Feed (Placeholder) */}
-          <div className="space-y-6">
+          {/* Instagram Feed */}
+          <div className="space-y-6 col-span-2 sm:col-span-2 lg:col-span-1">
             <h4 className="font-sans text-sm tracking-widest font-bold text-ivory uppercase hover:text-gold transition-colors">
               <a href="https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" target="_blank" rel="noopener noreferrer">
                 Instagram Feed
               </a>
             </h4>
             <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
+              {[
+                { src: "/images/wildlife/tiger.png", alt: "Tiger Wildlife" },
+                { src: "/images/products/peacock_necklace.png", alt: "Peacock Necklace" },
+                { src: "/images/wildlife/deer.png", alt: "Deer Wildlife" },
+                { src: "/images/products/butterfly_earrings.png", alt: "Butterfly Earrings" },
+                { src: "/images/wildlife/peacock.png", alt: "Peacock Wildlife" },
+                { src: "/images/products/leopard_pendant.png", alt: "Leopard Pendant" },
+              ].map((img, idx) => (
                 <a 
-                  key={i} 
+                  key={idx} 
                   href="https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="aspect-square bg-forest rounded overflow-hidden block"
+                  className="aspect-square bg-forest rounded overflow-hidden block relative group"
                 >
-                  <div className="w-full h-full bg-border/20 hover:bg-border/40 transition-colors cursor-pointer" />
+                  <Image 
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    sizes="(max-width: 640px) 30vw, 100px"
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-jungle/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <svg className="w-5 h-5 text-gold stroke-current" viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                  </div>
                 </a>
               ))}
             </div>
