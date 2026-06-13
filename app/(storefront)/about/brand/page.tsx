@@ -95,34 +95,58 @@ function parseBrandStory(text: string): ParsedBrandStory {
   if (idxCreate !== -1) {
     const end = idxValues !== -1 ? idxValues : (idxPromise !== -1 ? idxPromise : text.length);
     const createBlock = text.substring(idxCreate + 14, end).trim();
-    const itemsRegex = /(🐾|🦊|🔮|🎁|🏡)\s*([^🐾🦊🔮🎁🏡]+)/g;
-    let match;
-    while ((match = itemsRegex.exec(createBlock)) !== null) {
-      const emoji = match[1];
-      const rest = match[2].trim();
-      let title = "";
-      let desc = rest;
-      const titles = [
-        "Custom Pet Keepsakes",
-        "Wildlife-Inspired Jewelry",
-        "Artisan Animal-Themed Mugs",
-        "Accessories & Gifts",
-        "Lifestyle & Home Décor",
-        "Lifestyle & Home Decor"
-      ];
-      for (const t of titles) {
-        if (rest.startsWith(t)) {
-          title = t;
-          desc = rest.substring(t.length).trim();
-          break;
+    
+    // Split into paragraphs/lines
+    const lines = createBlock.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+    let currentItem: { emoji: string; title: string; desc: string } | null = null;
+    
+    const knownTitles = [
+      "Custom Pet Keepsakes",
+      "Wildlife-Inspired Jewelry",
+      "Artisan Animal-Themed Mugs",
+      "Accessories & Gifts",
+      "Lifestyle & Home Décor",
+      "Lifestyle & Home Decor",
+      "Lifestyle & Home"
+    ];
+
+    for (const line of lines) {
+      // Check if line starts with emoji, number, or bullet, OR matches a known title
+      const markerMatch = line.match(/^([🐾🦊🦋🔮☕🎁🏡🏡✨]|[1-9]\d*[\.\s]*|[•\-\*]\s*)(.+)$/i);
+      
+      let isTitle = false;
+      let titleText = line;
+      let marker = "";
+      
+      if (markerMatch) {
+        marker = markerMatch[1].trim();
+        titleText = markerMatch[2].trim();
+        isTitle = true;
+      } else {
+        const matchedKnown = knownTitles.find(t => line.toLowerCase().startsWith(t.toLowerCase()));
+        if (matchedKnown) {
+          titleText = line.trim();
+          isTitle = true;
         }
       }
-      if (!title) {
-        const words = rest.split(" ");
-        title = words.slice(0, 3).join(" ");
-        desc = words.slice(3).join(" ");
+      
+      if (isTitle) {
+        if (currentItem) {
+          result.creationItems.push(currentItem);
+        }
+        currentItem = {
+          emoji: marker || "✨",
+          title: titleText,
+          desc: ""
+        };
+      } else {
+        if (currentItem) {
+          currentItem.desc = currentItem.desc ? currentItem.desc + " " + line : line;
+        }
       }
-      result.creationItems.push({ emoji, title, desc });
+    }
+    if (currentItem) {
+      result.creationItems.push(currentItem);
     }
   }
 
@@ -177,7 +201,7 @@ export default async function AboutBrandPage() {
     }
   } catch { /* use defaults */ }
 
-  const parsed = parseBrandStory(d.missionParagraph1);
+  const parsed = parseBrandStory(d.missionParagraph1 + "\n" + (d.missionParagraph2 || ""));
   
   const defaultValues = [
     { icon: Heart,  title: d.value1Title, text: d.value1Text },
