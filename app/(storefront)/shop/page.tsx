@@ -1,20 +1,29 @@
 import { getProductCategories } from "@/app/actions/categories";
-import { getProducts } from "@/app/actions/products";
+import { getShopProducts, getProductPriceLimits } from "@/app/actions/products";
 import { mapDbProductToUI } from "@/lib/utils/product-mapper";
 import ShopClientPage from "./ShopClientPage";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function ShopPage() {
-  const [products, categories] = await Promise.all([
-    getProducts(),
+  const [shopData, categories, priceLimits] = await Promise.all([
+    getShopProducts({ skip: 0, take: 12 }),
     getProductCategories(),
+    getProductPriceLimits(),
   ]);
+
+  const initialProducts = shopData.success ? shopData.products.map(mapDbProductToUI) : [];
+  const totalCount = shopData.success ? shopData.totalCount : 0;
+  const minPrice = priceLimits.min;
+  const maxPrice = priceLimits.max;
 
   return (
     <ShopClientPage
-      initialProducts={products.map(mapDbProductToUI)}
+      initialProducts={initialProducts}
       initialCategories={categories}
+      initialTotalCount={totalCount}
+      dbMinPrice={minPrice}
+      dbMaxPrice={maxPrice}
     />
   );
 }

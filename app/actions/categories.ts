@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { requireAdmin } from '@/lib/auth-guard'
 import {
   CATEGORIES_CONTENT_ID,
   DEFAULT_GROUPED_CATEGORIES,
@@ -99,6 +100,7 @@ export async function addProductCategory(name: string, mainCategory = 'wwj') {
     : 'wwj'
 
   try {
+    await requireAdmin()
     const grouped = await getGroupedProductCategories()
     const groupList = grouped[collectionKey] ?? []
     if (groupList.some((c) => categoriesMatch(c, label))) {
@@ -113,7 +115,7 @@ export async function addProductCategory(name: string, mainCategory = 'wwj') {
     return { success: true }
   } catch (error) {
     console.error('Failed to add category:', error)
-    return { success: false, error: 'Failed to add category' }
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to add category' }
   }
 }
 
@@ -130,6 +132,7 @@ export async function removeProductCategory(name: string, mainCategory = 'wwj') 
     : 'wwj'
 
   try {
+    await requireAdmin()
     const grouped = await getGroupedProductCategories()
     const groupList = grouped[collectionKey] ?? []
     const next = groupList.filter((c) => !categoriesMatch(c, label))
@@ -159,6 +162,6 @@ export async function removeProductCategory(name: string, mainCategory = 'wwj') 
     return { success: true }
   } catch (error) {
     console.error('Failed to remove category:', error)
-    return { success: false, error: 'Failed to remove category' }
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to remove category' }
   }
 }

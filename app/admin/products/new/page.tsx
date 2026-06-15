@@ -7,32 +7,18 @@ import { ChevronLeft, Upload, Image as ImageIcon, Save, CheckCircle, Plus } from
 import { toast } from "sonner";
 import { addProduct } from "@/app/actions/products";
 import { getGroupedProductCategories } from "@/app/actions/categories";
-import { createClient } from "@supabase/supabase-js";
+import { uploadImage } from "@/app/actions/upload";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-const uploadMediaClient = async (file: File) => {
-  const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-  const filename = `${uniqueSuffix}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
-
-  const { error } = await supabase
-    .storage
-    .from('product')
-    .upload(filename, file, { cacheControl: '31536000', upsert: false });
-
-  if (error) {
-    return { success: false, url: null, error: error.message };
-  }
-
-  const { data: publicUrlData } = supabase
-    .storage
-    .from('product')
-    .getPublicUrl(filename);
-
-  return { success: true, url: publicUrlData.publicUrl };
+const uploadMediaClient = async (file: File, folder = "products") => {
+  const formData = new FormData();
+  formData.append("image", file);
+  formData.append("folder", folder);
+  const res = await uploadImage(formData);
+  return {
+    success: res.success,
+    url: res.url || null,
+    error: res.error || null,
+  };
 };
 
 export default function NewProductPage() {
@@ -120,17 +106,17 @@ export default function NewProductPage() {
       const uploadPromises = [];
 
       if (mainImageFile) {
-        uploadPromises.push(uploadMediaClient(mainImageFile).then(res => ({ type: 'main', index: 0, res })));
+        uploadPromises.push(uploadMediaClient(mainImageFile, "products/thumbnails").then(res => ({ type: 'main', index: 0, res })));
       }
 
       galleryFiles.forEach((file, index) => {
         if (file) {
-          uploadPromises.push(uploadMediaClient(file).then(res => ({ type: 'gallery', index: index, res })));
+          uploadPromises.push(uploadMediaClient(file, "products/gallery").then(res => ({ type: 'gallery', index: index, res })));
         }
       });
 
       if (videoFile) {
-        uploadPromises.push(uploadMediaClient(videoFile).then(res => ({ type: 'video', index: 0, res })));
+        uploadPromises.push(uploadMediaClient(videoFile, "products/videos").then(res => ({ type: 'video', index: 0, res })));
       }
 
       if (uploadPromises.length > 0) {
@@ -138,7 +124,7 @@ export default function NewProductPage() {
         
         for (const result of results) {
           if (!result.res.success || !result.res.url) {
-            toast.error("Failed to upload a media file", { id: "upload" });
+            toast.error(result.res.error || "Failed to upload a media file", { id: "upload" });
             setIsSubmitting(false);
             return;
           }

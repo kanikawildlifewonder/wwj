@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { SlidersHorizontal, X, ChevronDown } from "lucide-react";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { categoriesMatch } from "@/lib/categories";
 import { Product } from "@/types/product";
+import { getShopProducts } from "@/app/actions/products";
+import { mapDbProductToUI } from "@/lib/utils/product-mapper";
 
 const SORT_OPTIONS = [
   { label: "Newest", value: "newest" },
@@ -33,6 +35,9 @@ type FilterPanelProps = {
 type ShopClientPageProps = {
   initialProducts: Product[];
   initialCategories: string[];
+  initialTotalCount: number;
+  dbMinPrice: number;
+  dbMaxPrice: number;
 };
 
 function FilterPanel({
@@ -108,6 +113,9 @@ function FilterPanel({
 export default function ShopClientPage({
   initialProducts,
   initialCategories,
+  initialTotalCount,
+  dbMinPrice,
+  dbMaxPrice,
 }: ShopClientPageProps) {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
@@ -115,70 +123,122 @@ export default function ShopClientPage({
   const [showBestsellers, setShowBestsellers] = useState(false);
   const [showNewArrivals, setShowNewArrivals] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [allProducts] = useState<Product[]>(initialProducts);
   const [productCategories] = useState<string[]>(["All", ...initialCategories]);
 
-  const { minPriceLimit, maxPriceLimit } = useMemo(() => {
-    if (allProducts.length === 0) {
-      return { minPriceLimit: 0, maxPriceLimit: 5000 };
+  // Pagination states
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [totalCount, setTotalCount] = useState(initialTotalCount);
+  const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const minPriceLimit = dbMinPrice;
+  const maxPriceLimit = dbMaxPrice;
+  const [priceMax, setPriceMax] = useState(dbMaxPrice);
+  const [debouncedPriceMax, setDebouncedPriceMax] = useState(dbMaxPrice);
+
+  // Debounce price slider
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedPriceMax(priceMax);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [priceMax]);
+
+  // Keep track of whether component is mounted to skip initial render fetch
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Fetch products when filters change
+  useEffect(() => {
+    if (!isMounted) return;
+
+    async function loadFilteredProducts() {
+      setLoading(true);
+      const res = await getShopProducts({
+        skip: 0,
+        take: 12,
+        category: selectedCategory,
+        sortBy,
+        inStockOnly: showInStockOnly,
+        priceMax: debouncedPriceMax,
+        showBestsellers,
+      });
+      if (res.success) {
+        setProducts(res.products.map(mapDbProductToUI));
+        setTotalCount(res.totalCount);
+      }
+      setLoading(false);
     }
 
-    const prices = allProducts.map((product) => product.price);
-    const min = Math.min(...prices);
-    const max = Math.max(...prices);
-    const minLimit = Math.max(0, Math.floor(min / 100) * 100);
-    const maxLimit = Math.max(minLimit + 100, Math.ceil(max / 100) * 100);
+    loadFilteredProducts();
+  }, [selectedCategory, sortBy, showInStockOnly, showBestsellers, debouncedPriceMax, isMounted]);
 
-    return { minPriceLimit: minLimit, maxPriceLimit: maxLimit };
-  }, [allProducts]);
-
-  const [priceMax, setPriceMax] = useState(() => {
-    if (initialProducts.length === 0) return 5000;
-    const max = Math.max(...initialProducts.map((product) => product.price));
-    return Math.ceil(max / 100) * 100;
-  });
+  // Fetch more products (load more pagination)
+  const loadMore = async () => {
+    if (loading || loadingMore) return;
+    setLoadingMore(true);
+    const nextSkip = products.length;
+    const res = await getShopProducts({
+      skip: nextSkip,
+      take: 12,
+      category: selectedCategory,
+      sortBy,
+      inStockOnly: showInStockOnly,
+      priceMax: debouncedPriceMax,
+      showBestsellers,
+    });
+    if (res.success) {
+      setProducts((prev) => [...prev, ...res.products.map(mapDbProductToUI)]);
+      setTotalCount(res.totalCount);
+    }
+    setLoadingMore(false);
+  };
 
   const filtered = useMemo(() => {
-    let products = [...allProducts];
+    let result = [...products];
 
+    // Local client filtering in case of state mismatches
     if (selectedCategory !== "All") {
-      products = products.filter((product) => categoriesMatch(product.category, selectedCategory));
+      result = result.filter((product) => categoriesMatch(product.category, selectedCategory));
     }
 
     if (showInStockOnly) {
-      products = products.filter((product) => product.inStock);
+      result = result.filter((product) => product.inStock);
     }
 
     if (showBestsellers) {
-      products = products.filter((product) => product.isBestseller);
+      result = result.filter((product) => product.isBestseller);
     }
 
     if (showNewArrivals) {
-      products = products.filter((product) => product.isNewArrival);
+      result = result.filter((product) => product.isNewArrival);
     }
 
-    products = products.filter((product) => product.price <= priceMax);
+    result = result.filter((product) => product.price <= priceMax);
 
     switch (sortBy) {
       case "price_asc":
-        products.sort((a, b) => a.price - b.price);
+        result.sort((a, b) => a.price - b.price);
         break;
       case "price_desc":
-        products.sort((a, b) => b.price - a.price);
+        result.sort((a, b) => b.price - a.price);
         break;
       case "popular":
-        products.sort((a, b) => (b.reviewCount ?? 0) - (a.reviewCount ?? 0));
+        result.sort((a, b) => (b.reviewCount ?? 0) - (a.reviewCount ?? 0));
         break;
       case "rating":
-        products.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+        result.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
         break;
       default:
         break;
     }
 
-    return products;
+    return result;
   }, [
-    allProducts,
+    products,
     priceMax,
     selectedCategory,
     showBestsellers,
@@ -231,7 +291,7 @@ export default function ShopClientPage({
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-8 gap-4">
               <p className="text-sm text-jungle/60">
-                <span className="font-bold text-jungle">{filtered.length}</span> products
+                Showing <span className="font-bold text-jungle">{filtered.length}</span> of <span className="font-bold text-jungle">{totalCount}</span> products
               </p>
               <div className="flex items-center gap-3">
                 <button
@@ -257,7 +317,7 @@ export default function ShopClientPage({
               </div>
             </div>
 
-            {filtered.length === 0 ? (
+            {filtered.length === 0 && !loading ? (
               <div className="text-center py-24">
                 <p className="font-display text-2xl text-jungle/40">No products found</p>
                 <p className="text-sm text-jungle/30 mt-2">Try adjusting your filters</p>
@@ -269,11 +329,25 @@ export default function ShopClientPage({
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
-                {filtered.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
+              <>
+                <div className={`grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 transition-opacity duration-200 ${loading ? "opacity-40 pointer-events-none" : "opacity-100"}`}>
+                  {filtered.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+
+                {products.length < totalCount && (
+                  <div className="flex justify-center mt-12">
+                    <button
+                      onClick={loadMore}
+                      disabled={loading || loadingMore}
+                      className="bg-jungle text-gold border border-jungle px-8 py-3 text-xs font-bold tracking-widest uppercase rounded-btn hover:bg-gold hover:text-jungle transition-colors disabled:opacity-50 cursor-pointer"
+                    >
+                      {loadingMore ? "Loading..." : "Load More"}
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

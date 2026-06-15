@@ -7,15 +7,15 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function ProductDetailPage({ params }: PageProps) {
   const { id } = await params;
-  
+
   const product = await prisma.product.findUnique({
     where: { id }
   });
-  
+
   if (!product) notFound();
 
   const reviews = MOCK_REVIEWS.filter((r) => r.productId === product.id);

@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { requireAdmin } from '@/lib/auth-guard'
 
 /**
  * Update page content in the database.
@@ -9,22 +10,23 @@ import { revalidatePath } from 'next/cache'
  */
 export async function updatePageContent(id: string, content: string) {
   try {
+    await requireAdmin()
     await prisma.pageContent.upsert({
       where: { id },
       update: { content },
       create: { id, content },
     })
-    
+
     // Revalidate the frontend paths so they show the new content immediately
     revalidatePath('/')
     revalidatePath('/about')
     revalidatePath('/impact')
     revalidatePath('/collections')
-    
+
     return { success: true }
   } catch (error) {
     console.error('Failed to update page content:', error)
-    return { success: false, error: 'Failed to update content' }
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to update content' }
   }
 }
 

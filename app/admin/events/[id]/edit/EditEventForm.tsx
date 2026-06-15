@@ -7,32 +7,18 @@ import { ChevronLeft, Upload, Image as ImageIcon, Save, Plus, Search, Trash2, He
 import { toast } from "sonner";
 import { updateEvent } from "@/app/actions/events";
 import { getProducts } from "@/app/actions/products";
-import { createClient } from "@supabase/supabase-js";
+import { uploadImage } from "@/app/actions/upload";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-const uploadMediaClient = async (file: File) => {
-  const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-  const filename = `${uniqueSuffix}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
-
-  const { error } = await supabase
-    .storage
-    .from('product') // Use existing product bucket which is already open
-    .upload(filename, file, { cacheControl: '31536000', upsert: false });
-
-  if (error) {
-    return { success: false, url: null, error: error.message };
-  }
-
-  const { data: publicUrlData } = supabase
-    .storage
-    .from('product')
-    .getPublicUrl(filename);
-
-  return { success: true, url: publicUrlData.publicUrl };
+const uploadMediaClient = async (file: File, folder = "events") => {
+  const formData = new FormData();
+  formData.append("image", file);
+  formData.append("folder", folder);
+  const res = await uploadImage(formData);
+  return {
+    success: res.success,
+    url: res.url || null,
+    error: res.error || null,
+  };
 };
 
 const slugify = (text: string) => {
@@ -210,7 +196,7 @@ export default function EditEventForm({ event }: { event: SerializedEvent }) {
       // Main image upload if changed
       if (mainImageFile) {
         uploadPromises.push(
-          uploadMediaClient(mainImageFile).then(res => ({ type: "main", index: 0, res }))
+          uploadMediaClient(mainImageFile, "events").then(res => ({ type: "main", index: 0, res }))
         );
       }
 
@@ -218,7 +204,7 @@ export default function EditEventForm({ event }: { event: SerializedEvent }) {
       galleryFiles.forEach((file, index) => {
         if (file) {
           uploadPromises.push(
-            uploadMediaClient(file).then(res => ({ type: "gallery", index, res }))
+            uploadMediaClient(file, "events").then(res => ({ type: "gallery", index, res }))
           );
         }
       });
@@ -226,7 +212,7 @@ export default function EditEventForm({ event }: { event: SerializedEvent }) {
       // Partner logo upload if changed
       if (partnerLogoFile) {
         uploadPromises.push(
-          uploadMediaClient(partnerLogoFile).then(res => ({ type: "partner", index: 0, res }))
+          uploadMediaClient(partnerLogoFile, "logos").then(res => ({ type: "partner", index: 0, res }))
         );
       }
 
@@ -234,7 +220,7 @@ export default function EditEventForm({ event }: { event: SerializedEvent }) {
         const results = await Promise.all(uploadPromises);
         for (const result of results) {
           if (!result.res.success || !result.res.url) {
-            toast.error("Failed to upload media files to Supabase", { id: "upload" });
+            toast.error(result.res.error || "Failed to upload media files", { id: "upload" });
             setIsSubmitting(false);
             return;
           }

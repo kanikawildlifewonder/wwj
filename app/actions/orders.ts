@@ -1,8 +1,9 @@
 'use server';
-
+ 
 import prisma from "@/lib/prisma";
 import Razorpay from "razorpay";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth-guard";
 
 interface OrderDataInput {
   clerkUserId?: string | null;
@@ -109,6 +110,7 @@ export async function createOrder(orderData: OrderDataInput, items: OrderItemInp
  */
 export async function getOrders() {
   try {
+    await requireAdmin();
     const orders = await prisma.order.findMany({
       orderBy: {
         createdAt: "desc",
@@ -138,6 +140,7 @@ export async function getOrders() {
  */
 export async function getDashboardStats() {
   try {
+    await requireAdmin();
     const orders = await prisma.order.findMany({
       select: {
         totalAmount: true,
@@ -165,7 +168,7 @@ export async function getDashboardStats() {
     // 7-day revenue grouping
     const last7DaysData: { name: string; total: number; dateStr: string }[] = [];
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    
+
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
@@ -218,6 +221,7 @@ export async function getDashboardStats() {
  */
 export async function getAdminCustomers() {
   try {
+    await requireAdmin();
     const orders = await prisma.order.findMany({
       orderBy: { createdAt: 'desc' },
       select: {
@@ -261,12 +265,12 @@ export async function getAdminCustomers() {
     });
 
     const customersList = Array.from(customerMap.values());
-    
+
     customersList.forEach(c => {
       const joinDate = new Date(c.joined);
       const diffTime = Math.abs(Date.now() - joinDate.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
+
       if (c.ordersCount >= 5) {
         c.status = "Active";
       } else if (diffDays <= 7) {
@@ -292,6 +296,7 @@ export async function getAdminCustomers() {
  */
 export async function updateOrderStatus(orderId: string, status: string) {
   try {
+    await requireAdmin();
     const updatedOrder = await prisma.order.update({
       where: {
         id: orderId,

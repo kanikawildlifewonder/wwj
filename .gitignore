@@ -52,3 +52,5 @@ next-env.d.ts
 /lib/generated/prisma
 
 testsprite_tests\tmp\config.json
+/scratch
+

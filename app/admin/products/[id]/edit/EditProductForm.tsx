@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { updateProduct } from "@/app/actions/products";
 import { getGroupedProductCategories } from "@/app/actions/categories";
 import { categoriesMatch } from "@/lib/categories";
-import { supabase } from "@/lib/supabase/client";
+import { uploadImage } from "@/app/actions/upload";
 
 type EditableProduct = {
   id: string;
@@ -23,25 +23,16 @@ type EditableProduct = {
   featured?: boolean;
 };
 
-const uploadMediaClient = async (file: File) => {
-  const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-  const filename = `${uniqueSuffix}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
-
-  const { error } = await supabase
-    .storage
-    .from('product')
-    .upload(filename, file, { cacheControl: '31536000', upsert: false });
-
-  if (error) {
-    return { success: false, url: null, error: error.message };
-  }
-
-  const { data: publicUrlData } = supabase
-    .storage
-    .from('product')
-    .getPublicUrl(filename);
-
-  return { success: true, url: publicUrlData.publicUrl };
+const uploadMediaClient = async (file: File, folder = "products") => {
+  const formData = new FormData();
+  formData.append("image", file);
+  formData.append("folder", folder);
+  const res = await uploadImage(formData);
+  return {
+    success: res.success,
+    url: res.url || null,
+    error: res.error || null,
+  };
 };
 
 export default function EditProductForm({ product }: { product: EditableProduct }) {
@@ -170,19 +161,19 @@ export default function EditProductForm({ product }: { product: EditableProduct 
 
       // Main image upload if changed
       if (mainImageFile) {
-        uploadPromises.push(uploadMediaClient(mainImageFile).then(res => ({ type: 'main', index: 0, res })));
+        uploadPromises.push(uploadMediaClient(mainImageFile, "products/thumbnails").then(res => ({ type: 'main', index: 0, res })));
       }
 
       // Gallery uploads if changed
       galleryFiles.forEach((file, index) => {
         if (file) {
-          uploadPromises.push(uploadMediaClient(file).then(res => ({ type: 'gallery', index: index, res })));
+          uploadPromises.push(uploadMediaClient(file, "products/gallery").then(res => ({ type: 'gallery', index: index, res })));
         }
       });
 
       // Video upload if changed
       if (videoFile) {
-        uploadPromises.push(uploadMediaClient(videoFile).then(res => ({ type: 'video', index: 0, res })));
+        uploadPromises.push(uploadMediaClient(videoFile, "products/videos").then(res => ({ type: 'video', index: 0, res })));
       }
 
       if (uploadPromises.length > 0) {
@@ -190,7 +181,7 @@ export default function EditProductForm({ product }: { product: EditableProduct 
         
         for (const result of results) {
           if (!result.res.success || !result.res.url) {
-            toast.error("Failed to upload a media file", { id: "upload" });
+            toast.error(result.res.error || "Failed to upload a media file", { id: "upload" });
             setIsSubmitting(false);
             return;
           }

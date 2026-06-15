@@ -39,7 +39,7 @@ type DbProduct = {
   updatedAt: Date;
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function CollectionPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
@@ -109,7 +109,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
     const bracelets = rawProducts.filter(p => checkCategory(p.category, ["bracelet"]));
     // 5. Sets & Combos
     const sets = rawProducts.filter(p => checkCategory(p.category, ["set", "combo"]));
-    
+
     // 6. Others
     const groupedIds = new Set([
       ...necklaces.map(p => p.id),
@@ -140,7 +140,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
     const bookmarks = rawProducts.filter(p => checkCategory(p.category, ["bookmark"]));
     // 6. Custom Pet Portraits
     const customPet = rawProducts.filter(p => checkCategory(p.category, ["pet", "customise"]));
-    
+
     const groupedIds = new Set([
       ...keychains.map(p => p.id),
       ...magnets.map(p => p.id),
@@ -256,7 +256,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
         <p className="text-sm text-jungle/50 mb-8">
           Showing <span className="font-bold text-jungle">{rawProducts.length}</span> pieces in this collection
         </p>
-        
+
         {rawProducts.length === 0 ? (
           <div className="text-center py-24">
             <p className="font-display text-2xl text-jungle/30">No products in this collection yet</p>

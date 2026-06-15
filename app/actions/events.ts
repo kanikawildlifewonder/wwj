@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { requireAdmin } from '@/lib/auth-guard'
 
 export type EventInput = {
   title: string
@@ -79,6 +80,7 @@ export async function getEventById(id: string) {
 
 export async function addEvent(data: EventInput) {
   try {
+    await requireAdmin()
     const eventDateFormatted = new Date(data.eventDate);
     const result = await prisma.event.create({
       data: {
@@ -93,12 +95,13 @@ export async function addEvent(data: EventInput) {
     return { success: true, event: result }
   } catch (error) {
     console.error('Failed to add event:', error)
-    return { success: false, error: 'Failed to add event' }
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to add event' }
   }
 }
 
 export async function updateEvent(id: string, data: EventUpdateInput) {
   try {
+    await requireAdmin()
     const updateData: EventUpdateInput = { ...data };
     if (data.eventDate) {
       updateData.eventDate = new Date(data.eventDate);
@@ -114,12 +117,13 @@ export async function updateEvent(id: string, data: EventUpdateInput) {
     return { success: true, event: result }
   } catch (error) {
     console.error('Failed to update event:', error)
-    return { success: false, error: 'Failed to update event' }
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to update event' }
   }
 }
 
 export async function deleteEvent(id: string) {
   try {
+    await requireAdmin()
     const event = await prisma.event.delete({
       where: { id }
     })
@@ -130,6 +134,6 @@ export async function deleteEvent(id: string) {
     return { success: true }
   } catch (error) {
     console.error('Failed to delete event:', error)
-    return { success: false, error: 'Failed to delete event' }
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to delete event' }
   }
 }
