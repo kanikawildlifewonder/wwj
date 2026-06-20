@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { SlidersHorizontal, X, ChevronDown } from "lucide-react";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { categoriesMatch } from "@/lib/categories";
@@ -38,6 +39,7 @@ type ShopClientPageProps = {
   initialTotalCount: number;
   dbMinPrice: number;
   dbMaxPrice: number;
+  searchQuery?: string;
 };
 
 function FilterPanel({
@@ -116,7 +118,9 @@ export default function ShopClientPage({
   initialTotalCount,
   dbMinPrice,
   dbMaxPrice,
+  searchQuery = "",
 }: ShopClientPageProps) {
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
   const [showInStockOnly, setShowInStockOnly] = useState(false);
@@ -124,6 +128,13 @@ export default function ShopClientPage({
   const [showNewArrivals, setShowNewArrivals] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [productCategories] = useState<string[]>(["All", ...initialCategories]);
+  const [search, setSearch] = useState(searchQuery);
+  const [prevSearchQuery, setPrevSearchQuery] = useState(searchQuery);
+
+  if (searchQuery !== prevSearchQuery) {
+    setPrevSearchQuery(searchQuery);
+    setSearch(searchQuery);
+  }
 
   // Pagination states
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -144,16 +155,15 @@ export default function ShopClientPage({
     return () => clearTimeout(timer);
   }, [priceMax]);
 
-  // Keep track of whether component is mounted to skip initial render fetch
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // Keep track of whether component is in its first render to skip initial fetch
+  const isFirstRender = useRef(true);
 
   // Fetch products when filters change
   useEffect(() => {
-    if (!isMounted) return;
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
 
     async function loadFilteredProducts() {
       setLoading(true);
@@ -165,6 +175,7 @@ export default function ShopClientPage({
         inStockOnly: showInStockOnly,
         priceMax: debouncedPriceMax,
         showBestsellers,
+        search,
       });
       if (res.success) {
         setProducts(res.products.map(mapDbProductToUI));
@@ -174,7 +185,7 @@ export default function ShopClientPage({
     }
 
     loadFilteredProducts();
-  }, [selectedCategory, sortBy, showInStockOnly, showBestsellers, debouncedPriceMax, isMounted]);
+  }, [selectedCategory, sortBy, showInStockOnly, showBestsellers, debouncedPriceMax, search]);
 
   // Fetch more products (load more pagination)
   const loadMore = async () => {
@@ -189,6 +200,7 @@ export default function ShopClientPage({
       inStockOnly: showInStockOnly,
       priceMax: debouncedPriceMax,
       showBestsellers,
+      search,
     });
     if (res.success) {
       setProducts((prev) => [...prev, ...res.products.map(mapDbProductToUI)]);
@@ -215,6 +227,15 @@ export default function ShopClientPage({
 
     if (showNewArrivals) {
       result = result.filter((product) => product.isNewArrival);
+    }
+
+    if (search && search.trim()) {
+      const q = search.toLowerCase().trim();
+      result = result.filter(
+        (product) =>
+          product.name.toLowerCase().includes(q) ||
+          product.description.toLowerCase().includes(q)
+      );
     }
 
     result = result.filter((product) => product.price <= priceMax);
@@ -245,6 +266,7 @@ export default function ShopClientPage({
     showInStockOnly,
     showNewArrivals,
     sortBy,
+    search,
   ]);
 
   const resetFilters = () => {
@@ -253,6 +275,8 @@ export default function ShopClientPage({
     setShowBestsellers(false);
     setShowNewArrivals(false);
     setPriceMax(maxPriceLimit);
+    setSearch("");
+    router.replace("/shop", { scroll: false });
   };
 
   return (
@@ -289,6 +313,20 @@ export default function ShopClientPage({
           </aside>
 
           <div className="flex-1 min-w-0">
+            {search && (
+              <div className="flex items-center gap-3 bg-gold/10 border border-gold/20 rounded-btn px-4 py-2 mb-6 w-fit text-sm text-jungle animate-fadeIn">
+                <span>Search results for: <span className="font-bold">&quot;{search}&quot;</span></span>
+                <button
+                  onClick={() => {
+                    setSearch("");
+                    router.replace("/shop", { scroll: false });
+                  }}
+                  className="hover:text-gold text-xs underline font-bold cursor-pointer"
+                >
+                  Clear
+                </button>
+              </div>
+            )}
             <div className="flex items-center justify-between mb-8 gap-4">
               <p className="text-sm text-jungle/60">
                 Showing <span className="font-bold text-jungle">{filtered.length}</span> of <span className="font-bold text-jungle">{totalCount}</span> products

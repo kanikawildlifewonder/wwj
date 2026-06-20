@@ -1,6 +1,7 @@
 'use server'
 
 import prisma from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { requireAdmin } from '@/lib/auth-guard'
 
@@ -167,13 +168,14 @@ export async function getShopProducts(options: {
   inStockOnly?: boolean
   priceMax?: number
   showBestsellers?: boolean
+  search?: string
 }) {
   try {
     const skip = options.skip ?? 0
     const take = options.take ?? 12
-    const { category, sortBy, inStockOnly, priceMax, showBestsellers } = options
+    const { category, sortBy, inStockOnly, priceMax, showBestsellers, search } = options
 
-    const where: any = {}
+    const where: Prisma.ProductWhereInput = {}
 
     if (category && category !== 'All') {
       where.category = { equals: category.trim(), mode: 'insensitive' }
@@ -191,7 +193,14 @@ export async function getShopProducts(options: {
       where.price = { lte: priceMax }
     }
 
-    const orderBy: any = []
+    if (search && search.trim()) {
+      where.OR = [
+        { name: { contains: search.trim(), mode: 'insensitive' } },
+        { description: { contains: search.trim(), mode: 'insensitive' } }
+      ]
+    }
+
+    const orderBy: Prisma.ProductOrderByWithRelationInput[] = []
     if (sortBy === 'price_asc') {
       orderBy.push({ price: 'asc' })
     } else if (sortBy === 'price_desc') {
@@ -241,3 +250,64 @@ export async function getProductPriceLimits() {
     return { success: false, min: 0, max: 5000 }
   }
 }
+
+/**
+ * Returns ALL distinct category values actually used in the products table,
+ * merged with the stored settings category list. This ensures custom /
+ * legacy tags not present in Settings always appear in admin filters.
+ *
+ * Uses a case-insensitive Map keyed on lowercased+trimmed value so that
+ * "Combo", " Combo", and "combo" all collapse to one entry.
+ */
+export async function getDistinctProductCategories(): Promise<string[]> {
+  try {
+    const rows = await prisma.product.findMany({
+      distinct: ['category'],
+      select: { category: true },
+      orderBy: { category: 'asc' },
+    })
+    const dbCats = rows.map((r) => r.category.trim()).filter(Boolean)
+
+    // Also pull the stored settings list so we include configured-but-unused categories
+    const { getProductCategories } = await import('@/app/actions/categories')
+    const storedCats = (await getProductCategories()).map((c) => c.trim()).filter(Boolean)
+
+    // Case-insensitive dedup: first-seen casing wins
+    const seen = new Map<string, string>()
+    for (const cat of [...dbCats, ...storedCats]) {
+      const key = cat.toLowerCase()
+      if (!seen.has(key)) seen.set(key, cat)
+    }
+
+    return Array.from(seen.values()).sort((a, b) => a.localeCompare(b))
+  } catch (error) {
+    console.error('Failed to get distinct product categories:', error)
+    return []
+  }
+}
+
+
+/**
+ * Returns a count of all products plus a breakdown of out-of-stock product names.
+ * Used by the admin dashboard inventory alerts widget.
+ */
+export async function getInventoryAlerts(): Promise<{
+  total: number
+  outOfStock: { id: string; name: string; category: string }[]
+}> {
+  try {
+    const [total, outOfStock] = await Promise.all([
+      prisma.product.count(),
+      prisma.product.findMany({
+        where: { inStock: false },
+        select: { id: true, name: true, category: true },
+        orderBy: { updatedAt: 'desc' },
+      }),
+    ])
+    return { total, outOfStock }
+  } catch (error) {
+    console.error('Failed to get inventory alerts:', error)
+    return { total: 0, outOfStock: [] }
+  }
+}
+

@@ -11,6 +11,7 @@ datasource db {
   provider = "postgresql"
 }
 
+
 model Product {
   id          String   @id @default(cuid())
   name        String

@@ -1,14 +1,7 @@
 'use server'
 
-import { createClient } from '@supabase/supabase-js'
 import { requireAdmin } from '@/lib/auth-guard'
 import { uploadToR2 } from '@/lib/storage'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-// Keep Supabase client for potential reference/rollback
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 export async function uploadImage(formData: FormData) {
   try {

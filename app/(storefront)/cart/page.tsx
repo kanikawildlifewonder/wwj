@@ -6,12 +6,15 @@ import { Trash2, ShoppingBag, ArrowRight, Tag } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { formatINR } from "@/lib/utils/currency";
 import { ProductCard } from "@/components/shop/ProductCard";
-import { MOCK_PRODUCTS } from "@/lib/mock-data";
 import { getPageContent } from "@/app/actions/content";
+import { getShopProducts } from "@/app/actions/products";
+import { mapDbProductToUI } from "@/lib/utils/product-mapper";
+import { Product } from "@/types/product";
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, subtotal } = useCartStore();
   const [shippingThreshold, setShippingThreshold] = useState(1499);
+  const [suggested, setSuggested] = useState<Product[]>([]);
 
   useEffect(() => {
     getPageContent("store-settings").then((raw) => {
@@ -24,9 +27,18 @@ export default function CartPage() {
     });
   }, []);
 
+  useEffect(() => {
+    getShopProducts({ take: 12 }).then((res) => {
+      if (res.success && res.products) {
+        const mapped = res.products.map(mapDbProductToUI);
+        const filtered = mapped.filter((p) => !items.some((i) => i.product.id === p.id)).slice(0, 4);
+        setSuggested(filtered);
+      }
+    });
+  }, [items]);
+
   const shippingFee = subtotal() >= shippingThreshold ? 0 : 99;
   const total = subtotal() + shippingFee;
-  const suggested = MOCK_PRODUCTS.filter((p) => !items.some((i) => i.product.id === p.id)).slice(0, 4);
 
   return (
     <div className="bg-cream min-h-screen py-12">

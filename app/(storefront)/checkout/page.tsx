@@ -235,11 +235,6 @@ export default function CheckoutPage() {
             discount: appliedDiscount,
           });
 
-          // Clear Cart and set confirmation view
-          clearCart();
-          setOrderPlaced(true);
-          toast.success("Payment successful! Order placed.");
-
           // Generate and open WhatsApp message automatically
           const orderItemsText = items
             .map((item) => `• *${item.product.name}* x ${item.quantity} (${formatINR(item.product.price * item.quantity)})`)

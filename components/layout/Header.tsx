@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, ShoppingBag, Menu, X, Heart } from "lucide-react";
-import { UserButton, SignInButton, Show } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { Search, ShoppingBag, Menu, X, Heart, User, LayoutDashboard } from "lucide-react";
+import { UserButton, SignInButton, Show, useUser } from "@clerk/nextjs";
 import { useHydrated } from "@/lib/hooks/useHydrated";
 import { cn } from "@/lib/utils";
 import { useCartStore, useWishlistStore } from "@/store/cartStore";
@@ -33,11 +34,25 @@ export function Header({
 }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
   const { openCart, totalItems } = useCartStore();
   const { items: wishlistItems } = useWishlistStore();
   const isHydrated = useHydrated();
+  const { user } = useUser();
+  const isAdmin = isHydrated && user?.publicMetadata?.role === "admin";
   const cartCount = totalItems();
   const wishlistCount = wishlistItems.length;
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery("");
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -122,32 +137,80 @@ export function Header({
               {link.label}
             </Link>
           ))}
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="text-xs font-bold text-gold/80 hover:text-gold transition-colors tracking-widest border border-gold/30 hover:border-gold px-2.5 py-1 rounded-full"
+            >
+              ADMIN
+            </Link>
+          )}
         </nav>
 
         {/* Icons */}
         <div className="flex items-center gap-3 text-ivory">
-          <button aria-label="Search" className="hover:text-gold transition-colors p-1">
-            <Search className="w-5 h-5" />
-          </button>
+          {isSearchOpen ? (
+            <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 bg-forest/80 border border-border/30 rounded-full px-3 py-1 shadow-inner">
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-transparent border-none outline-none text-xs text-ivory placeholder-ivory/50 w-24 sm:w-36 focus:ring-0 focus:outline-none"
+                autoFocus
+              />
+              <button type="submit" aria-label="Submit search" className="text-ivory hover:text-gold transition-colors">
+                <Search className="w-4 h-4" />
+              </button>
+              <button type="button" onClick={() => setIsSearchOpen(false)} aria-label="Close search" className="text-ivory/60 hover:text-ivory transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            </form>
+          ) : (
+            <button
+              aria-label="Search"
+              onClick={() => setIsSearchOpen(true)}
+              className="hover:text-gold transition-colors p-1"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+          )}
 
-          <Link href="/account" aria-label="Account" className="hover:text-gold transition-colors p-1 hidden sm:block">
-            <Show when="signed-in">
+          {/* My Account */}
+          <Show when="signed-in">
+            <Link
+              href="/account"
+              aria-label="My Account"
+              className="hidden sm:flex items-center gap-1.5 hover:text-gold transition-colors p-1 text-xs font-medium tracking-wider"
+            >
+              <User className="w-4 h-4" />
+              <span className="hidden md:inline">MY ACCOUNT</span>
+            </Link>
+            <div className="hidden sm:block">
               <UserButton
                 appearance={{
                   elements: { userButtonAvatarBox: "w-6 h-6" },
                 }}
               />
-            </Show>
-            <Show when="signed-out">
-              <SignInButton mode="modal">
-                <button className="hover:text-gold transition-colors" aria-label="Sign in">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-                  </svg>
-                </button>
-              </SignInButton>
-            </Show>
-          </Link>
+            </div>
+            {isAdmin && (
+              <Link
+                href="/admin"
+                aria-label="Admin Dashboard"
+                className="hidden sm:flex items-center gap-1 hover:text-gold transition-colors p-1 text-gold/70 hover:text-gold"
+                title="Admin Dashboard"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+              </Link>
+            )}
+          </Show>
+          <Show when="signed-out">
+            <SignInButton mode="modal">
+              <button className="hover:text-gold transition-colors p-1" aria-label="Sign in">
+                <User className="w-5 h-5" />
+              </button>
+            </SignInButton>
+          </Show>
 
           <Link href="/account/wishlist" aria-label="Wishlist" className="hover:text-gold transition-colors p-1 relative hidden sm:block">
             <Heart className="w-5 h-5" />
@@ -192,10 +255,13 @@ export function Header({
             </Link>
           ))}
 
-          {/* Mobile-only: Wishlist & Account links */}
-          <div className="border-t border-border mt-2 pt-2 px-6 pb-2 flex items-center gap-6">
+          {/* Mobile-only: Wishlist, Account & Admin links */}
+          <div className="border-t border-border mt-2 pt-2 px-6 pb-2 flex items-center gap-6 flex-wrap">
             <Link href="/account" className="text-ivory/60 hover:text-gold text-xs tracking-widest uppercase py-2" onClick={() => setMobileMenuOpen(false)}>My Account</Link>
             <Link href="/account/wishlist" className="text-ivory/60 hover:text-gold text-xs tracking-widest uppercase py-2" onClick={() => setMobileMenuOpen(false)}>Wishlist</Link>
+            {isAdmin && (
+              <Link href="/admin" className="text-gold/80 hover:text-gold text-xs tracking-widest uppercase py-2 font-bold border border-gold/30 px-2 rounded" onClick={() => setMobileMenuOpen(false)}>Admin Panel</Link>
+            )}
           </div>
         </div>
       </div>

@@ -59,7 +59,6 @@ function parseFounderStory(text: string): ParsedFounderStory {
 
   if (!text) return result;
 
-  const idxFounder = text.indexOf("FOUNDER");
   const idxAchievements = text.indexOf("Achievements");
   const idxVision = text.indexOf("Vision");
   const idxMission = text.indexOf("Mission");

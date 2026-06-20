@@ -5,9 +5,22 @@ import ShopClientPage from "./ShopClientPage";
 
 export const revalidate = 300;
 
-export default async function ShopPage() {
+interface ShopPageProps {
+  searchParams: Promise<{
+    category?: string;
+    search?: string;
+    sortBy?: string;
+    inStockOnly?: string;
+    priceMax?: string;
+  }>;
+}
+
+export default async function ShopPage({ searchParams }: ShopPageProps) {
+  const params = await searchParams;
+  const search = params.search;
+
   const [shopData, categories, priceLimits] = await Promise.all([
-    getShopProducts({ skip: 0, take: 12 }),
+    getShopProducts({ skip: 0, take: 12, search }),
     getProductCategories(),
     getProductPriceLimits(),
   ]);
@@ -24,6 +37,8 @@ export default async function ShopPage() {
       initialTotalCount={totalCount}
       dbMinPrice={minPrice}
       dbMaxPrice={maxPrice}
+      searchQuery={search}
     />
   );
 }
+

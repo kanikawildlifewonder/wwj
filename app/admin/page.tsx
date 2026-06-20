@@ -10,6 +10,11 @@ import {
   Calendar,
   AlertTriangle,
   Loader2,
+  Package,
+  Plus,
+  FileEdit,
+  Zap,
+  TrendingUp,
 } from "lucide-react";
 import {
   AreaChart,
@@ -22,6 +27,7 @@ import {
 } from "recharts";
 import { formatINR } from "@/lib/utils/currency";
 import { getDashboardStats } from "@/app/actions/orders";
+import { getInventoryAlerts } from "@/app/actions/products";
 
 type DashboardStats = {
   totalRevenue: number;
@@ -47,19 +53,25 @@ type MetricCardProps = {
   trend: string;
   isPositive: boolean;
   icon: React.ReactNode;
+  href?: string;
 };
 
 export default function AdminDashboardOverview() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [inventory, setInventory] = useState<{
+    total: number;
+    outOfStock: { id: string; name: string; category: string }[];
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    getDashboardStats().then((res) => {
-      if (res.success && res.stats) {
-        setStats(res.stats);
+    Promise.all([getDashboardStats(), getInventoryAlerts()]).then(
+      ([statsRes, invRes]) => {
+        if (statsRes.success && statsRes.stats) setStats(statsRes.stats);
+        setInventory(invRes);
+        setIsLoading(false);
       }
-      setIsLoading(false);
-    });
+    );
   }, []);
 
   if (isLoading) {
@@ -83,12 +95,26 @@ export default function AdminDashboardOverview() {
     );
   }
 
+  const outOfStock = inventory?.outOfStock ?? [];
+  const totalProducts = inventory?.total ?? 0;
+
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h2 className="font-display text-2xl text-jungle">Dashboard Overview</h2>
-        <p className="text-jungle/60">Live metrics from your store database.</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="font-display text-2xl text-jungle">Dashboard Overview</h2>
+          <p className="text-jungle/60">Live metrics from your store database.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/analytics"
+            className="flex items-center gap-1.5 text-xs font-bold text-jungle/70 hover:text-gold border border-jungle/10 hover:border-gold/30 px-3 py-2 rounded-lg transition-colors"
+          >
+            <TrendingUp className="w-3.5 h-3.5" />
+            Analytics
+          </Link>
+        </div>
       </div>
 
       {/* Metrics Cards */}
@@ -99,6 +125,7 @@ export default function AdminDashboardOverview() {
           trend="Real-time"
           isPositive={true}
           icon={<IndianRupee className="w-6 h-6 text-emerald-600" />}
+          href="/admin/analytics"
         />
         <MetricCard
           title="Total Orders"
@@ -106,6 +133,7 @@ export default function AdminDashboardOverview() {
           trend="In database"
           isPositive={true}
           icon={<ShoppingBag className="w-6 h-6 text-blue-600" />}
+          href="/admin/orders"
         />
         <MetricCard
           title="Active Customers"
@@ -113,14 +141,41 @@ export default function AdminDashboardOverview() {
           trend="Unique customers"
           isPositive={true}
           icon={<Users className="w-6 h-6 text-purple-600" />}
+          href="/admin/customers"
         />
         <MetricCard
-          title="Low Stock / Out of Stock"
-          value={stats.lowStock.toString()}
-          trend={stats.lowStock > 0 ? "Needs attention" : "Inventory healthy"}
-          isPositive={stats.lowStock === 0}
-          icon={<PackageOpen className={`w-6 h-6 ${stats.lowStock > 0 ? "text-amber-500" : "text-emerald-500"}`} />}
+          title="Total Products"
+          value={totalProducts.toString()}
+          trend={outOfStock.length > 0 ? `${outOfStock.length} out of stock` : "All in stock ✓"}
+          isPositive={outOfStock.length === 0}
+          icon={<Package className={`w-6 h-6 ${outOfStock.length > 0 ? "text-amber-500" : "text-emerald-500"}`} />}
+          href="/admin/products"
         />
+      </div>
+
+      {/* Quick Actions */}
+      <div className="bg-white rounded-xl border border-border shadow-sm p-6">
+        <div className="flex items-center gap-2 mb-5">
+          <Zap className="w-4 h-4 text-gold" />
+          <h3 className="font-display text-lg text-jungle">Quick Actions</h3>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            { href: "/admin/products/new", icon: Plus, label: "Add Product", color: "bg-jungle text-gold hover:bg-charcoal" },
+            { href: "/admin/orders", icon: ShoppingBag, label: "View Orders", color: "bg-blue-50 text-blue-700 hover:bg-blue-100" },
+            { href: "/admin/events/new", icon: Calendar, label: "New Event", color: "bg-purple-50 text-purple-700 hover:bg-purple-100" },
+            { href: "/admin/pages", icon: FileEdit, label: "Edit Content", color: "bg-amber-50 text-amber-700 hover:bg-amber-100" },
+          ].map(({ href, icon: Icon, label, color }) => (
+            <Link
+              key={href}
+              href={href}
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl font-medium text-sm transition-colors text-center ${color}`}
+            >
+              <Icon className="w-5 h-5" />
+              {label}
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* Analytics Chart & Recent Orders */}
@@ -222,6 +277,10 @@ export default function AdminDashboardOverview() {
                         className={`text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded ${
                           order.status.toLowerCase() === "delivered"
                             ? "text-emerald-700 bg-emerald-50"
+                            : order.status.toLowerCase() === "processing"
+                            ? "text-blue-700 bg-blue-50"
+                            : order.status.toLowerCase() === "shipped"
+                            ? "text-purple-700 bg-purple-50"
                             : "text-amber-700 bg-amber-50"
                         }`}
                       >
@@ -243,6 +302,51 @@ export default function AdminDashboardOverview() {
           )}
         </div>
       </div>
+
+      {/* Inventory Alerts */}
+      {outOfStock.length > 0 && (
+        <div className="bg-white rounded-xl border border-amber-200 shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <PackageOpen className="w-5 h-5 text-amber-500" />
+              <h3 className="font-display text-lg text-jungle">
+                Inventory Alerts
+                <span className="ml-2 text-sm font-sans font-normal text-amber-600">
+                  ({outOfStock.length} out of stock)
+                </span>
+              </h3>
+            </div>
+            <Link
+              href="/admin/products?stock=out"
+              className="text-xs font-bold text-amber-600 hover:text-amber-700 border border-amber-200 hover:border-amber-400 px-3 py-1.5 rounded-lg transition-colors"
+            >
+              Manage Stock
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {outOfStock.slice(0, 9).map((p) => (
+              <Link
+                key={p.id}
+                href={`/admin/products/${p.id}/edit`}
+                className="flex items-center gap-2 p-2.5 rounded-lg border border-amber-100 bg-amber-50/50 hover:bg-amber-50 hover:border-amber-200 transition-colors group"
+              >
+                <div className="w-2 h-2 rounded-full bg-red-400 flex-shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-jungle truncate group-hover:text-gold transition-colors">
+                    {p.name}
+                  </p>
+                  <p className="text-xs text-jungle/40 capitalize">{p.category}</p>
+                </div>
+              </Link>
+            ))}
+            {outOfStock.length > 9 && (
+              <div className="flex items-center justify-center p-2.5 rounded-lg border border-dashed border-amber-200 text-xs text-amber-600 font-medium">
+                +{outOfStock.length - 9} more out of stock
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -253,9 +357,10 @@ function MetricCard({
   trend,
   isPositive,
   icon,
+  href,
 }: MetricCardProps) {
-  return (
-    <div className="bg-white p-6 rounded-xl border border-border shadow-sm flex items-start justify-between">
+  const inner = (
+    <div className="bg-white p-6 rounded-xl border border-border shadow-sm flex items-start justify-between hover:border-gold/30 transition-colors">
       <div>
         <p className="text-sm text-jungle/60 mb-1">{title}</p>
         <h4 className="font-display text-2xl text-jungle mb-2">{value}</h4>
@@ -266,4 +371,9 @@ function MetricCard({
       <div className="p-3 bg-cream rounded-xl">{icon}</div>
     </div>
   );
+
+  if (href) {
+    return <Link href={href}>{inner}</Link>;
+  }
+  return inner;
 }

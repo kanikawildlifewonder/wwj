@@ -14,9 +14,9 @@ import {
   seedMockProducts,
   bulkUpdateProducts,
   bulkDeleteProducts,
+  getDistinctProductCategories,
   type BulkUpdatePayload,
 } from "@/app/actions/products";
-import { getProductCategories } from "@/app/actions/categories";
 import { toast } from "sonner";
 
 type AdminProduct = Awaited<ReturnType<typeof getProducts>>[number];
@@ -71,7 +71,7 @@ export default function AdminProductsPage() {
 
   /* ── load ── */
   const loadProducts = useCallback(async () => {
-    const [data, cats] = await Promise.all([getProducts(), getProductCategories()]);
+    const [data, cats] = await Promise.all([getProducts(), getDistinctProductCategories()]);
     setProducts(data);
     setCategories(cats);
     setSelected(new Set());
@@ -82,7 +82,7 @@ export default function AdminProductsPage() {
     let mounted = true;
     const fetchProducts = async () => {
       setIsLoading(true);
-      const [data, cats] = await Promise.all([getProducts(), getProductCategories()]);
+      const [data, cats] = await Promise.all([getProducts(), getDistinctProductCategories()]);
       if (mounted) {
         setProducts(data);
         setCategories(cats);

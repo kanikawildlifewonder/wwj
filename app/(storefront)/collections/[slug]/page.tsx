@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { COLLECTIONS_LIST } from "@/lib/mock-data";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { mapDbProductToUI } from "@/lib/utils/product-mapper";
 import prisma from "@/lib/prisma";
@@ -16,7 +15,7 @@ const COLLECTION_MAP: Record<string, string> = {
 const COLLECTION_IMAGES: Record<string, string> = {
   jewellery: "/images/collections/jewellery_banner.jpg",
   accessories: "/images/collections/accessories_banner.jpg",
-  gifting: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=1600&auto=format&fit=crop",
+  gifting: "/images/collections/gifting_box.jpeg",
 };
 
 interface PageProps {
@@ -77,7 +76,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
       where: {
         OR: [
           { mainCategory: "gift_cards" },
-          { category: { in: ["Gift Boxes", "Combo", "Sets", "Festive Collections"] } }
+          { category: { in: ["Gift Boxes", "Festive Collections"] } }
         ]
       },
       orderBy: { createdAt: 'desc' }
@@ -162,25 +161,19 @@ export default async function CollectionPage({ params, searchParams }: PageProps
   } else if (slug === "gifting") {
     // 1. Gift Boxes
     const boxes = rawProducts.filter(p => checkCategory(p.category, ["gift box", "gift boxes", "box", "boxes"]));
-    // 2. Combos & Gift Sets
-    const sets = rawProducts.filter(p => checkCategory(p.category, ["combo", "set", "sets"]));
-    // 3. Festive & Special
+    // 2. Festive & Special
     const festive = rawProducts.filter(p => checkCategory(p.category, ["festive", "special", "celebration"]));
 
     const groupedIds = new Set([
       ...boxes.map(p => p.id),
-      ...sets.map(p => p.id),
       ...festive.map(p => p.id)
     ]);
     const others = rawProducts.filter(p => !groupedIds.has(p.id));
 
     if (boxes.length > 0) sections.push({ title: "Curated Gift Boxes", products: mapProducts(boxes) });
-    if (sets.length > 0) sections.push({ title: "Combos & Gift Sets", products: mapProducts(sets) });
     if (festive.length > 0) sections.push({ title: "Festive & Special Collections", products: mapProducts(festive) });
     if (others.length > 0) sections.push({ title: "Other Gift Options", products: mapProducts(others) });
   }
-
-  const collectionInfo = COLLECTIONS_LIST.find((c) => c.slug === slug);
 
   // Filter sections by category query if present
   let filteredSections = sections;
@@ -200,42 +193,18 @@ export default async function CollectionPage({ params, searchParams }: PageProps
   return (
     <div className="bg-ivory min-h-screen">
       {/* Hero */}
-      {slug === "gifting" ? (
-        <div className="relative h-[40vh] min-h-[300px] overflow-hidden">
-          {COLLECTION_IMAGES[slug] ? (
-            <Image
-              src={COLLECTION_IMAGES[slug]}
-              alt={collectionName}
-              fill
-              priority
-              className="object-cover"
-            />
-          ) : null}
-          <div className="absolute inset-0 bg-jungle/70" />
-          <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4 py-8">
-            <div className="flex items-center gap-4 mb-4">
-              <span className="w-8 h-[1px] bg-gold/50" />
-              <Link href="/collections" className="text-gold text-xs tracking-widest uppercase">Collections</Link>
-              <span className="w-8 h-[1px] bg-gold/50" />
-            </div>
-            <h1 className="font-display text-4xl md:text-6xl text-ivory">{collectionName}</h1>
-            <p className="text-ivory/70 mt-4 text-sm font-sans max-w-lg">{collectionInfo?.description}</p>
-          </div>
-        </div>
-      ) : (
-        <div className="w-full relative aspect-[16/9] overflow-hidden bg-ivory">
-          {COLLECTION_IMAGES[slug] ? (
-            <Image
-              src={COLLECTION_IMAGES[slug]}
-              alt={collectionName}
-              fill
-              priority
-              className="object-cover"
-            />
-          ) : null}
-          <div className="absolute inset-0 bg-gradient-to-t from-jungle/10 to-transparent pointer-events-none" />
-        </div>
-      )}
+      <div className="w-full relative aspect-[16/9] overflow-hidden bg-ivory">
+        {COLLECTION_IMAGES[slug] ? (
+          <Image
+            src={COLLECTION_IMAGES[slug]}
+            alt={collectionName}
+            fill
+            priority
+            className="object-cover"
+          />
+        ) : null}
+        <div className="absolute inset-0 bg-gradient-to-t from-jungle/10 to-transparent pointer-events-none" />
+      </div>
 
       {/* Products */}
       <div className="container mx-auto px-4 lg:px-8 py-16">
