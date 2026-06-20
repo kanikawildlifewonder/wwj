@@ -292,7 +292,7 @@ export default function AddressesPage() {
                   <input
                     type={type}
                     name={name}
-                    value={(formData as Record<string, string>)[name]}
+                    value={(formData as Record<string, string | boolean>)[name] as string}
                     onChange={handleInputChange}
                     required={required}
                     placeholder={placeholder}
@@ -311,7 +311,7 @@ export default function AddressesPage() {
                     <input
                       type="text"
                       name={name}
-                      value={(formData as Record<string, string>)[name]}
+                      value={(formData as Record<string, string | boolean>)[name] as string}
                       onChange={handleInputChange}
                       required
                       placeholder={placeholder}
