@@ -15,10 +15,21 @@ const NAV_LINKS = [
   { label: "SHOP", href: "/shop" },
   { label: "COLLECTIONS", href: "/collections" },
   { label: "STYLING TIPS", href: "/faq" },
-  { label: "EVENTS & COLLABORATIONS", href: "/events" },
+  { label: "EVENTS & COLLABS", href: "/events" },
   { label: "ABOUT BRAND", href: "/about/brand" },
   { label: "FOUNDER", href: "/about/founder" },
   { label: "CONTACT US", href: "/contact" },
+];
+
+const NAV_LINKS_SHORT = [
+  { label: "HOME", href: "/" },
+  { label: "SHOP", href: "/shop" },
+  { label: "COLLECTIONS", href: "/collections" },
+  { label: "STYLING", href: "/faq" },
+  { label: "EVENTS", href: "/events" },
+  { label: "ABOUT", href: "/about/brand" },
+  { label: "FOUNDER", href: "/about/founder" },
+  { label: "CONTACT", href: "/contact" },
 ];
 
 type HeaderProps = {
@@ -127,12 +138,12 @@ export function Header({
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-8">
-          {NAV_LINKS.map((link) => (
+        <nav className="hidden lg:flex items-center gap-5 xl:gap-7">
+          {NAV_LINKS_SHORT.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className="text-sm font-medium text-ivory/80 hover:text-gold transition-colors tracking-widest"
+              className="text-xs font-medium text-ivory/80 hover:text-gold transition-colors tracking-widest whitespace-nowrap"
             >
               {link.label}
             </Link>
