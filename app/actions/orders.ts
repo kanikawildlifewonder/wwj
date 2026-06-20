@@ -199,6 +199,7 @@ export async function getDashboardStats() {
         recentOrders: recentDbOrders.map(o => ({
           id: o.id,
           customerName: o.customerName,
+          customerEmail: o.customerEmail,
           totalAmount: o.totalAmount,
           status: o.status,
           createdAt: o.createdAt.toISOString()
