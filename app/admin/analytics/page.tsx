@@ -247,9 +247,10 @@ export default function AdminAnalyticsPage() {
                   outerRadius={90}
                   dataKey="value"
                   nameKey="name"
-                  label={({ name, percent }) =>
-                    `${name.length > 12 ? name.slice(0, 11) + "…" : name} ${Math.round(percent * 100)}%`
-                  }
+                  label={({ name, percent }) => {
+                    const n = name ?? "";
+                    return `${n.length > 12 ? n.slice(0, 11) + "…" : n} ${Math.round((percent ?? 0) * 100)}%`;
+                  }}
                   labelLine={false}
                 >
                   {categoryData.map((_, i) => (
