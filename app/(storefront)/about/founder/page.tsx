@@ -177,13 +177,13 @@ export default async function AboutFounderPage() {
     <div className="bg-cream min-h-screen">
 
       {/* ─── Hero ─── */}
-      <section className="relative h-[50vh] min-h-[340px] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[50vh] min-h-85 flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0 opacity-30 bg-cover bg-center"
             style={{ backgroundImage: `url('${d.heroImage}')` }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-jungle via-jungle/70 to-jungle/30" />
+          <div className="absolute inset-0 bg-linear-to-t from-jungle via-jungle/70 to-jungle/30" />
         </div>
         <div className="relative z-10 text-center px-6 max-w-3xl mx-auto mt-16">
           <p className="text-gold text-xs tracking-[0.3em] uppercase font-bold mb-4">The Woman Behind WWJ</p>
@@ -202,8 +202,8 @@ export default async function AboutFounderPage() {
             {/* Photo */}
             <div className="lg:col-span-5 relative lg:sticky lg:top-28">
               <div className="relative w-full max-w-sm mx-auto">
-                <div className="absolute -inset-3 rounded-[40%_60%_60%_40%_/_40%_40%_60%_60%] border-2 border-gold/30" />
-                <div className="relative aspect-[4/5] rounded-[40%_60%_60%_40%_/_40%_40%_60%_60%] overflow-hidden border-4 border-ivory shadow-2xl">
+                <div className="absolute -inset-3 rounded-[40%_60%_60%_40%/40%_40%_60%_60%] border-2 border-gold/30" />
+                <div className="relative aspect-4/5 rounded-[40%_60%_60%_40%/40%_40%_60%_60%] overflow-hidden border-4 border-ivory shadow-2xl">
                   <div
                     className="absolute inset-0 bg-cover bg-center"
                     style={{ backgroundImage: `url('${d.founderImage}')` }}
@@ -329,7 +329,7 @@ export default async function AboutFounderPage() {
           <div className="text-center mb-12">
             <p className="text-gold text-xs tracking-[0.3em] uppercase font-bold mb-3">Words to Live By</p>
             <h2 className="font-display text-3xl md:text-4xl text-jungle">The Principles Behind Every Piece</h2>
-            <div className="w-12 h-[1px] bg-gold/50 mx-auto mt-4" />
+            <div className="w-12 h-px bg-gold/50 mx-auto mt-4" />
           </div>
 
           {parsed.coreValues.length > 0 ? (
@@ -344,7 +344,7 @@ export default async function AboutFounderPage() {
                 }
                 return (
                   <div key={i} className="flex gap-4 p-5 bg-ivory rounded-xl border border-jungle/5 hover:border-gold/20 hover:shadow-md transition-all duration-300">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-jungle flex items-center justify-center">
+                    <div className="shrink-0 w-8 h-8 rounded-full bg-jungle flex items-center justify-center">
                       <Star className="w-3.5 h-3.5 text-gold fill-gold" />
                     </div>
                     <div>
@@ -375,7 +375,7 @@ export default async function AboutFounderPage() {
                 },
               ].map((v, i) => (
                 <div key={i} className="flex gap-5 p-5 bg-ivory rounded-xl border border-jungle/5 hover:border-gold/20 transition-colors">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-jungle flex items-center justify-center">
+                  <div className="shrink-0 w-10 h-10 rounded-full bg-jungle flex items-center justify-center">
                     <Star className="w-4 h-4 text-gold fill-gold" />
                   </div>
                   <div>

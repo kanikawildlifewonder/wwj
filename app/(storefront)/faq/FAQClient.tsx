@@ -68,11 +68,11 @@ export default function FAQClient() {
         {/* Header */}
         <div className="text-center mb-16">
           <div className="flex items-center justify-center gap-3 mb-2">
-            <span className="w-12 h-[1px] bg-gold/40" />
+            <span className="w-12 h-px bg-gold/40" />
             <span className="text-gold text-xs tracking-widest uppercase font-bold flex items-center gap-1.5">
               <HelpCircle className="w-3.5 h-3.5" /> Support
             </span>
-            <span className="w-12 h-[1px] bg-gold/40" />
+            <span className="w-12 h-px bg-gold/40" />
           </div>
           <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-jungle mb-4">Frequently Asked Questions</h1>
           <p className="text-jungle/60 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
@@ -104,7 +104,7 @@ export default function FAQClient() {
                           {faq.q}
                         </h3>
                         <ChevronDown 
-                          className={`w-4 h-4 text-jungle/50 flex-shrink-0 transition-transform duration-300 ${
+                          className={`w-4 h-4 text-jungle/50 shrink-0 transition-transform duration-300 ${
                             isExpanded ? "rotate-180 text-gold" : "group-hover:text-gold"
                           }`} 
                         />

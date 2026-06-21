@@ -217,13 +217,13 @@ export default async function AboutBrandPage() {
     <div className="bg-cream min-h-screen">
 
       {/* ─── Hero ─── */}
-      <section className="relative h-[55vh] min-h-[380px] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[55vh] min-h-95 flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0 opacity-40 bg-cover bg-center"
             style={{ backgroundImage: `url('${d.heroImage}')` }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-jungle via-jungle/60 to-jungle/20" />
+          <div className="absolute inset-0 bg-linear-to-t from-jungle via-jungle/60 to-jungle/20" />
         </div>
         <div className="relative z-10 text-center px-6 max-w-3xl mx-auto mt-16">
           <p className="text-gold text-xs tracking-[0.3em] uppercase font-bold mb-4">About the Brand</p>
@@ -279,12 +279,12 @@ export default async function AboutBrandPage() {
               </div>
             </div>
             
-            <div className="lg:col-span-5 relative h-[300px] sm:h-[400px] lg:h-[480px] w-full rounded-2xl overflow-hidden shadow-2xl border-4 border-ivory/30 lg:sticky lg:top-28">
+            <div className="lg:col-span-5 relative h-75 sm:h-100 lg:h-120 w-full rounded-2xl overflow-hidden shadow-2xl border-4 border-ivory/30 lg:sticky lg:top-28">
               <div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{ backgroundImage: `url('${d.missionImage}')` }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-jungle/40 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-jungle/40 to-transparent" />
             </div>
           </div>
         </div>
@@ -297,7 +297,7 @@ export default async function AboutBrandPage() {
             <div className="text-center mb-16">
               <span className="text-gold text-xs tracking-[0.3em] uppercase font-bold mb-3 block">Artisan Crafts</span>
               <h2 className="font-display text-3xl md:text-4xl text-jungle">What We Create</h2>
-              <div className="w-12 h-[1px] bg-gold/50 mx-auto mt-4" />
+              <div className="w-12 h-px bg-gold/50 mx-auto mt-4" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {parsed.creationItems.map((item, i) => (
@@ -305,7 +305,7 @@ export default async function AboutBrandPage() {
                   key={i} 
                   className="bg-cream/20 border border-jungle/10 rounded-2xl p-6 hover:border-gold/40 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex gap-4"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center shrink-0 mt-0.5">
                     <Sparkles className="w-4 h-4 text-gold" />
                   </div>
                   <div className="space-y-1.5">
@@ -325,7 +325,7 @@ export default async function AboutBrandPage() {
           <div className="text-center mb-16">
             <p className="text-gold text-xs tracking-[0.3em] uppercase font-bold mb-3">What We Stand For</p>
             <h2 className="font-display text-3xl md:text-4xl text-ivory">Our Philosophy</h2>
-            <div className="w-12 h-[1px] bg-gold/30 mx-auto mt-4" />
+            <div className="w-12 h-px bg-gold/30 mx-auto mt-4" />
           </div>
 
           {parsed.coreValues.length > 0 ? (

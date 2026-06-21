@@ -14,7 +14,7 @@ export default function ImpactPage() {
   return (
     <div className="bg-cream min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[40vh] sm:h-[45vh] md:h-[50vh] min-h-[300px] sm:min-h-[400px] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[40vh] sm:h-[45vh] md:h-[50vh] min-h-75 sm:min-h-100 flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-jungle z-0">
           <div 
             className="absolute inset-0 opacity-50 bg-cover bg-center"

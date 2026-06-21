@@ -93,7 +93,7 @@ export default function AdminLayoutClient({
                     : "text-ivory/80 hover:text-ivory hover:bg-ivory/5"
                 }`}
               >
-                <Icon className={`w-4 h-4 transition-colors flex-shrink-0 ${
+                <Icon className={`w-4 h-4 transition-colors shrink-0 ${
                   isActive ? "text-gold" : "text-gold/70 group-hover:text-gold"
                 }`} />
                 <span>{label}</span>
