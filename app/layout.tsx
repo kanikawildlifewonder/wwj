@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
 import { DynamicFavicon } from "@/components/layout/DynamicFavicon";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -86,6 +87,7 @@ export default function RootLayout({
           <DynamicFavicon />
           <Toaster richColors position="top-center" />
           {children}
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
