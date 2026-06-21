@@ -189,7 +189,7 @@ export default function AdminDashboardOverview() {
               <span>Weekly Trend</span>
             </div>
           </div>
-          <div className="h-[300px] w-full">
+          <div className="h-75 w-full">
             {stats.totalRevenue === 0 ? (
               <div className="w-full h-full flex items-center justify-center bg-cream/20 rounded border border-dashed border-border text-xs text-jungle/40">
                 No revenue recorded in the last 7 days.
@@ -269,7 +269,7 @@ export default function AdminDashboardOverview() {
                         })}
                       </p>
                     </div>
-                    <div className="text-right flex-shrink-0">
+                    <div className="text-right shrink-0">
                       <p className="text-sm font-bold text-jungle">
                         {formatINR(order.totalAmount)}
                       </p>
@@ -330,7 +330,7 @@ export default function AdminDashboardOverview() {
                 href={`/admin/products/${p.id}/edit`}
                 className="flex items-center gap-2 p-2.5 rounded-lg border border-amber-100 bg-amber-50/50 hover:bg-amber-50 hover:border-amber-200 transition-colors group"
               >
-                <div className="w-2 h-2 rounded-full bg-red-400 flex-shrink-0" />
+                <div className="w-2 h-2 rounded-full bg-red-400 shrink-0" />
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-jungle truncate group-hover:text-gold transition-colors">
                     {p.name}

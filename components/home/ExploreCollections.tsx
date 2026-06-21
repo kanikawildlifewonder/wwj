@@ -106,19 +106,19 @@ export function ExploreCollections({
 
         <div className="text-center mb-12 flex flex-col items-center">
           <div className="flex items-center gap-4 mb-4">
-            <span className="w-8 h-[1px] bg-gold/50" />
+            <span className="w-8 h-px bg-gold/50" />
             <span className="text-gold text-xs tracking-[0.2em] uppercase font-bold">
               <Sparkles className="w-3 h-3 inline-block mr-2" />
               Explore Our Collections
             </span>
-            <span className="w-8 h-[1px] bg-gold/50" />
+            <span className="w-8 h-px bg-gold/50" />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {merged.map((col, idx) => {
             return (
-              <div key={idx} className="group relative rounded-card overflow-hidden border border-border bg-forest h-[350px] sm:h-[400px] md:h-[450px] flex flex-col justify-between">
+              <div key={idx} className="group relative rounded-card overflow-hidden border border-border bg-forest h-87.5 sm:h-100 md:h-112.5 flex flex-col justify-between">
 
                 {/* Background Image */}
                 <Image
@@ -129,7 +129,7 @@ export function ExploreCollections({
                   className="object-cover transition-all duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 z-0 bg-gradient-to-b from-jungle/80 via-transparent to-jungle/90 group-hover:opacity-70 transition-opacity duration-700" />
+                <div className="absolute inset-0 z-0 bg-linear-to-b from-jungle/80 via-transparent to-jungle/90 group-hover:opacity-70 transition-opacity duration-700" />
 
                 {/* Top Content */}
                 <div className="relative z-10 p-5 sm:p-8 flex flex-col items-start">
@@ -145,7 +145,7 @@ export function ExploreCollections({
                 </div>
 
                 {/* Bottom Sub-links (dynamic from categories) */}
-                <div className="relative z-10 p-4 sm:p-6 pt-0 mt-auto flex flex-wrap justify-center gap-4 sm:gap-6 border-t border-border/30 w-full pt-4 opacity-80 group-hover:opacity-100 transition-opacity">
+                <div className="relative z-10 p-4 sm:p-6 mt-auto flex flex-wrap justify-center gap-4 sm:gap-6 border-t border-border/30 w-full opacity-80 group-hover:opacity-100 transition-opacity">
                   {col.subLinks.map((sub, sidx) => {
                     const Icon = ICON_MAP[sub.icon] ?? Sparkles;
                     return (

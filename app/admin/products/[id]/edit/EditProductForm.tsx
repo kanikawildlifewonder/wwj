@@ -277,7 +277,7 @@ export default function EditProductForm({ product }: { product: EditableProduct 
                   placeholder="Describe the product details..."
                   value={formData.description} 
                   onChange={e => setFormData({ ...formData, description: e.target.value })} 
-                  className="w-full px-4 py-2.5 border border-border rounded-xl resize-none text-jungle bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all min-h-[120px]"
+                  className="w-full px-4 py-2.5 border border-border rounded-xl resize-none text-jungle bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all min-h-30"
                 />
               </div>
             </div>
@@ -354,9 +354,9 @@ export default function EditProductForm({ product }: { product: EditableProduct 
                   <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-border border-dashed rounded-xl cursor-pointer bg-cream/30 hover:bg-cream/50 transition-colors relative overflow-hidden">
                     <div className="flex flex-col items-center justify-center text-jungle/50">
                       <p className="text-sm font-medium">Upload Video (MP4, WebM)</p>
-                      <p className="text-xs mt-1 max-w-[200px] text-center">Max 100MB</p>
+                      <p className="text-xs mt-1 max-w-50 text-center">Max 100MB</p>
                     </div>
-                    <input type="file" className="hidden" accept="video/mp4, video/webm" onChange={handleVideoChange} />
+                    <input type="file" className="hidden" accept="image/*,video/*" onChange={handleVideoChange} />
                   </label>
                 )}
               </div>
@@ -457,7 +457,7 @@ export default function EditProductForm({ product }: { product: EditableProduct 
                   checked={formData.inStock}
                   onChange={e => setFormData({ ...formData, inStock: e.target.checked })}
                 />
-                <div className="relative w-11 h-6 bg-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                <div className="relative w-11 h-6 bg-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:inset-s-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
               </label>
 
               <label className="flex items-center justify-between cursor-pointer p-3 rounded-xl border border-border hover:bg-cream/50 transition-colors">
@@ -471,7 +471,7 @@ export default function EditProductForm({ product }: { product: EditableProduct 
                   checked={formData.featured}
                   onChange={e => setFormData({ ...formData, featured: e.target.checked })}
                 />
-                <div className="relative w-11 h-6 bg-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold"></div>
+                <div className="relative w-11 h-6 bg-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:inset-s-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold"></div>
               </label>
             </div>
           </div>

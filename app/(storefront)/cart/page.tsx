@@ -63,7 +63,7 @@ export default function CartPage() {
             <div className="lg:col-span-2 space-y-6">
               {items.map((item) => (
                 <div key={item.product.id} className="flex gap-5 p-5 bg-ivory rounded-xl border border-jungle/10 shadow-sm">
-                  <Link href={`/products/${item.product.slug}`} className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-cream">
+                  <Link href={`/products/${item.product.slug}`} className="w-24 h-24 rounded-lg overflow-hidden shrink-0 bg-cream">
                     <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${item.product.images[0]})` }} />
                   </Link>
                   <div className="flex-1 min-w-0">
@@ -88,7 +88,7 @@ export default function CartPage() {
 
               {/* Coupon */}
               <div className="p-5 bg-ivory rounded-xl border border-jungle/10 flex gap-3">
-                <Tag className="w-5 h-5 text-gold flex-shrink-0 mt-1" />
+                <Tag className="w-5 h-5 text-gold shrink-0 mt-1" />
                 <div className="flex-1">
                   <p className="text-sm font-bold text-jungle mb-3">Have a coupon code?</p>
                   <div className="flex gap-2">

@@ -83,6 +83,8 @@ export default async function CollectionPage({ params, searchParams }: PageProps
     });
   }
 
+
+ 
   // Group products into sections based on slug
   interface SectionGroup {
     title: string;
@@ -193,7 +195,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
   return (
     <div className="bg-ivory min-h-screen">
       {/* Hero */}
-      <div className="w-full relative aspect-[16/9] overflow-hidden bg-ivory">
+      <div className="w-full relative aspect-video overflow-hidden bg-ivory">
         {COLLECTION_IMAGES[slug] ? (
           <Image
             src={COLLECTION_IMAGES[slug]}
@@ -203,11 +205,21 @@ export default async function CollectionPage({ params, searchParams }: PageProps
             className="object-cover"
           />
         ) : null}
-        <div className="absolute inset-0 bg-gradient-to-t from-jungle/10 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-linear-to-t from-jungle/10 to-transparent pointer-events-none" />
       </div>
 
       {/* Products */}
       <div className="container mx-auto px-4 lg:px-8 py-16">
+        {/* Header Bar */}
+        <div className="flex items-center justify-between mb-8 border-b border-jungle/10 pb-6">
+          <h1 className="font-display text-xl sm:text-2xl text-jungle font-semibold">{collectionName}</h1>
+          <p className="text-sm text-jungle/60">
+            Showing <span className="font-bold text-jungle">{rawProducts.length}</span> pieces
+          </p>
+        </div>
+
+
+
         {categoryQuery && (
           <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-gold/10 border border-gold/20 rounded-card p-4 mb-8 gap-4">
             <p className="text-sm text-jungle">
@@ -215,16 +227,12 @@ export default async function CollectionPage({ params, searchParams }: PageProps
             </p>
             <Link
               href={`/collections/${slug}`}
-              className="inline-block text-center text-xs font-bold text-jungle hover:text-gold uppercase tracking-widest border border-jungle/20 px-4 py-2 hover:border-gold hover:bg-jungle hover:text-ivory transition-all rounded-btn"
+              className="inline-block text-center text-xs font-bold text-jungle uppercase tracking-widest border border-jungle/20 px-4 py-2 hover:border-gold hover:bg-jungle hover:text-ivory transition-all rounded-btn"
             >
               Clear Filter / Show All
             </Link>
           </div>
         )}
-
-        <p className="text-sm text-jungle/50 mb-8">
-          Showing <span className="font-bold text-jungle">{rawProducts.length}</span> pieces in this collection
-        </p>
 
         {rawProducts.length === 0 ? (
           <div className="text-center py-24">
@@ -246,7 +254,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
               <div key={idx} className="space-y-6">
                 <div className="flex items-center gap-4">
                   <h2 className="font-display text-2xl text-jungle tracking-wide whitespace-nowrap">{section.title}</h2>
-                  <span className="w-full h-[1px] bg-gold/30" />
+                  <span className="w-full h-px bg-gold/30" />
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
                   {section.products.map((p) => (

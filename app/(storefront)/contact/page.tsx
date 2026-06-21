@@ -150,32 +150,32 @@ export default function ContactPage() {
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm text-jungle/70 mb-1">Name</label>
+                      <label className="block text-xs font-semibold text-jungle/60 uppercase tracking-wider mb-1">Name</label>
                       <input 
                         {...register("name", { required: "Name is required" })}
-                        className="w-full border border-border px-4 py-3 rounded-btn bg-cream focus:outline-none focus:border-gold"
+                        className="w-full premium-input px-4 py-3 rounded-btn bg-cream text-jungle text-sm focus:outline-none"
                       />
                       {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
                     </div>
                     <div>
-                      <label className="block text-sm text-jungle/70 mb-1">Email</label>
+                      <label className="block text-xs font-semibold text-jungle/60 uppercase tracking-wider mb-1">Email</label>
                       <input 
                         type="email"
                         {...register("email", { 
                           required: "Email is required",
                           pattern: { value: /^\S+@\S+$/i, message: "Invalid email" }
                         })}
-                        className="w-full border border-border px-4 py-3 rounded-btn bg-cream focus:outline-none focus:border-gold"
+                        className="w-full premium-input px-4 py-3 rounded-btn bg-cream text-jungle text-sm focus:outline-none"
                       />
                       {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm text-jungle/70 mb-1">Subject</label>
+                    <label className="block text-xs font-semibold text-jungle/60 uppercase tracking-wider mb-1">Subject</label>
                     <select 
                       {...register("subject", { required: "Please select a subject" })}
-                      className="w-full border border-border px-4 py-3 rounded-btn bg-cream focus:outline-none focus:border-gold"
+                      className="w-full premium-input px-4 py-3 rounded-btn bg-cream text-jungle text-sm focus:outline-none cursor-pointer"
                     >
                       <option value="">Select a topic...</option>
                       <option value="order">Order Inquiry</option>
@@ -188,11 +188,11 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm text-jungle/70 mb-1">Message</label>
+                    <label className="block text-xs font-semibold text-jungle/60 uppercase tracking-wider mb-1">Message</label>
                     <textarea 
                       {...register("message", { required: "Message is required" })}
                       rows={5}
-                      className="w-full border border-border px-4 py-3 rounded-btn bg-cream focus:outline-none focus:border-gold resize-y"
+                      className="w-full premium-input px-4 py-3 rounded-btn bg-cream text-jungle text-sm focus:outline-none resize-y"
                     ></textarea>
                     {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message.message}</p>}
                   </div>
@@ -200,7 +200,7 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-jungle text-gold py-4 rounded-btn font-bold tracking-widest uppercase hover:bg-charcoal transition-colors disabled:opacity-70 flex items-center justify-center gap-2"
+                    className="w-full bg-jungle hover-shimmer text-gold py-4 rounded-btn font-bold tracking-widest uppercase transition-all disabled:opacity-70 flex items-center justify-center gap-2 shadow-lg hover:shadow-gold/5 active:scale-[0.99]"
                   >
                     {isSubmitting ? "Sending..." : "Send Message"}
                     {!isSubmitting && <Send className="w-4 h-4" />}

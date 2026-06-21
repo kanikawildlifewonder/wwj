@@ -34,7 +34,7 @@ export function WhatsAppWidget() {
     <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 font-sans">
       {/* Tooltip Badge */}
       <div
-        className={`bg-white text-jungle border border-jungle/10 px-4 py-2 rounded-xl shadow-xl text-xs font-semibold tracking-wide transition-all duration-500 transform ${
+        className={`bg-jungle text-gold border border-gold/30 px-4 py-2 rounded-xl shadow-xl text-xs font-semibold tracking-wide transition-all duration-500 transform ${
           showTooltip
             ? "opacity-100 translate-x-0 scale-100"
             : "opacity-0 translate-x-4 scale-95 pointer-events-none"
@@ -42,7 +42,7 @@ export function WhatsAppWidget() {
       >
         <div className="relative">
           Chat with us!
-          <div className="absolute right-[-20px] top-1/2 -translate-y-1/2 w-2 h-2 bg-white border-r border-b border-jungle/10 rotate-[-45deg]" />
+          <div className="absolute right-[-20px] top-1/2 -translate-y-1/2 w-2 h-2 bg-jungle border-r border-b border-gold/30 rotate-[-45deg]" />
         </div>
       </div>
 
@@ -53,11 +53,11 @@ export function WhatsAppWidget() {
         rel="noopener noreferrer"
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
-        className="group relative flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] text-white shadow-2xl hover:bg-[#20ba5a] transition-all duration-300 transform hover:scale-110 hover:rotate-6 active:scale-95"
+        className="group relative flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] text-white shadow-lg shadow-gold/20 border-2 border-gold/40 hover:border-gold hover:bg-[#20ba5a] transition-all duration-300 transform hover:scale-110 hover:rotate-6 active:scale-95"
         aria-label="Chat on WhatsApp"
       >
         {/* Pulsing Outer Rings */}
-        <span className="absolute -inset-1 rounded-full bg-[#25D366]/30 animate-ping opacity-75 group-hover:opacity-0 transition-opacity duration-300" />
+        <span className="absolute -inset-1 rounded-full bg-gold/20 animate-ping opacity-75 group-hover:opacity-0 transition-opacity duration-300" />
         <span className="absolute -inset-2 rounded-full bg-[#25D366]/10 animate-pulse" />
 
         {/* Custom SVG WhatsApp Icon */}

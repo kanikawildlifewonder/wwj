@@ -2,10 +2,9 @@
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { Star, ChevronLeft, ChevronRight } from "lucide-react";
-import { formatINR } from "@/lib/utils/currency";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { mapDbProductToUI } from "@/lib/utils/product-mapper";
+import { ProductCard } from "@/components/shop/ProductCard";
 
 type Product = {
   id: string;
@@ -112,51 +111,14 @@ export function BestsellersCarouselClient({ products }: { products: Product[] })
             featured: product.featured ?? undefined,
             mainCategory: product.mainCategory ?? undefined,
           });
-          return (
-            <Link
-              key={product.id}
-              href={`/products/${product.id}`}
-              className="min-w-[200px] sm:min-w-[260px] max-w-[280px] flex-none snap-start group/card bg-forest/30 hover:bg-forest/65 border border-gold/10 hover:border-gold/40 rounded-2xl p-2.5 sm:p-3 shadow-xs hover:shadow-lg hover:shadow-gold/5 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full"
-            >
-              <div className="relative aspect-square rounded-xl overflow-hidden bg-forest mb-3.5 border border-gold/5 flex-shrink-0">
-                <div className="absolute top-3 left-3 z-10 bg-gold/90 backdrop-blur px-2 py-0.5 text-[9px] font-bold tracking-widest text-jungle rounded">
-                  BESTSELLER
-                </div>
-                <Image
-                  src={product.images[0] ?? "/images/products/placeholder.png"}
-                  alt={product.name}
-                  fill
-                  sizes="(max-width: 640px) 200px, 260px"
-                  className="object-cover transition-transform duration-700 group-hover/card:scale-105"
-                  loading="lazy"
-                />
+            return (
+              <div
+                key={product.id}
+                className="min-w-[200px] sm:min-w-[260px] max-w-[280px] flex-none snap-start"
+              >
+                <ProductCard product={uiProduct} theme="dark" />
               </div>
-
-              <div className="flex flex-col gap-1.5 px-1 flex-1 justify-between">
-                <div className="space-y-1">
-                  <p className="text-[10px] text-gold/70 uppercase tracking-widest font-semibold">
-                    {uiProduct.animalInspiration} / {uiProduct.category}
-                  </p>
-                  <h3 className="font-sans font-medium text-sm text-ivory leading-tight group-hover/card:text-gold transition-colors line-clamp-2">
-                    {product.name}
-                  </h3>
-                </div>
-
-                <div className="space-y-2 mt-auto pt-2.5 border-t border-gold/10">
-                  <div className="flex items-center gap-1">
-                    <div className="flex text-gold">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star key={star} className="w-3 h-3 fill-current" />
-                      ))}
-                    </div>
-                  </div>
-                  <div className="font-sans font-bold text-sm text-gold">
-                    {formatINR(product.price)}
-                  </div>
-                </div>
-              </div>
-            </Link>
-          );
+            );
         })}
       </div>
     </div>

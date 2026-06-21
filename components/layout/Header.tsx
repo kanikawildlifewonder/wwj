@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Search, ShoppingBag, Menu, X, Heart, User, LayoutDashboard } from "lucide-react";
 import { UserButton, SignInButton, Show, useUser } from "@clerk/nextjs";
 import { useHydrated } from "@/lib/hooks/useHydrated";
@@ -14,7 +14,8 @@ const NAV_LINKS = [
   { label: "HOME", href: "/" },
   { label: "SHOP", href: "/shop" },
   { label: "COLLECTIONS", href: "/collections" },
-  { label: "STYLING TIPS", href: "/faq" },
+  { label: "LOOKBOOK", href: "/lookbook" },
+  { label: "WELFARE & AWARENESS", href: "/welfare" },
   { label: "EVENTS & COLLABS", href: "/events" },
   { label: "ABOUT BRAND", href: "/about/brand" },
   { label: "FOUNDER", href: "/about/founder" },
@@ -25,7 +26,8 @@ const NAV_LINKS_SHORT = [
   { label: "HOME", href: "/" },
   { label: "SHOP", href: "/shop" },
   { label: "COLLECTIONS", href: "/collections" },
-  { label: "STYLING", href: "/faq" },
+  { label: "LOOKBOOK", href: "/lookbook" },
+  { label: "WELFARE & AWARENESS", href: "/welfare" },
   { label: "EVENTS", href: "/events" },
   { label: "ABOUT", href: "/about/brand" },
   { label: "FOUNDER", href: "/about/founder" },
@@ -48,6 +50,7 @@ export function Header({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
+  const pathname = usePathname() || "";
   const { openCart, totalItems } = useCartStore();
   const { items: wishlistItems } = useWishlistStore();
   const isHydrated = useHydrated();
@@ -55,6 +58,11 @@ export function Header({
   const isAdmin = isHydrated && user?.publicMetadata?.role === "admin";
   const cartCount = totalItems();
   const wishlistCount = wishlistItems.length;
+
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,15 +85,17 @@ export function Header({
         "sticky top-0 z-50 w-full transition-all duration-300 border-b",
         isScrolled
           ? "bg-jungle/95 backdrop-blur-md border-border shadow-lg"
-          : "bg-jungle border-transparent"
+          : pathname === "/welfare"
+            ? "bg-transparent border-transparent"
+            : "bg-jungle border-transparent"
       )}
     >
       <div
         className={cn(
           "container mx-auto px-3 sm:px-4 lg:px-8 flex items-center justify-between transition-all duration-300",
           isScrolled
-            ? "h-[60px] md:h-[70px]"
-            : "h-[80px] md:h-[120px] lg:h-[140px]"
+            ? "h-15 md:h-17.5"
+            : "h-20 md:h-30 lg:h-35"
         )}
       >
 
@@ -104,7 +114,7 @@ export function Header({
             <div
               className={cn(
                 "w-auto flex items-center justify-center transition-all duration-300",
-                isScrolled ? "h-[44px] md:h-[54px]" : "h-[56px] md:h-[90px] lg:h-[120px]"
+                isScrolled ? "h-11 md:h-13.5" : "h-14 md:h-22.5 lg:h-30"
               )}
             >
               <Image
@@ -114,7 +124,7 @@ export function Header({
                 height={512}
                 className={cn(
                   "w-auto object-contain group-hover:opacity-90 transition-all duration-300",
-                  isScrolled ? "h-[44px] md:h-[54px]" : "h-[56px] md:h-[90px] lg:h-[120px]"
+                  isScrolled ? "h-11 md:h-13.5" : "h-14 md:h-22.5 lg:h-30"
                 )}
                 unoptimized
               />
@@ -122,7 +132,7 @@ export function Header({
           ) : (
             <>
               <span className={cn(
-                "font-display font-bold text-ivory tracking-widest group-hover:text-gold transition-colors transition-all duration-300",
+                "font-display font-bold text-ivory tracking-widest group-hover:text-gold transition-all duration-300",
                 isScrolled ? "text-xl md:text-2xl" : "text-3xl md:text-4xl lg:text-5xl"
               )}>
                 {logoText}
@@ -139,19 +149,30 @@ export function Header({
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-5 xl:gap-7">
-          {NAV_LINKS_SHORT.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className="text-xs font-medium text-ivory/80 hover:text-gold transition-colors tracking-widest whitespace-nowrap"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {NAV_LINKS_SHORT.map((link) => {
+            const active = isActive(link.href);
+            return (
+              <Link
+                key={link.label}
+                href={link.href}
+                className={cn(
+                  "text-xs font-medium tracking-widest whitespace-nowrap transition-colors nav-link-underline pb-1",
+                  active ? "text-gold active font-semibold" : "text-ivory/80 hover:text-gold"
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
           {isAdmin && (
             <Link
               href="/admin"
-              className="text-xs font-bold text-gold/80 hover:text-gold transition-colors tracking-widest border border-gold/30 hover:border-gold px-2.5 py-1 rounded-full"
+              className={cn(
+                "text-xs font-bold tracking-widest border px-2.5 py-1 rounded-full transition-colors",
+                pathname.startsWith("/admin")
+                  ? "bg-gold text-jungle border-gold"
+                  : "text-gold/80 hover:text-gold border-gold/30 hover:border-gold"
+              )}
             >
               ADMIN
             </Link>
@@ -208,7 +229,7 @@ export function Header({
               <Link
                 href="/admin"
                 aria-label="Admin Dashboard"
-                className="hidden sm:flex items-center gap-1 hover:text-gold transition-colors p-1 text-gold/70 hover:text-gold"
+                className="hidden sm:flex items-center gap-1 hover:text-gold transition-colors p-1 text-gold/70"
                 title="Admin Dashboard"
               >
                 <LayoutDashboard className="w-4 h-4" />
@@ -255,16 +276,24 @@ export function Header({
         )}
       >
         <div className="overflow-y-auto max-h-[70vh]">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className="px-6 py-3.5 text-sm font-medium text-ivory/80 hover:text-gold hover:bg-forest/50 transition-colors tracking-widest block"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const active = isActive(link.href);
+            return (
+              <Link
+                key={link.label}
+                href={link.href}
+                className={cn(
+                  "py-3.5 text-sm font-medium transition-all tracking-widest block border-l-2",
+                  active
+                    ? "text-gold bg-forest/40 border-gold pl-6 font-semibold"
+                    : "text-ivory/80 hover:text-gold hover:bg-forest/20 border-transparent pl-6"
+                )}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
 
           {/* Mobile-only: Wishlist, Account & Admin links */}
           <div className="border-t border-border mt-2 pt-2 px-6 pb-2 flex items-center gap-6 flex-wrap">

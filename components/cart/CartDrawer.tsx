@@ -21,7 +21,7 @@ export function CartDrawer({ threshold = 1499 }: { threshold?: number }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm"
+            className="fixed inset-0 bg-black/60 z-100 backdrop-blur-sm"
             onClick={closeCart}
           />
 
@@ -32,7 +32,7 @@ export function CartDrawer({ threshold = 1499 }: { threshold?: number }) {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed top-0 right-0 h-full w-full sm:max-w-[420px] bg-jungle border-l border-border z-[101] flex flex-col"
+            className="fixed top-0 right-0 h-full w-full sm:max-w-105 bg-jungle border-l border-border z-101 flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-5 border-b border-border">
@@ -77,7 +77,7 @@ export function CartDrawer({ threshold = 1499 }: { threshold?: number }) {
                       transition={{ duration: 0.2 }}
                       className="flex gap-4 pb-6 border-b border-border last:border-0"
                     >
-                      <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-forest">
+                      <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-forest">
                         <div
                           className="w-full h-full bg-cover bg-center"
                           style={{ backgroundImage: `url(${item.product.images[0]})` }}

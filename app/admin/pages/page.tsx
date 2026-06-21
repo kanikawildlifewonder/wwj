@@ -2,16 +2,16 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { updatePageContent, getPageContent } from "@/app/actions/content";
-import { uploadImage } from "@/app/actions/upload";
+import { uploadImage, uploadPdf } from "@/app/actions/upload";
 import { toast } from "sonner";
 import {
   Save, FileText, Image as ImageIcon, Home, Megaphone,
-  Layout, RefreshCw, CheckCircle, Upload, X, Eye,
+  Layout, RefreshCw, CheckCircle, Upload, X, Eye, FileDown,
 } from "lucide-react";
 
 /* ─────────────────────── types ──────────────────────── */
 type CollectionSlot = { title: string; description: string; image: string };
-type Section = "hero" | "collections" | "about" | "announcement" | "aboutBrand" | "aboutFounder";
+type Section = "hero" | "collections" | "about" | "announcement" | "aboutBrand" | "aboutFounder" | "catalogPdf" | "footerSocials";
 
 const DEFAULT_COLLECTIONS: CollectionSlot[] = [
   { title: "WWJ JEWELLERY",       description: "Handcrafted animal-inspired fashion pieces.", image: "/images/products/peacock_necklace.png" },
@@ -32,7 +32,7 @@ function SectionCard({ icon: Icon, label, description, active, onClick }: {
           : "bg-white border-border text-jungle hover:border-gold/40 hover:bg-cream/40"
       }`}
     >
-      <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${active ? "bg-gold/20" : "bg-cream"}`}>
+      <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${active ? "bg-gold/20" : "bg-cream"}`}>
         <Icon className={`w-4 h-4 ${active ? "text-gold" : "text-jungle/60"}`} />
       </div>
       <div>
@@ -144,6 +144,126 @@ function ImageUploader({ value, onChange, label }: { value: string; onChange: (u
   );
 }
 
+/* ─────────────────────── pdf uploader ─────────────────── */
+function PdfUploader({ value, onChange, label, fileName, onFileNameChange }: {
+  value: string;
+  onChange: (url: string) => void;
+  label: string;
+  fileName: string;
+  onFileNameChange: (name: string) => void;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [urlInput, setUrlInput] = useState("");
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await uploadPdf(fd);
+    setUploading(false);
+    if (res.success && res.url) {
+      onChange(res.url);
+      onFileNameChange(file.name);
+      toast.success("PDF uploaded successfully!");
+    } else {
+      toast.error(res.error ?? "Upload failed");
+    }
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  const applyUrl = () => {
+    if (urlInput.trim()) {
+      onChange(urlInput.trim());
+      const inferredName = urlInput.split("/").pop() || "Catalog PDF";
+      onFileNameChange(inferredName);
+      setUrlInput("");
+    }
+  };
+
+  return (
+    <div className="space-y-3">
+      <label className="block text-xs font-semibold text-jungle/60 uppercase tracking-wider">{label}</label>
+
+      {/* Preview */}
+      <div className="relative w-full p-4 rounded-xl border border-border bg-cream/30 flex flex-col justify-center min-h-25">
+        {value ? (
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded bg-red-100 flex items-center justify-center text-red-600 font-bold text-xs shrink-0">
+              PDF
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-jungle truncate" title={fileName || value}>
+                {fileName || "Lookbook / Catalog PDF"}
+              </p>
+              <a
+                href={value}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-gold hover:underline truncate block"
+              >
+                View PDF File
+              </a>
+            </div>
+            <button
+              onClick={() => {
+                onChange("");
+                onFileNameChange("");
+              }}
+              className="w-7 h-7 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors shadow shrink-0"
+              title="Remove PDF"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-2 text-jungle/30 py-4">
+            <div className="w-10 h-10 rounded bg-cream flex items-center justify-center">
+              <FileDown className="w-5 h-5 text-jungle/40" />
+            </div>
+            <p className="text-xs">No PDF uploaded</p>
+          </div>
+        )}
+      </div>
+
+      {/* Upload button */}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-dashed border-gold/50 text-gold text-xs font-semibold rounded-lg hover:bg-gold/5 transition-colors disabled:opacity-50"
+        >
+          {uploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+          {uploading ? "Uploading PDF…" : "Upload PDF (Max 20MB)"}
+        </button>
+        <input ref={fileRef} type="file" accept="application/pdf" className="hidden" onChange={handleFile} />
+      </div>
+
+      {/* Or paste URL */}
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={urlInput}
+          onChange={(e) => setUrlInput(e.target.value)}
+          placeholder="Or paste PDF URL..."
+          className="flex-1 px-3 py-2 border border-border rounded-lg text-xs text-jungle bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold transition-colors"
+          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyUrl(); } }}
+        />
+        <button
+          type="button"
+          onClick={applyUrl}
+          className="px-3 py-2 bg-jungle text-gold text-xs font-semibold rounded-lg hover:bg-charcoal transition-colors"
+        >
+          Use
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════ MAIN PAGE ═════════════════════════════ */
 export default function AdminPagesCMS() {
   const [activeSection, setActiveSection] = useState<Section>("hero");
@@ -162,9 +282,23 @@ export default function AdminPagesCMS() {
   const [aboutSubtitle,  setAboutSubtitle]  = useState("");
   const [aboutTitle,     setAboutTitle]     = useState("");
   const [aboutParagraph, setAboutParagraph] = useState("");
+  const [aboutImageLeft,   setAboutImageLeft]   = useState("/images/wildlife/peacock.png");
+  const [aboutImageCenter, setAboutImageCenter] = useState("/images/wildlife/deer.png");
+  const [aboutImageRight,  setAboutImageRight]  = useState("/images/collections/accessories_banner.jpg");
 
   // Announcement
   const [announcementText, setAnnouncementText] = useState("FREE SHIPPING ON ORDERS ABOVE ₹1499");
+
+  // Footer & Socials
+  const [instagramUrl, setInstagramUrl] = useState("https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==");
+  const [feeds, setFeeds] = useState<{ src: string; alt: string; href: string }[]>([
+    { src: "/images/wildlife/tiger.png", alt: "Tiger Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
+    { src: "/images/products/peacock_necklace.png", alt: "Peacock Necklace", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
+    { src: "/images/wildlife/deer.png", alt: "Deer Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
+    { src: "/images/products/butterfly_earrings.png", alt: "Butterfly Earrings", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
+    { src: "/images/wildlife/peacock.png", alt: "Peacock Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
+    { src: "/images/products/leopard_pendant.png", alt: "Leopard Pendant", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" }
+  ]);
 
   // About Brand
   const [brandHeroTitle,     setBrandHeroTitle]     = useState("Our Story");
@@ -193,18 +327,25 @@ export default function AdminPagesCMS() {
   const [founderM4Num,       setFounderM4Num]       = useState("15+");
   const [founderM4Label,     setFounderM4Label]     = useState("Artisan Partners");
 
+  // Catalog PDF
+  const [catalogPdfUrl,       setCatalogPdfUrl]       = useState("");
+  const [catalogPdfName,      setCatalogPdfName]      = useState("");
+  const [showCatalogDownload, setShowCatalogDownload] = useState(true);
+
   /* ── load ── */
   useEffect(() => {
     async function load() {
       setIsLoading(true);
       try {
-        const [heroRes, aboutRes, colRes, annRes, brandRes, founderRes] = await Promise.all([
+        const [heroRes, aboutRes, colRes, annRes, brandRes, founderRes, catalogRes, socialRes] = await Promise.all([
           getPageContent("home-hero"),
           getPageContent("home-about"),
           getPageContent("home-collections"),
           getPageContent("announcement-bar"),
           getPageContent("about-brand"),
           getPageContent("about-founder"),
+          getPageContent("shop-catalog"),
+          getPageContent("footer-socials"),
         ]);
 
         if (heroRes) {
@@ -218,6 +359,9 @@ export default function AdminPagesCMS() {
           setAboutSubtitle(c.subtitle ?? "");
           setAboutTitle(c.title ?? "");
           setAboutParagraph(c.paragraph ?? "");
+          setAboutImageLeft(c.imageLeft ?? "/images/wildlife/peacock.png");
+          setAboutImageCenter(c.imageCenter ?? "/images/wildlife/deer.png");
+          setAboutImageRight(c.imageRight ?? "/images/collections/accessories_banner.jpg");
         }
         if (colRes) {
           const arr = JSON.parse(colRes);
@@ -262,6 +406,23 @@ export default function AdminPagesCMS() {
           setFounderM4Num(c.milestone4Number ?? founderM4Num);
           setFounderM4Label(c.milestone4Label ?? founderM4Label);
         }
+        if (catalogRes) {
+          const c = JSON.parse(catalogRes);
+          setCatalogPdfUrl(c.pdfUrl ?? "");
+          setCatalogPdfName(c.pdfName ?? "");
+          setShowCatalogDownload(c.showDownloadButton ?? true);
+        }
+        if (socialRes) {
+          const c = JSON.parse(socialRes);
+          if (c.instagramUrl) setInstagramUrl(c.instagramUrl);
+          if (Array.isArray(c.feeds)) {
+            setFeeds(prev => c.feeds.map((f: { src?: string; alt?: string; href?: string }, i: number) => ({
+              src: f.src ?? (prev[i]?.src || ""),
+              alt: f.alt ?? (prev[i]?.alt || ""),
+              href: f.href ?? (prev[i]?.href || ""),
+            })));
+          }
+        }
       } catch { /* ignore */ }
       setIsLoading(false);
     }
@@ -279,7 +440,14 @@ export default function AdminPagesCMS() {
       } else if (activeSection === "collections") {
         res = await updatePageContent("home-collections", JSON.stringify(collections));
       } else if (activeSection === "about") {
-        res = await updatePageContent("home-about", JSON.stringify({ subtitle: aboutSubtitle, title: aboutTitle, paragraph: aboutParagraph }));
+        res = await updatePageContent("home-about", JSON.stringify({
+          subtitle: aboutSubtitle,
+          title: aboutTitle,
+          paragraph: aboutParagraph,
+          imageLeft: aboutImageLeft,
+          imageCenter: aboutImageCenter,
+          imageRight: aboutImageRight,
+        }));
       } else if (activeSection === "aboutBrand") {
         res = await updatePageContent("about-brand", JSON.stringify({
           heroTitle: brandHeroTitle, heroSubtitle: brandHeroSubtitle, heroImage: brandHeroImage,
@@ -296,6 +464,14 @@ export default function AdminPagesCMS() {
           milestone3Number: founderM3Num, milestone3Label: founderM3Label,
           milestone4Number: founderM4Num, milestone4Label: founderM4Label,
         }));
+      } else if (activeSection === "catalogPdf") {
+        res = await updatePageContent("shop-catalog", JSON.stringify({
+          pdfUrl: catalogPdfUrl,
+          pdfName: catalogPdfName,
+          showDownloadButton: showCatalogDownload,
+        }));
+      } else if (activeSection === "footerSocials") {
+        res = await updatePageContent("footer-socials", JSON.stringify({ instagramUrl, feeds }));
       } else {
         res = await updatePageContent("announcement-bar", JSON.stringify({ text: announcementText }));
       }
@@ -314,10 +490,12 @@ export default function AdminPagesCMS() {
   const SECTIONS: { id: Section; icon: React.ElementType; label: string; description: string }[] = [
     { id: "hero",         icon: Home,      label: "Hero Banner",          description: "Main title, subtitle & CTA button" },
     { id: "collections",  icon: Layout,    label: "Collection Thumbnails", description: "Images & text for 3 collection cards" },
-    { id: "about",        icon: FileText,  label: "Story / About Section", description: "Wildlife story banner text" },
+    { id: "about",        icon: FileText,  label: "Story / About Section", description: "Wildlife story banner text & images" },
     { id: "announcement", icon: Megaphone, label: "Announcement Bar",      description: "Top-of-page strip message" },
     { id: "aboutBrand",   icon: FileText,  label: "About Brand Page",      description: "Hero, mission, images for /about/brand" },
     { id: "aboutFounder", icon: FileText,  label: "About Founder Page",    description: "Founder photo, bio, quote, milestones" },
+    { id: "catalogPdf",   icon: FileDown,  label: "Catalog PDF / Lookbook", description: "Upload lookbook PDF for the shop page" },
+    { id: "footerSocials", icon: Layout,    label: "Footer & Socials",     description: "Instagram link and feed thumbnails" },
   ];
 
   if (isLoading) {
@@ -375,7 +553,7 @@ export default function AdminPagesCMS() {
           {/* Live tip */}
           <div className="mt-4 p-3 rounded-lg bg-emerald-50 border border-emerald-200">
             <div className="flex items-start gap-2">
-              <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+              <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <p className="text-xs text-emerald-700">Changes go live instantly after saving — no rebuild needed.</p>
             </div>
           </div>
@@ -427,7 +605,7 @@ export default function AdminPagesCMS() {
                   {collections.map((col, idx) => (
                     <div key={idx} className="rounded-xl border border-border overflow-hidden">
                       <div className="px-4 py-3 bg-cream/30 border-b border-border flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-jungle text-gold text-xs font-bold flex items-center justify-center flex-shrink-0">{idx + 1}</span>
+                        <span className="w-6 h-6 rounded-full bg-jungle text-gold text-xs font-bold flex items-center justify-center shrink-0">{idx + 1}</span>
                         <span className="text-sm font-semibold text-jungle">Card {idx + 1}</span>
                         <span className="text-xs text-jungle/40 ml-1">— {DEFAULT_COLLECTIONS[idx].title}</span>
                       </div>
@@ -461,6 +639,11 @@ export default function AdminPagesCMS() {
                   <FormField label="Body Paragraph">
                     <textarea value={aboutParagraph} onChange={(e) => setAboutParagraph(e.target.value)} rows={5} placeholder="e.g. From the elegance of a butterfly…" className={TEXTAREA_CLS} />
                   </FormField>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-border mt-4">
+                    <ImageUploader label="Collage Left Image" value={aboutImageLeft} onChange={setAboutImageLeft} />
+                    <ImageUploader label="Collage Center Image" value={aboutImageCenter} onChange={setAboutImageCenter} />
+                    <ImageUploader label="Collage Right Image" value={aboutImageRight} onChange={setAboutImageRight} />
+                  </div>
                 </>
               )}
 
@@ -513,6 +696,87 @@ export default function AdminPagesCMS() {
                       <div key={i} className="p-3 border border-border rounded-lg space-y-2">
                         <input value={m.num} onChange={(e) => m.setNum(e.target.value)} placeholder="5+" className={INPUT_CLS} />
                         <input value={m.label} onChange={(e) => m.setLabel(e.target.value)} placeholder="Years of Craft" className={INPUT_CLS} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── CATALOG PDF ── */}
+              {activeSection === "catalogPdf" && (
+                <div className="space-y-6">
+                  <p className="text-xs text-jungle/50 -mt-2">
+                    Upload a catalog or lookbook PDF file. A premium download button will appear on the shop page header.
+                  </p>
+                  <PdfUploader
+                    label="Catalog / Lookbook PDF"
+                    value={catalogPdfUrl}
+                    onChange={setCatalogPdfUrl}
+                    fileName={catalogPdfName}
+                    onFileNameChange={setCatalogPdfName}
+                  />
+                  <div className="pt-2">
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                      <div
+                        onClick={() => setShowCatalogDownload(!showCatalogDownload)}
+                        className={`w-9 h-5 rounded-full transition-colors shrink-0 ${showCatalogDownload ? "bg-gold" : "bg-jungle/20"}`}
+                      >
+                        <div className={`w-4 h-4 rounded-full bg-white mt-0.5 mx-0.5 shadow transition-transform ${showCatalogDownload ? "translate-x-4" : "translate-x-0"}`} />
+                      </div>
+                      <span className="text-sm font-medium text-jungle">Show Download Button on Shop Page</span>
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              {/* ── FOOTER & SOCIALS ── */}
+              {activeSection === "footerSocials" && (
+                <div className="space-y-6">
+                  <p className="text-xs text-jungle/50 -mt-2">
+                    Manage your Instagram profile link and the 6 feed thumbnail images/links in the footer.
+                  </p>
+                  
+                  <FormField label="Instagram Profile Link">
+                    <input
+                      type="text"
+                      value={instagramUrl}
+                      onChange={(e) => setInstagramUrl(e.target.value)}
+                      placeholder="https://instagram.com/..."
+                      className={INPUT_CLS}
+                    />
+                  </FormField>
+
+                  <p className="text-xs font-semibold text-jungle/50 uppercase tracking-wider">Instagram Feed Items</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {feeds.map((feed, idx) => (
+                      <div key={idx} className="p-4 border border-border rounded-xl space-y-4 bg-cream/5">
+                        <div className="flex items-center gap-2 border-b border-border pb-2">
+                          <span className="w-5 h-5 rounded-full bg-jungle text-gold text-xs font-bold flex items-center justify-center shrink-0">{idx + 1}</span>
+                          <span className="text-xs font-bold text-jungle">Feed Image {idx + 1}</span>
+                        </div>
+                        <ImageUploader
+                          label="Image Thumbnail"
+                          value={feed.src}
+                          onChange={(url) => setFeeds(prev => prev.map((f, i) => i === idx ? { ...f, src: url } : f))}
+                        />
+                        <FormField label="Image Alt Description">
+                          <input
+                            type="text"
+                            value={feed.alt}
+                            onChange={(e) => setFeeds(prev => prev.map((f, i) => i === idx ? { ...f, alt: e.target.value } : f))}
+                            placeholder="e.g. Tiger Wildlife"
+                            className={INPUT_CLS}
+                          />
+                        </FormField>
+                        <FormField label="Instagram Post URL">
+                          <input
+                            type="text"
+                            value={feed.href}
+                            onChange={(e) => setFeeds(prev => prev.map((f, i) => i === idx ? { ...f, href: e.target.value } : f))}
+                            placeholder="https://instagram.com/p/..."
+                            className={INPUT_CLS}
+                          />
+                        </FormField>
                       </div>
                     ))}
                   </div>

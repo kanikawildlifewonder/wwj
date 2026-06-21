@@ -15,7 +15,7 @@ export function HeroBanner({
   buttonText?: string;
 }) {
   return (
-    <section className="relative w-full h-[70vh] sm:h-[80vh] md:h-[85vh] min-h-[500px] sm:min-h-[600px] flex items-center justify-center overflow-hidden bg-jungle">
+    <section className="relative w-full h-[70vh] sm:h-[80vh] md:h-[85vh] min-h-125 sm:min-h-150 flex items-center justify-center overflow-hidden bg-jungle">
       {/* Background Image Placeholder */}
       <Image
         src="/images/hero_leopard.png"
@@ -26,8 +26,8 @@ export function HeroBanner({
       />
       
       {/* Dark overlay for text readability */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-t from-jungle via-jungle/40 to-transparent" />
-      <div className="absolute inset-0 z-0 bg-gradient-to-r from-jungle/80 via-transparent to-transparent" />
+      <div className="absolute inset-0 z-0 bg-linear-to-t from-jungle via-jungle/40 to-transparent" />
+      <div className="absolute inset-0 z-0 bg-linear-to-r from-jungle/80 via-transparent to-transparent" />
 
       {/* Content */}
       <div className="container relative z-10 mx-auto px-4 sm:px-4 lg:px-8 flex flex-col items-start pt-12 sm:pt-16 md:pt-20">
@@ -38,9 +38,9 @@ export function HeroBanner({
           className="max-w-xl"
         >
           <div className="flex items-center gap-4 mb-4">
-            <span className="w-12 h-[1px] bg-gold" />
+            <span className="w-12 h-px bg-gold" />
             <span className="font-sans text-gold text-sm tracking-[0.2em] uppercase font-bold">WWJ</span>
-            <span className="w-12 h-[1px] bg-gold" />
+            <span className="w-12 h-px bg-gold" />
           </div>
           
           <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-ivory mb-2 tracking-tight" dangerouslySetInnerHTML={{ __html: title }} />

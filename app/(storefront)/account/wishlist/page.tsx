@@ -25,19 +25,19 @@ export default function WishlistPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8">
           {/* Sidebar — horizontal scroll on mobile, vertical on desktop */}
           <div className="flex md:flex-col gap-2 overflow-x-auto hide-scrollbar pb-2 md:pb-0">
-            <Link href="/account" className="flex items-center gap-2.5 px-4 py-3 hover:bg-jungle/5 rounded-lg transition-colors text-jungle/70 whitespace-nowrap text-sm font-medium flex-shrink-0">
+            <Link href="/account" className="flex items-center gap-2.5 px-4 py-3 hover:bg-jungle/5 rounded-lg transition-colors text-jungle/70 whitespace-nowrap text-sm font-medium shrink-0">
               <User className="w-4 h-4" />
               <span>Profile</span>
             </Link>
-            <Link href="/account/orders" className="flex items-center gap-2.5 px-4 py-3 hover:bg-jungle/5 rounded-lg transition-colors text-jungle/70 whitespace-nowrap text-sm font-medium flex-shrink-0">
+            <Link href="/account/orders" className="flex items-center gap-2.5 px-4 py-3 hover:bg-jungle/5 rounded-lg transition-colors text-jungle/70 whitespace-nowrap text-sm font-medium shrink-0">
               <Package className="w-4 h-4" />
               <span>Orders</span>
             </Link>
-            <Link href="/account/wishlist" className="flex items-center gap-2.5 px-4 py-3 bg-jungle text-gold rounded-lg transition-colors whitespace-nowrap text-sm font-medium flex-shrink-0">
+            <Link href="/account/wishlist" className="flex items-center gap-2.5 px-4 py-3 bg-jungle text-gold rounded-lg transition-colors whitespace-nowrap text-sm font-medium shrink-0">
               <Heart className="w-4 h-4" />
               <span>Wishlist</span>
             </Link>
-            <Link href="/account/addresses" className="flex items-center gap-2.5 px-4 py-3 hover:bg-jungle/5 rounded-lg transition-colors text-jungle/70 whitespace-nowrap text-sm font-medium flex-shrink-0">
+            <Link href="/account/addresses" className="flex items-center gap-2.5 px-4 py-3 hover:bg-jungle/5 rounded-lg transition-colors text-jungle/70 whitespace-nowrap text-sm font-medium shrink-0">
               <MapPin className="w-4 h-4" />
               <span>Addresses</span>
             </Link>

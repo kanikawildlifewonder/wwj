@@ -12,12 +12,12 @@ export async function BestsellersCarousel() {
         {/* Heading */}
         <div className="text-center mb-12 flex flex-col items-center">
           <div className="flex items-center gap-4 mb-4">
-            <span className="w-8 h-[1px] bg-gold/30" />
+            <span className="w-8 h-px bg-gold/30" />
             <span className="text-gold text-xs tracking-[0.2em] uppercase font-bold flex items-center">
               <PawPrint className="w-3 h-3 inline-block mr-2" />
               Bestsellers
             </span>
-            <span className="w-8 h-[1px] bg-gold/30" />
+            <span className="w-8 h-px bg-gold/30" />
           </div>
         </div>
 

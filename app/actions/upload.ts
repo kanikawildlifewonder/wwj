@@ -71,3 +71,53 @@ export async function uploadImage(formData: FormData) {
     return { success: false, error: error instanceof Error ? error.message : 'Failed to upload media' };
   }
 }
+
+export async function uploadPdf(formData: FormData) {
+  try {
+    await requireAdmin()
+    
+    const file = formData.get('file') as File;
+    if (!file) {
+      return { success: false, error: 'No file provided' };
+    }
+
+    const folder = formData.get('folder') as string || 'catalogs';
+
+    // Server-side validation
+    const mimeType = file.type.toLowerCase();
+    const size = file.size;
+
+    if (mimeType !== "application/pdf") {
+      return { success: false, error: `Only PDF files are supported. Got: ${mimeType}` };
+    }
+
+    if (size > 20 * 1024 * 1024) {
+      return { success: false, error: "PDF size exceeds the 20MB limit." };
+    }
+
+    // Convert file to Buffer
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Format unique filename and key
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const sanitizedFilename = `${uniqueSuffix}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+    const cleanFolder = folder.replace(/^\/|\/$/g, "");
+    const key = cleanFolder ? `${cleanFolder}/${sanitizedFilename}` : sanitizedFilename;
+
+    // Upload to Cloudflare R2
+    const uploadResult = await uploadToR2(buffer, key, mimeType);
+    if (!uploadResult.success) {
+      return { success: false, error: uploadResult.error || "Upload to Cloudflare R2 failed" };
+    }
+
+    return { 
+      success: true, 
+      url: uploadResult.url 
+    };
+
+  } catch (error) {
+    console.error('Failed to upload PDF:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to upload PDF' };
+  }
+}

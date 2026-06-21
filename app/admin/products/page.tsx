@@ -276,7 +276,7 @@ export default function AdminProductsPage() {
             <div className="flex flex-wrap gap-4 items-end">
 
               {/* Category */}
-              <div className="flex flex-col gap-1 min-w-[160px]">
+              <div className="flex flex-col gap-1 min-w-40">
                 <label className="text-xs font-semibold text-jungle/60 uppercase tracking-wider">Category</label>
                 <div className="relative">
                   <select
@@ -294,7 +294,7 @@ export default function AdminProductsPage() {
               </div>
 
               {/* Stock */}
-              <div className="flex flex-col gap-1 min-w-[140px]">
+              <div className="flex flex-col gap-1 min-w-35">
                 <label className="text-xs font-semibold text-jungle/60 uppercase tracking-wider">Stock</label>
                 <div className="relative">
                   <select
@@ -311,7 +311,7 @@ export default function AdminProductsPage() {
               </div>
 
               {/* Featured */}
-              <div className="flex flex-col gap-1 min-w-[140px]">
+              <div className="flex flex-col gap-1 min-w-35">
                 <label className="text-xs font-semibold text-jungle/60 uppercase tracking-wider">Featured</label>
                 <div className="relative">
                   <select
@@ -471,7 +471,7 @@ export default function AdminProductsPage() {
                       {/* Product */}
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded overflow-hidden bg-forest flex-shrink-0">
+                          <div className="w-10 h-10 rounded overflow-hidden bg-forest shrink-0">
                             <div
                               className="w-full h-full bg-cover bg-center"
                               style={{ backgroundImage: `url(${product.images?.[0]})` }}

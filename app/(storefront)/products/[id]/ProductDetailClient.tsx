@@ -170,7 +170,7 @@ export default function ProductDetailClient({
             Shop
           </Link>
           <span>/</span>
-          <span className="text-jungle font-medium truncate max-w-[200px] sm:max-w-none">{product.name}</span>
+          <span className="text-jungle font-medium truncate max-w-50 sm:max-w-none">{product.name}</span>
         </div>
       </div>
 
@@ -193,7 +193,7 @@ export default function ProductDetailClient({
                     className="w-full h-full object-contain"
                     preload="none"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 opacity-0 group-hover/video:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-black/20 opacity-0 group-hover/video:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
                   {!isPlaying && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/30 transition-all duration-300">
@@ -207,7 +207,7 @@ export default function ProductDetailClient({
                     <div className="flex items-center gap-2">
                       <button
                         onClick={togglePlay}
-                        className="w-8 h-8 rounded-full bg-ivory/80 backdrop-blur flex-shrink-0 flex items-center justify-center text-jungle hover:bg-white hover:text-charcoal transition-all shadow"
+                        className="w-8 h-8 rounded-full bg-ivory/80 backdrop-blur shrink-0 flex items-center justify-center text-jungle hover:bg-white hover:text-charcoal transition-all shadow"
                       >
                         {isPlaying ? (
                           <Pause className="w-4 h-4 fill-current" />
@@ -218,7 +218,7 @@ export default function ProductDetailClient({
 
                       <button
                         onClick={toggleMute}
-                        className="w-8 h-8 rounded-full bg-ivory/80 backdrop-blur flex-shrink-0 flex items-center justify-center text-jungle hover:bg-white hover:text-charcoal transition-all shadow"
+                        className="w-8 h-8 rounded-full bg-ivory/80 backdrop-blur shrink-0 flex items-center justify-center text-jungle hover:bg-white hover:text-charcoal transition-all shadow"
                       >
                         {isMuted ? (
                           <VolumeX className="w-4 h-4" />
@@ -230,7 +230,7 @@ export default function ProductDetailClient({
 
                     <button
                       onClick={handleFullscreen}
-                      className="w-8 h-8 rounded-full bg-ivory/80 backdrop-blur flex-shrink-0 flex items-center justify-center text-jungle hover:bg-white hover:text-charcoal transition-all shadow"
+                      className="w-8 h-8 rounded-full bg-ivory/80 backdrop-blur shrink-0 flex items-center justify-center text-jungle hover:bg-white hover:text-charcoal transition-all shadow"
                     >
                       <Maximize className="w-4 h-4" />
                     </button>
@@ -282,7 +282,7 @@ export default function ProductDetailClient({
                   <button
                     key={`${media.type}-${media.url}`}
                     onClick={() => selectMedia(index)}
-                    className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors flex-shrink-0 relative ${selectedMediaIndex === index ? "border-gold" : "border-transparent"}`}
+                    className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors shrink-0 relative ${selectedMediaIndex === index ? "border-gold" : "border-transparent"}`}
                   >
                     {media.type === "video" ? (
                       <div className="w-full h-full bg-black/80 flex flex-col items-center justify-center relative">
@@ -393,7 +393,7 @@ export default function ProductDetailClient({
                 >
                   -
                 </button>
-                <span className="px-4 py-2 text-sm font-medium text-jungle min-w-[40px] text-center border-x border-jungle/20">
+                <span className="px-4 py-2 text-sm font-medium text-jungle min-w-10 text-center border-x border-jungle/20">
                   {quantity}
                 </span>
                 <button
@@ -435,7 +435,7 @@ export default function ProductDetailClient({
                   key={title}
                   className="flex items-start gap-3 p-3 bg-cream rounded-lg border border-jungle/10"
                 >
-                  <Icon className="w-4 h-4 text-gold mt-0.5 flex-shrink-0" />
+                  <Icon className="w-4 h-4 text-gold mt-0.5 shrink-0" />
                   <div>
                     <p className="text-xs font-bold text-jungle">{title}</p>
                     <p className="text-[11px] text-jungle/60">{desc}</p>

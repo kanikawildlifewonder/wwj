@@ -1,10 +1,9 @@
-import React from "react";
-import Link from "next/link";
+"use client";
 
-export const metadata = {
-  title: "FAQ | WWJ",
-  description: "Frequently asked questions about WWJ products, shipping, and returns.",
-};
+import React, { useState } from "react";
+import Link from "next/link";
+import { ChevronDown, HelpCircle, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 
 const FAQS = [
   {
@@ -57,42 +56,94 @@ const FAQS = [
 ];
 
 export default function FAQPage() {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const toggleExpand = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
   return (
     <div className="bg-cream min-h-screen py-12 sm:py-20">
-      <div className="container mx-auto px-4 max-w-4xl">
+      <div className="container mx-auto px-4 max-w-3xl">
+        {/* Header */}
         <div className="text-center mb-16">
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <span className="w-12 h-[1px] bg-gold/40" />
+            <span className="text-gold text-xs tracking-widest uppercase font-bold flex items-center gap-1.5">
+              <HelpCircle className="w-3.5 h-3.5" /> Support
+            </span>
+            <span className="w-12 h-[1px] bg-gold/40" />
+          </div>
           <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-jungle mb-4">Frequently Asked Questions</h1>
-          <p className="text-jungle/60 text-lg">
+          <p className="text-jungle/60 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
             Find answers to common questions about our pieces, shipping, and policies.
           </p>
         </div>
 
-        <div className="space-y-16">
+        {/* FAQ Accordions */}
+        <div className="space-y-12">
           {FAQS.map((section, idx) => (
-            <div key={idx}>
-              <h2 className="font-display text-2xl text-gold mb-6 border-b border-jungle/10 pb-2">
+            <div key={idx} className="space-y-4">
+              <h2 className="font-sans text-xs tracking-[0.25em] font-bold text-gold uppercase border-b border-jungle/10 pb-2.5">
                 {section.category}
               </h2>
-              <div className="space-y-6">
-                {section.questions.map((faq, fIdx) => (
-                  <div key={fIdx} className="bg-ivory rounded-xl p-4 sm:p-6 border border-jungle/10 shadow-sm">
-                    <h3 className="font-sans font-bold text-lg text-jungle mb-2">{faq.q}</h3>
-                    <p className="text-jungle/70 leading-relaxed text-sm md:text-base">{faq.a}</p>
-                  </div>
-                ))}
+              <div className="space-y-3">
+                {section.questions.map((faq, fIdx) => {
+                  const uniqueId = `${idx}-${fIdx}`;
+                  const isExpanded = expandedId === uniqueId;
+                  return (
+                    <div 
+                      key={fIdx} 
+                      className="bg-ivory rounded-xl border border-jungle/10 hover:border-gold/30 shadow-xs overflow-hidden transition-all duration-300"
+                    >
+                      <button
+                        onClick={() => toggleExpand(uniqueId)}
+                        className="w-full px-5 py-4 sm:py-5 flex items-center justify-between text-left focus:outline-none cursor-pointer group"
+                      >
+                        <h3 className="font-display text-sm sm:text-base text-jungle font-semibold group-hover:text-gold transition-colors pr-4">
+                          {faq.q}
+                        </h3>
+                        <ChevronDown 
+                          className={`w-4 h-4 text-jungle/50 flex-shrink-0 transition-transform duration-300 ${
+                            isExpanded ? "rotate-180 text-gold" : "group-hover:text-gold"
+                          }`} 
+                        />
+                      </button>
+
+                      <AnimatePresence initial={false}>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                          >
+                            <div className="px-5 pb-5 sm:pb-6 text-xs sm:text-sm text-jungle/70 leading-relaxed border-t border-jungle/5 pt-3 bg-cream/20">
+                              {faq.a}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ))}
         </div>
 
-        <div className="mt-12 sm:mt-20 bg-jungle text-ivory rounded-xl p-6 sm:p-8 text-center">
-          <h2 className="font-display text-2xl text-gold mb-4">Still have questions?</h2>
-          <p className="text-ivory/80 mb-6 max-w-lg mx-auto">
+        {/* Footer Support Card */}
+        <div className="mt-12 sm:mt-20 bg-jungle text-ivory rounded-xl p-6 sm:p-8 text-center border border-gold/15 shadow-xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-15">
+            <Sparkles className="w-12 h-12 text-gold" />
+          </div>
+          <h2 className="font-display text-2xl text-gold mb-3">Still have questions?</h2>
+          <p className="text-ivory/80 text-xs sm:text-sm mb-6 max-w-lg mx-auto leading-relaxed">
             If you couldn&apos;t find the answer you were looking for, our customer care team is here to help.
           </p>
           <Link 
             href="/contact" 
-            className="inline-block bg-gold text-jungle px-8 py-3 rounded-btn font-bold tracking-widest uppercase hover:bg-ivory transition-colors text-sm"
+            className="inline-block bg-gold hover-shimmer text-jungle px-8 py-3 rounded-lg font-bold tracking-widest uppercase hover:bg-gold-light transition-all text-xs sm:text-sm shadow-md active:scale-95"
           >
             Contact Us
           </Link>

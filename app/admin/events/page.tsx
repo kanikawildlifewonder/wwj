@@ -291,7 +291,7 @@ export default function AdminEventsPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
                         <div
-                          className="w-14 h-14 rounded-lg bg-cream border border-border bg-cover bg-center flex-shrink-0"
+                          className="w-14 h-14 rounded-lg bg-cream border border-border bg-cover bg-center shrink-0"
                           style={{ backgroundImage: `url(${event.featuredImage})` }}
                         />
                         <div className="max-w-xs md:max-w-sm">

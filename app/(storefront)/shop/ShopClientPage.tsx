@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { SlidersHorizontal, X, ChevronDown } from "lucide-react";
+import { SlidersHorizontal, X, ChevronDown, FileDown, Search } from "lucide-react";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { categoriesMatch } from "@/lib/categories";
 import { Product } from "@/types/product";
@@ -40,6 +40,7 @@ type ShopClientPageProps = {
   dbMinPrice: number;
   dbMaxPrice: number;
   searchQuery?: string;
+  catalogPdfUrl?: string;
 };
 
 function FilterPanel({
@@ -61,12 +62,16 @@ function FilterPanel({
     <div className="space-y-8">
       <div>
         <h3 className="font-sans text-xs tracking-widest uppercase font-bold text-jungle mb-4">Category</h3>
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           {productCategories.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`block text-sm w-full text-left py-1 transition-colors ${selectedCategory === cat ? "text-gold-dark font-bold" : "text-jungle/70 hover:text-jungle"}`}
+              className={`block text-[11px] font-semibold uppercase tracking-wider w-full text-left py-2 px-3 border-l-2 transition-all duration-300 ${
+                selectedCategory === cat
+                  ? "text-gold bg-jungle border-gold font-bold pl-4 rounded-r-md"
+                  : "text-jungle/70 hover:text-jungle border-transparent hover:border-jungle/20 pl-3"
+              }`}
             >
               {cat}
             </button>
@@ -75,42 +80,58 @@ function FilterPanel({
       </div>
 
       <div>
-        <h3 className="font-sans text-xs tracking-widest uppercase font-bold text-jungle mb-4">Max Range</h3>
-        <input
-          type="range"
-          min={minPriceLimit}
-          max={maxPriceLimit}
-          step={Math.max(1, Math.round((maxPriceLimit - minPriceLimit) / 50))}
-          value={priceMax}
-          onChange={(e) => setPriceMax(Number(e.target.value))}
-          className="w-full accent-gold"
-        />
-        <div className="flex justify-between text-xs text-jungle/60 mt-1">
-          <span>Rs. {minPriceLimit.toLocaleString("en-IN")}</span>
-          <span className="font-bold text-jungle">Rs. {priceMax.toLocaleString("en-IN")}</span>
+        <h3 className="font-sans text-xs tracking-widest uppercase font-bold text-jungle mb-4">Max Price</h3>
+        <div className="px-1">
+          <input
+            type="range"
+            min={minPriceLimit}
+            max={maxPriceLimit}
+            step={Math.max(1, Math.round((maxPriceLimit - minPriceLimit) / 50))}
+            value={priceMax}
+            onChange={(e) => setPriceMax(Number(e.target.value))}
+            className="w-full h-1 bg-jungle/10 rounded-lg appearance-none cursor-pointer accent-gold focus:outline-none"
+          />
+          <div className="flex justify-between text-[10px] text-jungle/50 mt-2 font-medium">
+            <span>Rs. {minPriceLimit.toLocaleString("en-IN")}</span>
+            <span className="font-bold text-jungle">Rs. {priceMax.toLocaleString("en-IN")}</span>
+          </div>
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2 bg-white/40 border border-jungle/5 rounded-xl p-4">
+        <h3 className="font-sans text-xs tracking-widest uppercase font-bold text-jungle mb-3">Status</h3>
         {[
           { label: "In Stock Only", state: showInStockOnly, set: setShowInStockOnly },
-          { label: "Bestsellers Only", state: showBestsellers, set: setShowBestsellers },
-          { label: "New Arrivals Only", state: showNewArrivals, set: setShowNewArrivals },
+          { label: "Bestsellers", state: showBestsellers, set: setShowBestsellers },
+          { label: "New Arrivals", state: showNewArrivals, set: setShowNewArrivals },
         ].map(({ label, state, set }) => (
-          <label key={label} className="flex items-center gap-3 cursor-pointer group">
-            <div
+          <div key={label} className="flex items-center justify-between py-1.5 first:pt-0 last:pb-0 border-b border-jungle/5 last:border-0">
+            <span className="text-[11px] font-semibold text-jungle/70 uppercase tracking-wider">{label}</span>
+            <button
+              type="button"
               onClick={() => set(!state)}
-              className={`w-9 h-5 rounded-full transition-colors flex-shrink-0 ${state ? "bg-gold" : "bg-jungle/20"}`}
+              className={`w-9 h-5 rounded-full transition-colors shrink-0 relative focus:outline-none ${state ? "bg-jungle" : "bg-jungle/15"}`}
+              aria-label={`Toggle ${label}`}
             >
-              <div className={`w-4 h-4 rounded-full bg-white mt-0.5 mx-0.5 shadow transition-transform ${state ? "translate-x-4" : "translate-x-0"}`} />
-            </div>
-            <span className="text-sm text-jungle/80 group-hover:text-jungle">{label}</span>
-          </label>
+              <span className={`absolute left-0.5 top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-300 ${state ? "translate-x-4" : "translate-x-0"}`} />
+            </button>
+          </div>
         ))}
       </div>
     </div>
   );
 }
+
+const ProductSkeleton = () => (
+  <div className="bg-white/40 border border-jungle/5 rounded-xl p-3 flex flex-col h-full animate-pulse">
+    <div className="relative aspect-square rounded-lg bg-jungle/5 mb-3" />
+    <div className="space-y-2 flex-1">
+      <div className="h-3 bg-jungle/5 rounded w-1/3" />
+      <div className="h-4 bg-jungle/5 rounded w-3/4" />
+      <div className="h-3 bg-jungle/5 rounded w-1/2 mt-auto" />
+    </div>
+  </div>
+);
 
 export default function ShopClientPage({
   initialProducts,
@@ -119,6 +140,7 @@ export default function ShopClientPage({
   dbMinPrice,
   dbMaxPrice,
   searchQuery = "",
+  catalogPdfUrl = "",
 }: ShopClientPageProps) {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -283,17 +305,30 @@ export default function ShopClientPage({
     <div className="bg-cream min-h-screen">
       <div className="bg-jungle py-12 text-center border-b border-border">
         <div className="flex items-center justify-center gap-3 mb-2">
-          <span className="w-12 h-[1px] bg-gold/40" />
+          <span className="w-12 h-px bg-gold/40" />
           <span className="text-gold text-xs tracking-widest uppercase font-bold">WWJ Store</span>
-          <span className="w-12 h-[1px] bg-gold/40" />
+          <span className="w-12 h-px bg-gold/40" />
         </div>
         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-ivory">Shop All</h1>
         <p className="font-sans text-sm text-ivory/60 mt-3">Handcrafted Wildlife-Inspired Jewellery &amp; Accessories</p>
+        {catalogPdfUrl && (
+          <div className="mt-6 flex justify-center">
+            <a
+              href={catalogPdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2.5 px-6 py-3 bg-gold hover:bg-gold-light text-jungle text-xs font-bold tracking-widest uppercase rounded-full shadow-lg shadow-gold/10 hover:shadow-gold/25 transition-all duration-300 transform hover:-translate-y-0.5"
+            >
+              <FileDown className="w-4 h-4 animate-bounce" style={{ animationDuration: "2s" }} />
+              Download Lookbook (PDF)
+            </a>
+          </div>
+        )}
       </div>
 
       <div className="container mx-auto px-3 sm:px-4 lg:px-8 py-8 sm:py-12">
         <div className="flex gap-10">
-          <aside className="hidden lg:block w-60 flex-shrink-0 sticky top-28 h-fit">
+          <aside className="hidden lg:block w-60 shrink-0 sticky top-28 h-fit">
             <h2 className="font-sans text-xs tracking-widest uppercase font-bold text-jungle mb-6 border-b border-jungle/10 pb-3">Filters</h2>
             <FilterPanel
               maxPriceLimit={maxPriceLimit}
@@ -313,6 +348,37 @@ export default function ShopClientPage({
           </aside>
 
           <div className="flex-1 min-w-0">
+            {/* Search Input Bar */}
+            <div className="mb-6">
+              <div className="flex items-center gap-2 bg-white/80 border border-jungle/20 rounded-full px-4 py-2.5 max-w-md shadow-sm focus-within:border-gold transition-colors">
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    if (!e.target.value) {
+                      router.replace("/shop", { scroll: false });
+                    }
+                  }}
+                  className="bg-transparent border-none outline-none text-sm text-jungle placeholder-jungle/40 w-full focus:ring-0 focus:outline-none"
+                />
+                {search ? (
+                  <button
+                    onClick={() => {
+                      setSearch("");
+                      router.replace("/shop", { scroll: false });
+                    }}
+                    aria-label="Clear search"
+                    className="text-jungle/50 hover:text-jungle transition-colors mr-1 cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                ) : null}
+                <Search className="w-4 h-4 text-jungle/60" />
+              </div>
+            </div>
+
             {search && (
               <div className="flex items-center gap-3 bg-gold/10 border border-gold/20 rounded-btn px-4 py-2 mb-6 w-fit text-sm text-jungle animate-fadeIn">
                 <span>Search results for: <span className="font-bold">&quot;{search}&quot;</span></span>
@@ -355,7 +421,13 @@ export default function ShopClientPage({
               </div>
             </div>
 
-            {filtered.length === 0 && !loading ? (
+            {loading ? (
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                  <ProductSkeleton key={i} />
+                ))}
+              </div>
+            ) : filtered.length === 0 ? (
               <div className="text-center py-24">
                 <p className="font-display text-2xl text-jungle/40">No products found</p>
                 <p className="text-sm text-jungle/30 mt-2">Try adjusting your filters</p>
@@ -368,7 +440,7 @@ export default function ShopClientPage({
               </div>
             ) : (
               <>
-                <div className={`grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 transition-opacity duration-200 ${loading ? "opacity-40 pointer-events-none" : "opacity-100"}`}>
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
                   {filtered.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}

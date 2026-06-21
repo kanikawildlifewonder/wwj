@@ -68,16 +68,16 @@ export default function OrdersPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8">
           {/* Sidebar */}
           <div className="flex md:flex-col gap-2 overflow-x-auto hide-scrollbar pb-2 md:pb-0">
-            <Link href="/account" className="flex items-center gap-2.5 px-4 py-3 hover:bg-jungle/5 rounded-lg transition-colors text-jungle/70 whitespace-nowrap text-sm font-medium flex-shrink-0">
+            <Link href="/account" className="flex items-center gap-2.5 px-4 py-3 hover:bg-jungle/5 rounded-lg transition-colors text-jungle/70 whitespace-nowrap text-sm font-medium shrink-0">
               <User className="w-4 h-4" /><span>Profile</span>
             </Link>
-            <Link href="/account/orders" className="flex items-center gap-2.5 px-4 py-3 bg-jungle text-gold rounded-lg whitespace-nowrap text-sm font-medium flex-shrink-0">
+            <Link href="/account/orders" className="flex items-center gap-2.5 px-4 py-3 bg-jungle text-gold rounded-lg whitespace-nowrap text-sm font-medium shrink-0">
               <Package className="w-4 h-4" /><span>Orders</span>
             </Link>
-            <Link href="/account/wishlist" className="flex items-center gap-2.5 px-4 py-3 hover:bg-jungle/5 rounded-lg transition-colors text-jungle/70 whitespace-nowrap text-sm font-medium flex-shrink-0">
+            <Link href="/account/wishlist" className="flex items-center gap-2.5 px-4 py-3 hover:bg-jungle/5 rounded-lg transition-colors text-jungle/70 whitespace-nowrap text-sm font-medium shrink-0">
               <Heart className="w-4 h-4" /><span>Wishlist</span>
             </Link>
-            <Link href="/account/addresses" className="flex items-center gap-2.5 px-4 py-3 hover:bg-jungle/5 rounded-lg transition-colors text-jungle/70 whitespace-nowrap text-sm font-medium flex-shrink-0">
+            <Link href="/account/addresses" className="flex items-center gap-2.5 px-4 py-3 hover:bg-jungle/5 rounded-lg transition-colors text-jungle/70 whitespace-nowrap text-sm font-medium shrink-0">
               <MapPin className="w-4 h-4" /><span>Addresses</span>
             </Link>
           </div>
@@ -230,7 +230,7 @@ export default function OrdersPage() {
                 <div className="divide-y divide-jungle/5">
                   {selectedOrder.items.map((item, i) => (
                     <div key={i} className="flex gap-4 py-3 items-center">
-                      <div className="relative w-16 h-16 bg-cream border border-jungle/5 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
+                      <div className="relative w-16 h-16 bg-cream border border-jungle/5 rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
                         {item.image ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={item.image} alt={item.name} className="object-cover w-full h-full" />
@@ -238,11 +238,11 @@ export default function OrdersPage() {
                           <Package className="w-6 h-6 text-jungle/20" />
                         )}
                       </div>
-                      <div className="flex-grow min-w-0">
+                      <div className="grow min-w-0">
                         <h5 className="font-serif text-jungle text-sm font-medium truncate">{item.name}</h5>
                         <p className="text-xs text-jungle/60 mt-0.5">Qty: {item.quantity}</p>
                       </div>
-                      <div className="text-right flex-shrink-0">
+                      <div className="text-right shrink-0">
                         <span className="font-sans text-sm font-bold text-jungle">{formatINR(item.price * item.quantity)}</span>
                         {item.quantity > 1 && (
                           <span className="block text-[10px] text-jungle/50">{formatINR(item.price)} each</span>

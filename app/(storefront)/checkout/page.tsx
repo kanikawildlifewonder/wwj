@@ -442,10 +442,10 @@ export default function CheckoutPage() {
             <div className="bg-jungle text-ivory rounded-xl p-5 sm:p-6 md:p-8 sticky top-28">
               <h2 className="font-display text-xl mb-6 text-gold">Order Summary</h2>
 
-              <div className="space-y-4 mb-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="space-y-4 mb-6 max-h-100 overflow-y-auto pr-2 custom-scrollbar">
                 {items.map((item) => (
                   <div key={item.product.id} className="flex gap-4">
-                    <div className="w-16 h-16 rounded bg-forest flex-shrink-0 relative overflow-hidden">
+                    <div className="w-16 h-16 rounded bg-forest shrink-0 relative overflow-hidden">
                       <Image
                         src={item.product.images[0]}
                         alt={item.product.name}
@@ -479,7 +479,7 @@ export default function CheckoutPage() {
                         setCouponError("");
                       }}
                       placeholder="e.g. WILD15"
-                      className="flex-grow bg-cream/10 border border-ivory/20 px-3 py-1.5 rounded-lg text-sm text-ivory placeholder-ivory/30 focus:outline-none focus:border-gold uppercase"
+                      className="grow bg-cream/10 border border-ivory/20 px-3 py-1.5 rounded-lg text-sm text-ivory placeholder-ivory/30 focus:outline-none focus:border-gold uppercase"
                     />
                     <button
                       type="button"

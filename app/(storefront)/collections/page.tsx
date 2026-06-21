@@ -62,9 +62,9 @@ export default async function CollectionsPage() {
       {/* Header */}
       <div className="py-12 sm:py-20 text-center border-b border-border px-4">
         <div className="flex items-center justify-center gap-4 mb-4">
-          <span className="w-10 h-[1px] bg-gold/50" />
+          <span className="w-10 h-px bg-gold/50" />
           <span className="text-gold text-xs tracking-[0.2em] uppercase font-bold">Explore</span>
-          <span className="w-10 h-[1px] bg-gold/50" />
+          <span className="w-10 h-px bg-gold/50" />
         </div>
         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-ivory">Our Collections</h1>
         <p className="text-ivory/60 text-sm mt-4 font-sans max-w-lg mx-auto">
@@ -90,13 +90,13 @@ export default async function CollectionsPage() {
 
             <Link
               href={`/collections/${col.slug}`}
-              className="relative h-[350px] sm:h-[420px] md:h-[500px] rounded-card overflow-hidden border border-border block"
+              className="relative h-87.5 sm:h-105 md:h-125 rounded-card overflow-hidden border border-border block"
             >
               <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-60"
                 style={{ backgroundImage: `url(${col.image})` }}
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-jungle/50 to-jungle/95" />
+              <div className="absolute inset-0 bg-linear-to-b from-jungle/50 to-jungle/95" />
               <div className="absolute bottom-0 left-0 right-0 p-8 z-10">
                 <h2 className="font-display text-3xl text-ivory mb-2 group-hover:text-gold transition-colors">
                   {col.name}
