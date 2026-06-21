@@ -5,6 +5,9 @@ import { ArrowRight, Sparkles, BookOpen, Sparkle } from "lucide-react";
 export const metadata = {
   title: "About Us | WWJ — Wildlife Wonder Jewellery",
   description: "Learn about the story behind Wildlife Wonder Jewellery and our commitment to craftsmanship and conservation.",
+  alternates: {
+    canonical: "/about",
+  },
 };
 
 export default function AboutPage() {

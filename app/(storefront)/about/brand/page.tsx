@@ -7,6 +7,9 @@ export const metadata = {
   title: "About the Brand | WWJ — Wildlife Wonder Jewellery",
   description:
     "Learn the story behind WWJ — Wildlife Wonder Jewellery. Our mission, values, and commitment to wildlife conservation through handcrafted jewellery.",
+  alternates: {
+    canonical: "/about/brand",
+  },
 };
 
 const DEFAULT = {

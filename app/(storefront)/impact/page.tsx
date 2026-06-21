@@ -3,8 +3,11 @@ import Link from "next/link";
 import { ArrowRight, Globe, Shield, Heart } from "lucide-react";
 
 export const metadata = {
-  title: "Our Impact | WWJ",
+  title: "Our Impact & Conservation | WWJ",
   description: "Discover how WWJ gives back to wildlife conservation and protects endangered species globally.",
+  alternates: {
+    canonical: "/impact",
+  },
 };
 
 export default function ImpactPage() {

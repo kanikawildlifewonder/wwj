@@ -6,6 +6,9 @@ import { ArrowRight, Heart, PawPrint, Feather } from "lucide-react";
 export const metadata = {
   title: "Welfare & Awareness | WWJ",
   description: "Join WWJ in our compassionate initiatives supporting stray animal nourishment, cow sanctuaries, and urban bird preservation.",
+  alternates: {
+    canonical: "/welfare",
+  },
 };
 
 const initiatives = [

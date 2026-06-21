@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { mapDbProductToUI } from "@/lib/utils/product-mapper";
 import prisma from "@/lib/prisma";
+import { Metadata } from "next";
 
 const COLLECTION_MAP: Record<string, string> = {
   jewellery: "WWJ Jewellery",
@@ -21,6 +22,39 @@ const COLLECTION_IMAGES: Record<string, string> = {
 interface PageProps {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ category?: string | string[] }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  
+  const titleMap: Record<string, string> = {
+    jewellery: "WWJ Jewellery | Handcrafted Animal-Inspired Fine Jewelry",
+    accessories: "WWA Accessories | Unique Animal Keychains, Magnets & Collectibles",
+    gifting: "Gifting Collection | Luxury Curated Jewelry Gift Boxes & Gift Cards",
+  };
+
+  const descMap: Record<string, string> = {
+    jewellery: "Explore the premium WWJ jewellery collection. Handcrafted rings, necklaces, bracelets, and earrings inspired by wildlife, crafted in 925 sterling silver and brass.",
+    accessories: "Discover unique handcrafted accessories by Wildlife Wonder. Buy wild animal keychains, fridge magnets, hair accessories, bookmarks, and customized pet portraits.",
+    gifting: "Shop luxury curated gift sets and gift cards for wildlife lovers. Perfect presents featuring handcrafted animal-inspired jewelry and festive collections.",
+  };
+
+  const title = titleMap[slug] || "Collections | WWJ";
+  const description = descMap[slug] || "Browse our themed collections of wildlife-inspired jewellery and handcrafted accessories.";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/collections/${slug}`,
+    },
+    openGraph: {
+      title: `${title} - WWJ`,
+      description,
+      url: `/collections/${slug}`,
+      type: "website",
+    },
+  };
 }
 
 type DbProduct = {

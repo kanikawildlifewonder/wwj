@@ -12,16 +12,45 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "WWJ - Wildlife Wonder Jewellery",
+  title: {
+    template: "%s | WWJ - Wildlife Wonder Jewellery",
+    default: "WWJ - Wildlife Wonder Jewellery | Handcrafted Animal Jewelry India",
+  },
   description:
-    "Handcrafted wildlife-inspired jewellery and accessories that tell a story of beauty, strength, and the wild.",
-  metadataBase: new URL("https://wwj.vercel.app"),
+    "Discover handcrafted, luxury wildlife-inspired jewellery and accessories supporting conservation. Shop unique animal rings, necklaces, and earrings in India.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://wildlifewonderjewellery.com"),
+  keywords: [
+    "wildlife jewellery India",
+    "handcrafted animal jewelry",
+    "conservation jewelry",
+    "nature inspired jewelry",
+    "wildlife accessories",
+    "sterling silver animal jewelry",
+    "brass wildlife rings",
+    "sustainable luxury jewelry India",
+    "WWJ",
+    "Wildlife Wonder"
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
     title: "WWJ - Wildlife Wonder Jewellery",
     description:
-      "Handcrafted wildlife-inspired jewellery and accessories that tell a story of beauty, strength, and the wild.",
-    url: "https://wwj.vercel.app",
-    siteName: "WWJ",
+      "Discover handcrafted, luxury wildlife-inspired jewellery and accessories supporting conservation. Shop unique animal rings, necklaces, and earrings in India.",
+    url: "/",
+    siteName: "WWJ - Wildlife Wonder Jewellery",
     images: [
       {
         url: "/og-image.png",
@@ -37,7 +66,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "WWJ - Wildlife Wonder Jewellery",
     description:
-      "Handcrafted wildlife-inspired jewellery and accessories that tell a story of beauty, strength, and the wild.",
+      "Discover handcrafted, luxury wildlife-inspired jewellery and accessories supporting conservation. Shop unique animal rings, necklaces, and earrings in India.",
     images: ["/og-image.png"],
   },
 };

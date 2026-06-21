@@ -12,6 +12,14 @@ import { getGroupedProductCategories } from "@/app/actions/categories";
 
 export const revalidate = 300;
 
+export const metadata = {
+  title: "WWJ - Wildlife Wonder Jewellery | Handcrafted Animal Jewelry India",
+  description: "Experience Wildlife Wonder Jewellery (WWJ). Luxury handcrafted rings, necklaces, and accessories inspired by wildlife. We donate a portion of all proceeds to animal welfare.",
+  alternates: {
+    canonical: "/",
+  },
+};
+
 export default async function HomePage() {
   const [heroContentStr, aboutContentStr, collectionsStr, groupedCategories] = await Promise.all([
     getPageContent("home-hero"),
@@ -31,8 +39,49 @@ export default async function HomePage() {
     try { collectionsData = JSON.parse(collectionsStr); } catch { /* keep default */ }
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wildlifewonderjewellery.com";
+  
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "WWJ - Wildlife Wonder Jewellery",
+    "url": baseUrl,
+    "logo": `${baseUrl}/logo.png`,
+    "sameAs": [
+      "https://www.instagram.com/wildlifewonderjewellery",
+      "https://www.facebook.com/wildlifewonderjewellery"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+91-98490-77246",
+      "contactType": "customer service",
+      "email": "hello@wildlifewonderjewellery.com",
+      "areaServed": "IN"
+    }
+  };
+
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Wildlife Wonder Jewellery",
+    "url": baseUrl,
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": `${baseUrl}/shop?search={search_term_string}`,
+      "query-input": "required name=search_term_string"
+    }
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+      />
       <HeroBanner {...heroProps} />
       <BrandValueStrip />
       <ExploreCollections collections={collectionsData} groupedCategories={groupedCategories} />

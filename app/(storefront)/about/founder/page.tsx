@@ -7,6 +7,9 @@ export const metadata = {
   title: "Meet the Founder | WWJ — Wildlife Wonder Jewellery",
   description:
     "Meet Kanika — the founder of WWJ Wildlife Wonder Jewellery. Her story of passion for wildlife, artisanal craftsmanship and building a brand with purpose.",
+  alternates: {
+    canonical: "/about/founder",
+  },
 };
 
 const DEFAULT = {

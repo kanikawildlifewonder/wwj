@@ -5,6 +5,9 @@ import LookbookClient from "./LookbookClient";
 export const metadata = {
   title: "Lookbook | WWJ — Wildlife Wonder Jewellery",
   description: "Browse the latest Lookbook and product catalog of Wildlife Wonder Jewellery.",
+  alternates: {
+    canonical: "/lookbook",
+  },
 };
 
 export default async function LookbookPage() {

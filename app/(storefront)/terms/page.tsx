@@ -2,7 +2,10 @@ import React from "react";
 
 export const metadata = {
   title: "Terms of Service | WWJ",
-  description: "Terms and conditions for using the WildLife Jewellery website.",
+  description: "Terms and conditions for using the Wildlife Wonder Jewellery (WWJ) website.",
+  alternates: {
+    canonical: "/terms",
+  },
 };
 
 export default function TermsPage() {

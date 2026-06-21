@@ -6,6 +6,9 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Events & Collaborations | WWJ - Wildlife Wonder Jewellery",
   description: "Discover the latest exhibitions, design collaborations, press features, and conservation initiatives by Wildlife Wonder Jewellery.",
+  alternates: {
+    canonical: "/events",
+  },
 };
 
 export default async function EventsPage() {

@@ -6,6 +6,14 @@ import ShopClientPage from "./ShopClientPage";
 
 export const revalidate = 300;
 
+export const metadata = {
+  title: "Shop Handcrafted Wildlife Jewelry Online | WWJ",
+  description: "Browse the complete Wildlife Wonder Jewellery catalog. Discover handcrafted rings, earrings, necklaces, and accessories inspired by nature and wild animals.",
+  alternates: {
+    canonical: "/shop",
+  },
+};
+
 interface ShopPageProps {
   searchParams: Promise<{
     category?: string;
@@ -44,16 +52,35 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const minPrice = priceLimits.min;
   const maxPrice = priceLimits.max;
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://wildlifewonderjewellery.com";
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Shop Handcrafted Wildlife Jewelry Online | WWJ",
+    "description": "Browse the complete Wildlife Wonder Jewellery catalog. Discover handcrafted rings, earrings, necklaces, and accessories inspired by nature and wild animals.",
+    "url": `${baseUrl}/shop`,
+    "about": {
+      "@type": "Thing",
+      "name": "Wildlife Inspired Jewellery"
+    }
+  };
+
   return (
-    <ShopClientPage
-      initialProducts={initialProducts}
-      initialCategories={categories}
-      initialTotalCount={totalCount}
-      dbMinPrice={minPrice}
-      dbMaxPrice={maxPrice}
-      searchQuery={search}
-      catalogPdfUrl={catalogPdfUrl}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ShopClientPage
+        initialProducts={initialProducts}
+        initialCategories={categories}
+        initialTotalCount={totalCount}
+        dbMinPrice={minPrice}
+        dbMaxPrice={maxPrice}
+        searchQuery={search}
+        catalogPdfUrl={catalogPdfUrl}
+      />
+    </>
   );
 }
 
