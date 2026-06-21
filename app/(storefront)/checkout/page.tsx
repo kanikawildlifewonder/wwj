@@ -7,13 +7,14 @@ import * as z from "zod";
 import { toast } from "sonner";
 import { useCartStore } from "@/store/cartStore";
 import { formatINR } from "@/lib/utils/currency";
-import { Lock, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Lock, ArrowRight, CheckCircle2, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { sendOrderConfirmationEmail } from "@/app/actions/emails";
 import { useUser } from "@clerk/nextjs";
 import { createRazorpayOrder, createOrder } from "@/app/actions/orders";
 import { getPageContent } from "@/app/actions/content";
+import { validateCoupon } from "@/app/actions/coupons";
 
 interface RazorpayOptions {
   key: string;
@@ -71,7 +72,9 @@ export default function CheckoutPage() {
   const [appliedCoupon, setAppliedCoupon] = useState("");
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [couponError, setCouponError] = useState("");
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   const [shippingThreshold, setShippingThreshold] = useState(1499);
+  const [shippingFeeConfig, setShippingFeeConfig] = useState(99);
 
   useEffect(() => {
     getPageContent("store-settings").then((raw) => {
@@ -79,6 +82,7 @@ export default function CheckoutPage() {
         try {
           const s = JSON.parse(raw);
           if (typeof s.shippingThreshold === "number") setShippingThreshold(s.shippingThreshold);
+          if (typeof s.shippingFee === "number") setShippingFeeConfig(s.shippingFee);
         } catch { /* keep default */ }
       }
     });
@@ -93,7 +97,7 @@ export default function CheckoutPage() {
     });
   }, []);
 
-  const applyCoupon = () => {
+  const applyCoupon = async () => {
     setCouponError("");
     const code = couponCode.trim().toUpperCase();
     if (!code) {
@@ -101,25 +105,21 @@ export default function CheckoutPage() {
       return;
     }
 
-    const currentSubtotal = subtotal();
-    let discount = 0;
-
-    if (code === "SAVE10") {
-      discount = currentSubtotal * 0.1;
-    } else if (code === "WILD15") {
-      discount = currentSubtotal * 0.15;
-    } else if (code === "GOLD20") {
-      discount = currentSubtotal * 0.2;
-    } else if (code === "FREE500") {
-      discount = Math.min(500, currentSubtotal);
-    } else {
-      setCouponError("Invalid coupon code");
-      return;
+    setIsValidatingCoupon(true);
+    try {
+      const res = await validateCoupon(code, subtotal());
+      if (res.success && res.discount !== undefined) {
+        setAppliedCoupon(res.code ?? code);
+        setAppliedDiscount(res.discount);
+        toast.success(`Coupon "${res.code ?? code}" applied successfully!`);
+      } else {
+        setCouponError(res.error ?? "Invalid coupon code");
+      }
+    } catch {
+      setCouponError("Failed to validate coupon. Please try again.");
+    } finally {
+      setIsValidatingCoupon(false);
     }
-
-    setAppliedCoupon(code);
-    setAppliedDiscount(discount);
-    toast.success(`Coupon "${code}" applied successfully!`);
   };
 
   const removeCoupon = () => {
@@ -130,7 +130,7 @@ export default function CheckoutPage() {
     toast.info("Coupon code removed");
   };
 
-  const shippingFee = subtotal() >= shippingThreshold ? 0 : 99;
+  const shippingFee = subtotal() >= shippingThreshold ? 0 : shippingFeeConfig;
   const total = Math.max(0, subtotal() + shippingFee - appliedDiscount);
 
   const {
@@ -484,9 +484,11 @@ export default function CheckoutPage() {
                     <button
                       type="button"
                       onClick={applyCoupon}
-                      className="bg-gold text-jungle px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white transition-colors"
+                      disabled={isValidatingCoupon}
+                      className="bg-gold text-jungle px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white transition-colors disabled:opacity-60 flex items-center gap-1"
                     >
-                      Apply
+                      {isValidatingCoupon ? <RefreshCw className="w-3 h-3 animate-spin" /> : null}
+                      {isValidatingCoupon ? "Checking…" : "Apply"}
                     </button>
                   </div>
                   {couponError && <p className="text-red-400 text-[11px] mt-1.5 font-medium">{couponError}</p>}

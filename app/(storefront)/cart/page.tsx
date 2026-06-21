@@ -14,6 +14,7 @@ import { Product } from "@/types/product";
 export default function CartPage() {
   const { items, removeItem, updateQuantity, subtotal } = useCartStore();
   const [shippingThreshold, setShippingThreshold] = useState(1499);
+  const [shippingFeeConfig, setShippingFeeConfig] = useState(99);
   const [suggested, setSuggested] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -22,6 +23,7 @@ export default function CartPage() {
         try {
           const s = JSON.parse(raw);
           if (typeof s.shippingThreshold === "number") setShippingThreshold(s.shippingThreshold);
+          if (typeof s.shippingFee === "number") setShippingFeeConfig(s.shippingFee);
         } catch { /* keep default */ }
       }
     });
@@ -37,7 +39,7 @@ export default function CartPage() {
     });
   }, [items]);
 
-  const shippingFee = subtotal() >= shippingThreshold ? 0 : 99;
+  const shippingFee = subtotal() >= shippingThreshold ? 0 : shippingFeeConfig;
   const total = subtotal() + shippingFee;
 
   return (

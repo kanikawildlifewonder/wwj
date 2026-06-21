@@ -16,6 +16,7 @@ import {
   Menu,
   X,
   BarChart2,
+  Tag,
 } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 
@@ -33,6 +34,7 @@ const NAV_LINKS = [
   { href: "/admin/events",    icon: Calendar,        label: "Events & Collabs" },
   { href: "/admin/customers", icon: Users,           label: "Customers" },
   { href: "/admin/pages",     icon: FileEdit,        label: "Site Content" },
+  { href: "/admin/coupons",   icon: Tag,             label: "Coupons" },
   { href: "/admin/settings",  icon: Settings,        label: "Settings" },
 ];
 

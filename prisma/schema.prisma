@@ -87,3 +87,14 @@ model Event {
   @@map("events")
 }
 
+model Coupon {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  type      String   // "PERCENTAGE" or "FIXED"
+  value     Float
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+

@@ -190,6 +190,7 @@ export default function AdminSettingsPage() {
   const [storeDescription,   setStoreDescription]   = useState("Premium handcrafted wildlife-inspired jewellery for a cause.");
   const [currency,           setCurrency]           = useState("INR");
   const [shippingThreshold,  setShippingThreshold]  = useState("1499");
+  const [shippingFee,        setShippingFee]        = useState("99");
   const [isSavingSettings,   setIsSavingSettings]   = useState(false);
 
   /* load on mount */
@@ -231,6 +232,7 @@ export default function AdminSettingsPage() {
           if (p.storeDescription)  setStoreDescription(p.storeDescription);
           if (p.currency)          setCurrency(p.currency);
           if (p.shippingThreshold) setShippingThreshold(String(p.shippingThreshold));
+          if (p.shippingFee !== undefined) setShippingFee(String(p.shippingFee));
         } catch { /* keep defaults */ }
       }
     });
@@ -289,6 +291,7 @@ export default function AdminSettingsPage() {
         storeDescription,
         currency,
         shippingThreshold: parseFloat(shippingThreshold) || 1499,
+        shippingFee: parseFloat(shippingFee) || 0,
       })
     );
     setIsSavingSettings(false);
@@ -466,7 +469,7 @@ export default function AdminSettingsPage() {
 
         <section>
           <h3 className="font-display text-lg text-jungle mb-4 border-b border-border pb-2">Shipping &amp; Currency</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-jungle/80 mb-1">Primary Currency</label>
               <select
@@ -489,7 +492,19 @@ export default function AdminSettingsPage() {
                 step="1"
                 className={INPUT_CLS}
               />
-              <p className="text-xs text-jungle/40 mt-1">Orders at or above this amount qualify for free shipping.</p>
+              <p className="text-xs text-jungle/40 mt-1">Orders at or above this qualify for free shipping.</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-jungle/80 mb-1">Standard Shipping Fee (₹)</label>
+              <input
+                type="number"
+                value={shippingFee}
+                onChange={(e) => setShippingFee(e.target.value)}
+                min="0"
+                step="1"
+                className={INPUT_CLS}
+              />
+              <p className="text-xs text-jungle/40 mt-1">Charged when the order subtotal is below the threshold.</p>
             </div>
           </div>
         </section>
