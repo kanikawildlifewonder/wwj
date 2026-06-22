@@ -48,6 +48,11 @@ export default function TermsPage() {
           <p>
             These Terms of Service and any separate agreements whereby we provide you Services shall be governed by and construed in accordance with the laws of India, specifically within the jurisdiction of Mumbai, Maharashtra.
           </p>
+
+          <h2 className="font-display text-2xl text-jungle pt-4">6. Product Material Disclaimer</h2>
+          <p>
+            All jewelry products sold on Wildlife Wonder Jewellery (WWJ) are handcrafted imitation, fashion, and art jewelry. They are made of brass, alloy, resin, enamel, and other non-precious metals/materials. We do not sell or deal in precious metals (such as Gold, Silver, or Platinum) or precious stones/gems.
+          </p>
         </div>
       </div>
     </div>

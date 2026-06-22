@@ -25,10 +25,10 @@ const DEFAULT = {
   missionImage: "https://images.unsplash.com/photo-1585036156171-384164a8c675?w=800&auto=format&fit=crop",
   value1Title: "Artisanal Craftsmanship",
   value1Text:
-    "Every curve, texture, and gemstone is placed with intention by skilled artisans using techniques passed down through generations. We believe in slow fashion.",
+    "Every curve, texture, and detail is placed with intention by skilled artisans using techniques passed down through generations. We believe in slow fashion.",
   value2Title: "Ethical Sourcing",
   value2Text:
-    "Our materials are procured with deep respect for the earth. We use conflict-free gemstones and recycled precious metals wherever possible.",
+    "Our materials are procured with deep respect for the earth. We use high-quality recycled brass, eco-friendly alloys, and sustainably sourced materials.",
   value3Title: "Wildlife Conservation",
   value3Text:
     "Nature gives us our inspiration, and we give back. A portion of every purchase goes directly to verified wildlife sanctuaries and conservation funds.",

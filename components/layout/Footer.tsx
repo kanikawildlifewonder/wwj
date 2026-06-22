@@ -175,7 +175,12 @@ export async function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
-          <p>© {new Date().getFullYear()} WWJ - Wildlife Wonder Jewellery. All Rights Reserved.</p>
+          <div className="space-y-1">
+            <p>© {new Date().getFullYear()} WWJ - Wildlife Wonder Jewellery. All Rights Reserved.</p>
+            <p className="text-[10px] text-ivory/40 max-w-xl">
+              Disclaimer: All jewelry products sold on this website are handcrafted fashion/imitation jewelry made of brass, alloy, and non-precious metals. We do not deal in precious metals (Gold, Silver, Platinum) or precious stones/gems.
+            </p>
+          </div>
           <div className="flex items-center gap-1 text-gold">
             <PawPrint className="w-3 h-3" />
             <span className="text-ivory/60 italic ml-2">Handcrafted with ♥ for Wildlife & Nature Lovers</span>
