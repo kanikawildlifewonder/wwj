@@ -14,11 +14,11 @@ export const metadata = {
 const initiatives = [
   {
     id: "paws",
-    title: "WWJ – Donate Food for Paws",
+    title: "WWJ – Support Food for Paws",
     subtitle: "Nourish a Friend in Need",
     image: "/images/welfare/food-for-paws.jpg",
     description:
-      "A heartfelt initiative dedicated to helping hungry cats and dogs by collecting pet food for local shelters and rescue organizations. Every donation provides nourishment, hope, and a second chance to animals in need. Join us in making a difference—one bowl at a time.",
+      "A heartfelt initiative dedicated to helping hungry cats and dogs by collecting pet food for local shelters and rescue organizations. Every contribution provides nourishment, hope, and a second chance to animals in need. Join us in making a difference—one bowl at a time.",
     points: [
       "Give a hungry animal hope.",
       "Support local shelters.",

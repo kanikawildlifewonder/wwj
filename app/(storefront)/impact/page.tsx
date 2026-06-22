@@ -37,7 +37,7 @@ export default function ImpactPage() {
           <h2 className="font-display text-3xl sm:text-4xl text-jungle">The WWJ Pledge</h2>
           <div className="w-16 h-1 bg-gold mx-auto"></div>
           <p className="text-xl text-jungle/80 leading-relaxed font-serif italic">
-            &quot;For every piece of jewellery sold, WWJ donates 5% of the profits directly to grassroots wildlife conservation organizations in India and Africa.&quot;
+            &quot;For every piece of jewellery sold, WWJ contributes 5% of the profits directly to grassroots wildlife conservation organizations in India and Africa.&quot;
           </p>
           <p className="text-jungle/60 leading-relaxed max-w-2xl mx-auto">
             We believe that businesses have a fundamental responsibility to the planet. Our inspiration comes from the majestic beauty of animals, and it is our duty to ensure these species thrive for generations to come.
@@ -60,7 +60,7 @@ export default function ImpactPage() {
               <Shield className="w-12 h-12 text-gold" />
               <h3 className="font-display text-2xl">Anti-Poaching</h3>
               <p className="text-ivory/70 text-sm leading-relaxed">
-                By supporting frontline rangers with better equipment and training, our donations actively help protect elephants, rhinos, and big cats from illegal hunting.
+                By supporting frontline rangers with better equipment and training, our contributions actively help protect elephants, rhinos, and big cats from illegal hunting.
               </p>
             </div>
             <div className="space-y-4">

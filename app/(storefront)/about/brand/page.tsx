@@ -404,7 +404,7 @@ export default async function AboutBrandPage() {
             Every Purchase Protects a Species
           </h2>
           <p className="text-jungle/70 leading-relaxed max-w-2xl mx-auto">
-            A percentage of every sale is donated to our partner wildlife sanctuaries and conservation programmes across India. When you wear WWJ, you wear a promise.
+            A percentage of every sale is contributed to our partner wildlife sanctuaries and conservation programmes across India. When you wear WWJ, you wear a promise.
           </p>
           <Link
             href="/impact"

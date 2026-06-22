@@ -14,7 +14,7 @@ export const revalidate = 300;
 
 export const metadata = {
   title: "WWJ - Wildlife Wonder Jewellery | Handcrafted Animal Jewelry India",
-  description: "Experience Wildlife Wonder Jewellery (WWJ). Luxury handcrafted rings, necklaces, and accessories inspired by wildlife. We donate a portion of all proceeds to animal welfare.",
+  description: "Experience Wildlife Wonder Jewellery (WWJ). Luxury handcrafted rings, necklaces, and accessories inspired by wildlife. We support animal welfare initiatives with a portion of all proceeds.",
   alternates: {
     canonical: "/",
   },
