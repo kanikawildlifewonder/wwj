@@ -171,7 +171,7 @@ export default function CheckoutPage() {
     }
 
     // 3. Open Razorpay payment modal
-    const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+    const razorpayKey = rzpOrderRes.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
     if (!razorpayKey) {
       toast.error("Razorpay key not configured. Please contact support.");
       setIsProcessing(false);
