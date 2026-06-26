@@ -8,12 +8,8 @@ const nextConfig: NextConfig = {
     proxyClientMaxBodySize: '50mb',
   },
   images: {
-    unoptimized: true,
+    unoptimized: false,
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'dslwgbtaxwyotsyjqwhd.supabase.co',
-      },
       {
         protocol: 'https',
         hostname: 'media.wildlifewonderjewellery.com',
