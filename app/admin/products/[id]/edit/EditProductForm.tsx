@@ -229,6 +229,7 @@ export default function EditProductForm({ product }: { product: EditableProduct 
       }
     } catch (error) {
       console.error(error);
+      toast.dismiss("upload");
       toast.error("An unexpected error occurred.", { id: "save" });
     } finally {
       setIsSubmitting(false);

@@ -162,6 +162,7 @@ export default function NewProductPage() {
       }
     } catch (error) {
       console.error(error);
+      toast.dismiss("upload");
       toast.error("An unexpected error occurred.", { id: "save" });
     } finally {
       setIsSubmitting(false);
