@@ -50,7 +50,7 @@ const DEFAULT_COLLECTIONS: CollectionCard[] = [
   {
     title: "GIFTING COLLECTION",
     description: "Ready-to-gift pieces & curated sets for every occasion.",
-    image: "/images/collections/gifting_box.png",
+    image: "/images/collections/gifting_box.webp",
     link: "/collections/gifting",
     subLinks: [
       { name: "Gift Boxes", icon: "Gift" },

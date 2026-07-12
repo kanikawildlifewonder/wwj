@@ -5,9 +5,9 @@ export function WildlifeStoryBanner({
   subtitle = "INSPIRED BY NATURE. MADE FOR YOU.",
   title = "Every Piece Tells <br /> A Wild Story.",
   paragraph = "From the elegance of a butterfly to the strength of a tiger, our designs are a tribute to the incredible wildlife that inspires us every day.",
-  imageLeft = "/images/wildlife/peacock.png",
-  imageCenter = "/images/wildlife/deer.png",
-  imageRight = "/images/collections/accessories_banner.jpg"
+  imageLeft = "/images/wildlife/peacock.webp",
+  imageCenter = "/images/wildlife/deer.webp",
+  imageRight = "/images/collections/accessories_banner.webp"
 }: {
   subtitle?: string;
   title?: string;
@@ -21,7 +21,7 @@ export function WildlifeStoryBanner({
       {/* Tiger Background Left */}
       <div
         className="absolute left-0 top-0 w-1/2 h-full bg-cover bg-center opacity-30"
-        style={{ backgroundImage: "url('/images/wildlife/tiger.png')" }}
+        style={{ backgroundImage: "url('/images/wildlife/tiger.webp')" }}
       />
       <div className="absolute left-0 top-0 w-1/2 h-full bg-linear-to-r from-transparent to-jungle" />
       <div className="container mx-auto px-4 lg:px-8">

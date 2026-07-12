@@ -170,7 +170,7 @@ export const MOCK_PRODUCTS: Product[] = [
     longDescription: "Inspired by the majestic Bengal tiger, this hair clip brings fierce yet refined style to any look. The bold stripe pattern in black and gold enamel is perfect for those who want to make a statement.",
     price: 799,
     images: [
-      "/images/wildlife/deer.png",
+      "/images/wildlife/deer.webp",
     ],
     category: "Hair Accessories",
     collection: "WWJ Jewellery",
@@ -197,7 +197,7 @@ export const MOCK_PRODUCTS: Product[] = [
     price: 2999,
     originalPrice: 3999,
     images: [
-      "/images/collections/gifting_box.png",
+      "/images/collections/gifting_box.webp",
       "/images/products/elephant_keychain.png",
     ],
     category: "Gift Boxes",

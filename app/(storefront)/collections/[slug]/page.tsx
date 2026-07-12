@@ -14,9 +14,9 @@ const COLLECTION_MAP: Record<string, string> = {
 };
 
 const COLLECTION_IMAGES: Record<string, string> = {
-  jewellery: "/images/collections/jewellery_banner.jpg",
-  accessories: "/images/collections/accessories_banner.jpg",
-  gifting: "/images/collections/gifting_box.jpeg",
+  jewellery: "/images/collections/jewellery_banner.webp",
+  accessories: "/images/collections/accessories_banner.webp",
+  gifting: "/images/collections/gifting_box.webp",
 };
 
 interface PageProps {

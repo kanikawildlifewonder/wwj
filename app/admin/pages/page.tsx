@@ -16,7 +16,7 @@ type Section = "hero" | "collections" | "about" | "announcement" | "aboutBrand" 
 const DEFAULT_COLLECTIONS: CollectionSlot[] = [
   { title: "WWJ JEWELLERY",       description: "Handcrafted animal-inspired fashion pieces.", image: "/images/products/peacock_necklace.png" },
   { title: "WWA ACCESSORIES",     description: "Cute everyday wildlife collectibles.",         image: "/images/products/elephant_keychain.png" },
-  { title: "GIFTING COLLECTION",  description: "Ready-to-gift pieces & curated sets for every occasion.", image: "/images/collections/gifting_box.png" },
+  { title: "GIFTING COLLECTION",  description: "Ready-to-gift pieces & curated sets for every occasion.", image: "/images/collections/gifting_box.webp" },
 ];
 
 /* ─────────────────────── helpers ─────────────────────── */
@@ -282,9 +282,9 @@ export default function AdminPagesCMS() {
   const [aboutSubtitle,  setAboutSubtitle]  = useState("");
   const [aboutTitle,     setAboutTitle]     = useState("");
   const [aboutParagraph, setAboutParagraph] = useState("");
-  const [aboutImageLeft,   setAboutImageLeft]   = useState("/images/wildlife/peacock.png");
-  const [aboutImageCenter, setAboutImageCenter] = useState("/images/wildlife/deer.png");
-  const [aboutImageRight,  setAboutImageRight]  = useState("/images/collections/accessories_banner.jpg");
+  const [aboutImageLeft,   setAboutImageLeft]   = useState("/images/wildlife/peacock.webp");
+  const [aboutImageCenter, setAboutImageCenter] = useState("/images/wildlife/deer.webp");
+  const [aboutImageRight,  setAboutImageRight]  = useState("/images/collections/accessories_banner.webp");
 
   // Announcement
   const [announcementText, setAnnouncementText] = useState("FREE SHIPPING ON ORDERS ABOVE ₹1499");
@@ -292,11 +292,11 @@ export default function AdminPagesCMS() {
   // Footer & Socials
   const [instagramUrl, setInstagramUrl] = useState("https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==");
   const [feeds, setFeeds] = useState<{ src: string; alt: string; href: string }[]>([
-    { src: "/images/wildlife/tiger.png", alt: "Tiger Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
+    { src: "/images/wildlife/tiger.webp", alt: "Tiger Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
     { src: "/images/products/peacock_necklace.png", alt: "Peacock Necklace", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
-    { src: "/images/wildlife/deer.png", alt: "Deer Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
+    { src: "/images/wildlife/deer.webp", alt: "Deer Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
     { src: "/images/products/butterfly_earrings.png", alt: "Butterfly Earrings", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
-    { src: "/images/wildlife/peacock.png", alt: "Peacock Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
+    { src: "/images/wildlife/peacock.webp", alt: "Peacock Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
     { src: "/images/products/leopard_pendant.png", alt: "Leopard Pendant", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" }
   ]);
 
@@ -359,9 +359,9 @@ export default function AdminPagesCMS() {
           setAboutSubtitle(c.subtitle ?? "");
           setAboutTitle(c.title ?? "");
           setAboutParagraph(c.paragraph ?? "");
-          setAboutImageLeft(c.imageLeft ?? "/images/wildlife/peacock.png");
-          setAboutImageCenter(c.imageCenter ?? "/images/wildlife/deer.png");
-          setAboutImageRight(c.imageRight ?? "/images/collections/accessories_banner.jpg");
+          setAboutImageLeft(c.imageLeft ?? "/images/wildlife/peacock.webp");
+          setAboutImageCenter(c.imageCenter ?? "/images/wildlife/deer.webp");
+          setAboutImageRight(c.imageRight ?? "/images/collections/accessories_banner.webp");
         }
         if (colRes) {
           const arr = JSON.parse(colRes);

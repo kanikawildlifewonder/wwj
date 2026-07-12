@@ -18,7 +18,7 @@ export default function ImpactPage() {
         <div className="absolute inset-0 bg-jungle z-0">
           <div 
             className="absolute inset-0 opacity-50 bg-cover bg-center"
-            style={{ backgroundImage: "url('/images/wildlife/peacock.png')" }}
+            style={{ backgroundImage: "url('/images/wildlife/peacock.webp')" }}
           />
         </div>
         <div className="relative z-10 text-center px-4 max-w-3xl mx-auto">

@@ -18,7 +18,7 @@ export function HeroBanner({
     <section className="relative w-full h-[70vh] sm:h-[80vh] md:h-[85vh] min-h-125 sm:min-h-150 flex items-center justify-center overflow-hidden bg-jungle">
       {/* Background Image Placeholder */}
       <Image
-        src="/images/hero_leopard.png"
+        src="/images/hero_leopard.webp"
         alt="Hero Banner Leopard"
         fill
         priority

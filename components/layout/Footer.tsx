@@ -11,11 +11,11 @@ export async function Footer() {
   ]);
   let instagramUrl = "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==";
   let feeds = [
-    { src: "/images/wildlife/tiger.png", alt: "Tiger Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
+    { src: "/images/wildlife/tiger.webp", alt: "Tiger Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
     { src: "/images/products/peacock_necklace.png", alt: "Peacock Necklace", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
-    { src: "/images/wildlife/deer.png", alt: "Deer Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
+    { src: "/images/wildlife/deer.webp", alt: "Deer Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
     { src: "/images/products/butterfly_earrings.png", alt: "Butterfly Earrings", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
-    { src: "/images/wildlife/peacock.png", alt: "Peacock Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
+    { src: "/images/wildlife/peacock.webp", alt: "Peacock Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
     { src: "/images/products/leopard_pendant.png", alt: "Leopard Pendant", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" }
   ];
 
