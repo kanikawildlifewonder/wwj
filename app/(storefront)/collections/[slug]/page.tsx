@@ -110,15 +110,14 @@ export default async function CollectionPage({ params, searchParams }: PageProps
       where: {
         OR: [
           { mainCategory: "gift_cards" },
-          { category: { in: ["Gift Boxes", "Festive Collections"] } }
+          { category: { in: ["Gift Boxes", "Festive Collections", "Friendship Day", "Gift Cards"] } },
+          { category: { contains: "Gift" } }
         ]
       },
       orderBy: { createdAt: 'desc' }
     });
   }
 
-
- 
   // Group products into sections based on slug
   interface SectionGroup {
     title: string;
@@ -145,7 +144,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
     // 5. Sets & Combos
     const sets = rawProducts.filter(p => checkCategory(p.category, ["set", "combo"]));
 
-    // 6. Others
+    // 6. Remaining products grouped by exact category name
     const groupedIds = new Set([
       ...necklaces.map(p => p.id),
       ...rings.map(p => p.id),
@@ -160,7 +159,16 @@ export default async function CollectionPage({ params, searchParams }: PageProps
     if (earrings.length > 0) sections.push({ title: "Earrings", products: mapProducts(earrings) });
     if (bracelets.length > 0) sections.push({ title: "Bracelets", products: mapProducts(bracelets) });
     if (sets.length > 0) sections.push({ title: "Sets & Combos", products: mapProducts(sets) });
-    if (others.length > 0) sections.push({ title: "Other Jewellery Pieces", products: mapProducts(others) });
+
+    const otherCatMap: Record<string, DbProduct[]> = {};
+    for (const prod of others) {
+      const cName = prod.category ? prod.category.trim() : "Fine Jewellery";
+      if (!otherCatMap[cName]) otherCatMap[cName] = [];
+      otherCatMap[cName].push(prod);
+    }
+    for (const [cName, prods] of Object.entries(otherCatMap)) {
+      if (prods.length > 0) sections.push({ title: cName, products: mapProducts(prods) });
+    }
 
   } else if (slug === "accessories") {
     // 1. Keychains & Charms
@@ -192,23 +200,31 @@ export default async function CollectionPage({ params, searchParams }: PageProps
     if (mugs.length > 0) sections.push({ title: "Coffee Mugs", products: mapProducts(mugs) });
     if (bookmarks.length > 0) sections.push({ title: "Bookmarks", products: mapProducts(bookmarks) });
     if (customPet.length > 0) sections.push({ title: "Custom Pet Portraits", products: mapProducts(customPet) });
-    if (others.length > 0) sections.push({ title: "Other Collectibles", products: mapProducts(others) });
+
+    const otherCatMap: Record<string, DbProduct[]> = {};
+    for (const prod of others) {
+      const cName = prod.category ? prod.category.trim() : "Accessories";
+      if (!otherCatMap[cName]) otherCatMap[cName] = [];
+      otherCatMap[cName].push(prod);
+    }
+    for (const [cName, prods] of Object.entries(otherCatMap)) {
+      if (prods.length > 0) sections.push({ title: cName, products: mapProducts(prods) });
+    }
 
   } else if (slug === "gifting") {
-    // 1. Gift Boxes
-    const boxes = rawProducts.filter(p => checkCategory(p.category, ["gift box", "gift boxes", "box", "boxes"]));
-    // 2. Festive & Special
-    const festive = rawProducts.filter(p => checkCategory(p.category, ["festive", "special", "celebration"]));
+    // Dynamically group products in gifting by their exact category name (e.g. Friendship Day, Gift Boxes, etc.)
+    const catMap: Record<string, DbProduct[]> = {};
+    for (const prod of rawProducts) {
+      const catName = prod.category ? prod.category.trim() : "Gift Collection";
+      if (!catMap[catName]) catMap[catName] = [];
+      catMap[catName].push(prod);
+    }
 
-    const groupedIds = new Set([
-      ...boxes.map(p => p.id),
-      ...festive.map(p => p.id)
-    ]);
-    const others = rawProducts.filter(p => !groupedIds.has(p.id));
-
-    if (boxes.length > 0) sections.push({ title: "Curated Gift Boxes", products: mapProducts(boxes) });
-    if (festive.length > 0) sections.push({ title: "Festive & Special Collections", products: mapProducts(festive) });
-    if (others.length > 0) sections.push({ title: "Other Gift Options", products: mapProducts(others) });
+    for (const [catName, prods] of Object.entries(catMap)) {
+      if (prods.length > 0) {
+        sections.push({ title: catName, products: mapProducts(prods) });
+      }
+    }
   }
 
   // Filter sections by category query if present
