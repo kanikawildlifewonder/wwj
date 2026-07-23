@@ -8,21 +8,26 @@ import { motion } from "motion/react";
 export function HeroBanner({
   title = "WEAR <br /> THE WILD",
   subtitle = "Celebrate Nature. Inspire Change.",
-  buttonText = "Shop Collection"
+  buttonText = "Shop Collection",
+  bgImage = "/images/hero_leopard.webp",
 }: {
   title?: string;
   subtitle?: string;
   buttonText?: string;
+  bgImage?: string;
 }) {
+  const imageSrc = bgImage || "/images/hero_leopard.webp";
+
   return (
     <section className="relative w-full h-[70vh] sm:h-[80vh] md:h-[85vh] min-h-125 sm:min-h-150 flex items-center justify-center overflow-hidden bg-jungle">
-      {/* Background Image Placeholder */}
+      {/* Background Image */}
       <Image
-        src="/images/hero_leopard.webp"
-        alt="Hero Banner Leopard"
+        src={imageSrc}
+        alt="Hero Banner Background"
         fill
         priority
         className="absolute inset-0 z-0 opacity-60 object-cover object-center transition-transform duration-[10s] ease-out hover:scale-105"
+        unoptimized={imageSrc.startsWith("http")}
       />
       
       {/* Dark overlay for text readability */}

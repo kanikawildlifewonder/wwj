@@ -274,6 +274,7 @@ export default function AdminPagesCMS() {
   const [heroTitle,      setHeroTitle]      = useState("");
   const [heroSubtitle,   setHeroSubtitle]   = useState("");
   const [heroButtonText, setHeroButtonText] = useState("");
+  const [heroImage,      setHeroImage]      = useState("/images/hero_leopard.webp");
 
   // Collections
   const [collections, setCollections] = useState<CollectionSlot[]>(DEFAULT_COLLECTIONS.map(c => ({ ...c })));
@@ -394,6 +395,7 @@ export default function AdminPagesCMS() {
           setHeroTitle(c.title ?? "");
           setHeroSubtitle(c.subtitle ?? "");
           setHeroButtonText(c.buttonText ?? "");
+          setHeroImage(c.bgImage ?? c.image ?? "/images/hero_leopard.webp");
         }
         if (aboutRes) {
           const c = JSON.parse(aboutRes);
@@ -508,7 +510,12 @@ export default function AdminPagesCMS() {
     try {
       let res: { success: boolean };
       if (activeSection === "hero") {
-        res = await updatePageContent("home-hero", JSON.stringify({ title: heroTitle, subtitle: heroSubtitle, buttonText: heroButtonText }));
+        res = await updatePageContent("home-hero", JSON.stringify({
+          title: heroTitle,
+          subtitle: heroSubtitle,
+          buttonText: heroButtonText,
+          bgImage: heroImage,
+        }));
       } else if (activeSection === "collections") {
         res = await updatePageContent("home-collections", JSON.stringify(collections));
       } else if (activeSection === "about") {
@@ -675,7 +682,12 @@ export default function AdminPagesCMS() {
 
               {/* ── HERO ── */}
               {activeSection === "hero" && (
-                <>
+                <div className="space-y-6">
+                  <ImageUploader
+                    label="Hero Background Image"
+                    value={heroImage}
+                    onChange={setHeroImage}
+                  />
                   <FormField label="Main Title" hint='You can use <br /> for line breaks'>
                     <input value={heroTitle} onChange={(e) => setHeroTitle(e.target.value)} placeholder='e.g. WEAR <br /> THE WILD' className={INPUT_CLS} />
                   </FormField>
@@ -685,7 +697,7 @@ export default function AdminPagesCMS() {
                   <FormField label="Primary Button Text">
                     <input value={heroButtonText} onChange={(e) => setHeroButtonText(e.target.value)} placeholder="e.g. Shop Collection" className={INPUT_CLS} />
                   </FormField>
-                </>
+                </div>
               )}
 
               {/* ── COLLECTIONS ── */}
