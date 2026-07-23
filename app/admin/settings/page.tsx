@@ -193,6 +193,14 @@ export default function AdminSettingsPage() {
   const [shippingFee,        setShippingFee]        = useState("99");
   const [isSavingSettings,   setIsSavingSettings]   = useState(false);
 
+  /* color theme */
+  const [themeJungle, setThemeJungle] = useState("#071D16");
+  const [themeForest, setThemeForest] = useState("#102C22");
+  const [themeGold, setThemeGold] = useState("#D6B87A");
+  const [themeIvory, setThemeIvory] = useState("#F7F1E5");
+  const [themeCream, setThemeCream] = useState("#F6EBD5");
+  const [isSavingTheme, setIsSavingTheme] = useState(false);
+
   /* load on mount */
   useEffect(() => {
     // categories
@@ -201,11 +209,12 @@ export default function AdminSettingsPage() {
       setIsLoadingCategories(false);
     });
 
-    // brand logo / favicon
+    // brand logo, favicon, theme
     void Promise.all([
       getPageContent("brand-logo"),
       getPageContent("brand-favicon"),
-    ]).then(([logoRaw, favRaw]) => {
+      getPageContent("site-theme"),
+    ]).then(([logoRaw, favRaw, themeRaw]) => {
       if (logoRaw) {
         try {
           const p = JSON.parse(logoRaw);
@@ -218,6 +227,16 @@ export default function AdminSettingsPage() {
         try {
           const p = JSON.parse(favRaw);
           setFaviconUrl(p.url ?? "");
+        } catch { /* ignore */ }
+      }
+      if (themeRaw) {
+        try {
+          const p = JSON.parse(themeRaw);
+          if (p.jungle) setThemeJungle(p.jungle);
+          if (p.forest) setThemeForest(p.forest);
+          if (p.gold) setThemeGold(p.gold);
+          if (p.ivory) setThemeIvory(p.ivory);
+          if (p.cream) setThemeCream(p.cream);
         } catch { /* ignore */ }
       }
     });
@@ -298,6 +317,28 @@ export default function AdminSettingsPage() {
     if (res.success) toast.success("Store settings saved! Changes will be reflected on the site.");
     else toast.error("Failed to save store settings.");
   };
+
+  const handleSaveTheme = async (
+    j = themeJungle, f = themeForest, g = themeGold, i = themeIvory, c = themeCream
+  ) => {
+    setIsSavingTheme(true);
+    const res = await updatePageContent(
+      "site-theme",
+      JSON.stringify({ jungle: j, forest: f, gold: g, ivory: i, cream: c })
+    );
+    setIsSavingTheme(false);
+    if (res.success) toast.success("Color theme saved! Site colors updated live.");
+    else toast.error("Failed to save color theme.");
+  };
+
+  const THEME_PRESETS = [
+    { name: "Jungle Emerald (Default)", jungle: "#071D16", forest: "#102C22", gold: "#D6B87A", ivory: "#F7F1E5", cream: "#F6EBD5" },
+    { name: "Royal Onyx & Gold",       jungle: "#0D0D0D", forest: "#1A1A1A", gold: "#E5C158", ivory: "#F9F9F9", cream: "#F0EAD6" },
+    { name: "Midnight Sapphire",        jungle: "#090C15", forest: "#121829", gold: "#C0C0C0", ivory: "#FFFFFF", cream: "#EBF0F5" },
+    { name: "Rose Gold Luxury",         jungle: "#1C0F13", forest: "#2A161C", gold: "#E0A96D", ivory: "#FBF2ED", cream: "#F7E8E1" },
+    { name: "Warm Terracotta & Sand",   jungle: "#2C1A14", forest: "#3E261E", gold: "#D9A05B", ivory: "#FAF4EE", cream: "#F5EBE1" },
+    { name: "Deep Ruby & Champagne",   jungle: "#240A10", forest: "#38111B", gold: "#F0C987", ivory: "#FCF8F0", cream: "#F6EEE0" },
+  ];
 
   const INPUT_CLS = "w-full border border-border px-3 py-2 rounded-lg bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold text-jungle transition-all";
 
@@ -518,6 +559,176 @@ export default function AdminSettingsPage() {
             {isSavingSettings
               ? <><RefreshCw className="w-4 h-4 animate-spin" /> Saving…</>
               : <><Save className="w-4 h-4" /> Save Changes</>}
+          </button>
+        </div>
+      </div>
+
+      {/* ── Dynamic Website Color Theme Customizer ── */}
+      <div className="bg-white rounded-xl border border-border shadow-sm p-6 space-y-6">
+        <div className="flex items-center gap-2 border-b border-border pb-3">
+          <Zap className="w-5 h-5 text-gold" />
+          <h3 className="font-display text-lg text-jungle">Website Color Theme Customizer</h3>
+          <p className="ml-2 text-sm text-jungle/50">Change the live color palette across the website.</p>
+        </div>
+
+        {/* Theme Presets */}
+        <div className="space-y-3">
+          <label className="block text-sm font-medium text-jungle/80">One-Click Luxury Theme Presets</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {THEME_PRESETS.map((p) => {
+              const isSelected =
+                themeJungle === p.jungle && themeGold === p.gold;
+              return (
+                <button
+                  key={p.name}
+                  type="button"
+                  onClick={() => {
+                    setThemeJungle(p.jungle);
+                    setThemeForest(p.forest);
+                    setThemeGold(p.gold);
+                    setThemeIvory(p.ivory);
+                    setThemeCream(p.cream);
+                    void handleSaveTheme(p.jungle, p.forest, p.gold, p.ivory, p.cream);
+                  }}
+                  className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all ${
+                    isSelected
+                      ? "border-gold ring-2 ring-gold/30 bg-cream/40"
+                      : "border-border bg-white hover:border-gold/50"
+                  }`}
+                >
+                  <p className="text-xs font-bold text-jungle mb-2">{p.name}</p>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded-full border shadow-xs shrink-0" style={{ backgroundColor: p.jungle }} title="Main Background / Jungle" />
+                    <span className="w-5 h-5 rounded-full border shadow-xs shrink-0" style={{ backgroundColor: p.forest }} title="Card Forest" />
+                    <span className="w-5 h-5 rounded-full border shadow-xs shrink-0" style={{ backgroundColor: p.gold }} title="Accent Gold" />
+                    <span className="w-5 h-5 rounded-full border shadow-xs shrink-0" style={{ backgroundColor: p.ivory }} title="Text Ivory" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Custom Color Pickers */}
+        <div className="pt-4 border-t border-border space-y-4">
+          <label className="block text-sm font-medium text-jungle/80">Custom Brand Color Controls</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-jungle/60 uppercase">Main Dark / Jungle</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={themeJungle}
+                  onChange={(e) => setThemeJungle(e.target.value)}
+                  className="w-9 h-9 rounded cursor-pointer border border-border p-0.5"
+                />
+                <input
+                  type="text"
+                  value={themeJungle}
+                  onChange={(e) => setThemeJungle(e.target.value)}
+                  className="flex-1 text-xs px-2 py-1.5 border border-border rounded font-mono text-jungle"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-jungle/60 uppercase">Card / Forest</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={themeForest}
+                  onChange={(e) => setThemeForest(e.target.value)}
+                  className="w-9 h-9 rounded cursor-pointer border border-border p-0.5"
+                />
+                <input
+                  type="text"
+                  value={themeForest}
+                  onChange={(e) => setThemeForest(e.target.value)}
+                  className="flex-1 text-xs px-2 py-1.5 border border-border rounded font-mono text-jungle"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-jungle/60 uppercase">Accent / Gold</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={themeGold}
+                  onChange={(e) => setThemeGold(e.target.value)}
+                  className="w-9 h-9 rounded cursor-pointer border border-border p-0.5"
+                />
+                <input
+                  type="text"
+                  value={themeGold}
+                  onChange={(e) => setThemeGold(e.target.value)}
+                  className="flex-1 text-xs px-2 py-1.5 border border-border rounded font-mono text-jungle"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-jungle/60 uppercase">Light Text / Ivory</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={themeIvory}
+                  onChange={(e) => setThemeIvory(e.target.value)}
+                  className="w-9 h-9 rounded cursor-pointer border border-border p-0.5"
+                />
+                <input
+                  type="text"
+                  value={themeIvory}
+                  onChange={(e) => setThemeIvory(e.target.value)}
+                  className="flex-1 text-xs px-2 py-1.5 border border-border rounded font-mono text-jungle"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-jungle/60 uppercase">Light Card / Cream</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={themeCream}
+                  onChange={(e) => setThemeCream(e.target.value)}
+                  className="w-9 h-9 rounded cursor-pointer border border-border p-0.5"
+                />
+                <input
+                  type="text"
+                  value={themeCream}
+                  onChange={(e) => setThemeCream(e.target.value)}
+                  className="flex-1 text-xs px-2 py-1.5 border border-border rounded font-mono text-jungle"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Live Preview Box */}
+        <div className="p-5 rounded-xl border border-border space-y-3" style={{ backgroundColor: themeJungle, color: themeIvory }}>
+          <p className="text-xs uppercase tracking-widest font-bold" style={{ color: themeGold }}>Live Theme Color Preview</p>
+          <h4 className="font-display text-xl font-bold">WEAR THE WILD</h4>
+          <p className="text-sm opacity-80">Sample card rendering using chosen colors.</p>
+          <div className="flex items-center gap-3 pt-2">
+            <button type="button" className="px-4 py-2 text-xs font-bold uppercase rounded tracking-wider" style={{ backgroundColor: themeGold, color: themeJungle }}>
+              Shop Collection
+            </button>
+            <span className="text-xs px-3 py-1 rounded-full font-medium" style={{ backgroundColor: themeForest, color: themeGold }}>
+              Wildlife Conservation Badge
+            </span>
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-2">
+          <button
+            onClick={() => void handleSaveTheme()}
+            disabled={isSavingTheme}
+            className="bg-jungle text-gold px-6 py-2.5 rounded-btn flex items-center gap-2 text-sm font-bold tracking-wide hover:bg-charcoal transition-colors disabled:opacity-50"
+          >
+            {isSavingTheme
+              ? <><RefreshCw className="w-4 h-4 animate-spin" /> Saving Color Theme…</>
+              : <><Save className="w-4 h-4" /> Save Color Theme</>}
           </button>
         </div>
       </div>

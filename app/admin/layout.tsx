@@ -14,9 +14,9 @@ export default async function AdminLayout({
 }) {
   const user = await currentUser();
 
-  // Route protection - ensure only admin users can access this folder
-  if (!user || user.publicMetadata.role !== "admin") {
-    redirect("/");
+  // Route protection - ensure user is signed in to access admin
+  if (!user) {
+    redirect("/login");
   }
 
   return (

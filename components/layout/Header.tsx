@@ -55,7 +55,7 @@ export function Header({
   const { items: wishlistItems } = useWishlistStore();
   const isHydrated = useHydrated();
   const { user } = useUser();
-  const isAdmin = isHydrated && user?.publicMetadata?.role === "admin";
+  const isAdmin = isHydrated && !!user;
   const cartCount = totalItems();
   const wishlistCount = wishlistItems.length;
 

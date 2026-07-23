@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
 import { DynamicFavicon } from "@/components/layout/DynamicFavicon";
+import { DynamicThemeInjector } from "@/components/layout/DynamicThemeInjector";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
@@ -84,6 +85,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className="antialiased h-full scroll-smooth">
         <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+          <DynamicThemeInjector />
           <DynamicFavicon />
           <Toaster richColors position="top-center" />
           {children}
