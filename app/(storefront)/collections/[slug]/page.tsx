@@ -127,36 +127,45 @@ export default async function CollectionPage({ params, searchParams }: PageProps
 
   const checkCategory = (categoryName: string, keywords: string[]) => {
     const name = (categoryName || "").toLowerCase().trim();
-    return keywords.some(kw => name.includes(kw));
+    return keywords.some(kw => {
+      // Prevent "ring" matching "earring" / "earrings"
+      if (kw === "ring" || kw === "rings") {
+        if (name.includes("earring") || name.includes("stud") || name.includes("jhumka") || name.includes("hoop") || name.includes("dangle")) {
+          return false;
+        }
+        return name.includes("ring") || name.includes("band");
+      }
+      return name.includes(kw);
+    });
   };
 
   const mapProducts = (products: DbProduct[]) => products.map(mapDbProductToUI);
 
   if (slug === "jewellery") {
     // 1. Necklaces
-    const necklaces = rawProducts.filter(p => checkCategory(p.category, ["necklace"]));
-    // 2. Rings
-    const rings = rawProducts.filter(p => checkCategory(p.category, ["ring"]));
-    // 3. Earrings
-    const earrings = rawProducts.filter(p => checkCategory(p.category, ["earring", "stud"]));
+    const necklaces = rawProducts.filter(p => checkCategory(p.category, ["necklace", "choker", "pendant"]));
+    // 2. Earrings (Evaluated before rings)
+    const earrings = rawProducts.filter(p => checkCategory(p.category, ["earring", "stud", "jhumka", "hoop", "dangle"]));
+    // 3. Rings
+    const rings = rawProducts.filter(p => checkCategory(p.category, ["ring", "band"]));
     // 4. Bracelets
-    const bracelets = rawProducts.filter(p => checkCategory(p.category, ["bracelet"]));
+    const bracelets = rawProducts.filter(p => checkCategory(p.category, ["bracelet", "bangle", "kada"]));
     // 5. Sets & Combos
     const sets = rawProducts.filter(p => checkCategory(p.category, ["set", "combo"]));
 
     // 6. Remaining products grouped by exact category name
     const groupedIds = new Set([
       ...necklaces.map(p => p.id),
-      ...rings.map(p => p.id),
       ...earrings.map(p => p.id),
+      ...rings.map(p => p.id),
       ...bracelets.map(p => p.id),
       ...sets.map(p => p.id)
     ]);
     const others = rawProducts.filter(p => !groupedIds.has(p.id));
 
     if (necklaces.length > 0) sections.push({ title: "Necklaces", products: mapProducts(necklaces) });
-    if (rings.length > 0) sections.push({ title: "Rings", products: mapProducts(rings) });
     if (earrings.length > 0) sections.push({ title: "Earrings", products: mapProducts(earrings) });
+    if (rings.length > 0) sections.push({ title: "Rings", products: mapProducts(rings) });
     if (bracelets.length > 0) sections.push({ title: "Bracelets", products: mapProducts(bracelets) });
     if (sets.length > 0) sections.push({ title: "Sets & Combos", products: mapProducts(sets) });
 
