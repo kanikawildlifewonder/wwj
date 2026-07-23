@@ -16,13 +16,13 @@ const DEFAULT = {
   heroTitle: "Our Story",
   heroSubtitle:
     "Where high-end craftsmanship meets untamed beauty. Born from a passion for wildlife and a dedication to exquisite design.",
-  heroImage: "/images/hero_leopard.png",
+  heroImage: "/images/brand_story.png",
   missionTitle: "A Brand Born From the Wild",
   missionParagraph1:
     "Wildlife Wonder Jewellery (WWJ) was founded with a singular vision: to capture the fierce, delicate, and awe-inspiring essence of nature in wearable art. Every collection begins not in a design studio, but in the wild — inspired by the creatures that share our planet.",
   missionParagraph2:
     "We believe jewellery should tell a story. Not just of beauty, but of purpose. Each piece in the WWJ family is a pledge — a promise to the animals that inspired it, and to the world they inhabit.",
-  missionImage: "https://images.unsplash.com/photo-1585036156171-384164a8c675?w=800&auto=format&fit=crop",
+  missionImage: "/images/artisan_studio.png",
   value1Title: "Artisanal Craftsmanship",
   value1Text:
     "Every curve, texture, and detail is placed with intention by skilled artisans using techniques passed down through generations. We believe in slow fashion.",

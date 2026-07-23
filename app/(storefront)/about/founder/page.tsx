@@ -15,10 +15,10 @@ export const metadata = {
 const DEFAULT = {
   heroTitle: "Meet the Founder",
   heroSubtitle: "A story of passion, purpose, and the wild.",
-  heroImage: "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?q=80&w=800&auto=format&fit=crop",
+  heroImage: "/images/kanika_founder.png",
   founderName: "Kanika",
   founderRole: "Founder & Creative Director, WWJ",
-  founderImage: "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?q=80&w=800&auto=format&fit=crop",
+  founderImage: "/images/kanika_founder.png",
   quote:
     "I founded WWJ with a singular vision: to capture the fierce, delicate, and awe-inspiring essence of nature in wearable art. Every piece is a conversation between the wild and the one who wears it.",
   bio1:

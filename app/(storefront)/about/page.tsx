@@ -39,7 +39,7 @@ export default function AboutPage() {
           {/* Background image with parallax scale zoom */}
           <div 
             className="absolute inset-0 z-0 bg-cover bg-center opacity-65 group-hover:opacity-85 transition-all duration-700 group-hover:scale-105"
-            style={{ backgroundImage: "url('/images/hero_leopard.png')" }}
+            style={{ backgroundImage: "url('/images/brand_story.png')" }}
           />
           <div className="absolute inset-0 z-0 bg-linear-to-b from-jungle/50 via-transparent to-jungle/95" />
 
@@ -75,7 +75,7 @@ export default function AboutPage() {
           {/* Background image with parallax scale zoom */}
           <div 
             className="absolute inset-0 z-0 bg-cover bg-center opacity-65 group-hover:opacity-85 transition-all duration-700 group-hover:scale-105"
-            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?q=80&w=800&auto=format&fit=crop')" }}
+            style={{ backgroundImage: "url('/images/kanika_founder.png')" }}
           />
           <div className="absolute inset-0 z-0 bg-linear-to-b from-jungle/50 via-transparent to-jungle/95" />
 
