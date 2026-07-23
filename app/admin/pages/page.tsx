@@ -57,7 +57,7 @@ const INPUT_CLS = "w-full px-3.5 py-2.5 bg-cream/40 hover:bg-cream/60 focus:bg-c
 const TEXTAREA_CLS = `${INPUT_CLS} resize-none`;
 
 /* ─────────────────────── image uploader ─────────────────── */
-function ImageUploader({ value, onChange, label }: { value: string; onChange: (url: string) => void; label: string }) {
+function ImageUploader({ value, onChange, label, hint }: { value: string; onChange: (url: string) => void; label: string; hint?: string }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [urlInput, setUrlInput] = useState("");
@@ -81,7 +81,10 @@ function ImageUploader({ value, onChange, label }: { value: string; onChange: (u
 
   return (
     <div className="space-y-3">
-      <label className="block text-xs font-semibold text-jungle/60 uppercase tracking-wider">{label}</label>
+      <div>
+        <label className="block text-xs font-semibold text-jungle/60 uppercase tracking-wider">{label}</label>
+        {hint && <p className="text-[11px] text-gold font-medium mt-0.5">{hint}</p>}
+      </div>
 
       {/* Preview */}
       <div className="relative w-full h-40 rounded-xl overflow-hidden border border-border bg-cream/30">
@@ -685,6 +688,7 @@ export default function AdminPagesCMS() {
                 <div className="space-y-6">
                   <ImageUploader
                     label="Hero Background Image"
+                    hint="Recommended Size: 1920 × 1080 px (16:9 aspect ratio, max 2 MB)"
                     value={heroImage}
                     onChange={setHeroImage}
                   />
@@ -714,6 +718,7 @@ export default function AdminPagesCMS() {
                       <div className="p-4 space-y-4">
                         <ImageUploader
                           label="Thumbnail Image"
+                          hint="Recommended Size: 800 × 1000 px (3:4 portrait ratio)"
                           value={col.image}
                           onChange={(url) => updateCollection(idx, "image", url)}
                         />
@@ -742,9 +747,9 @@ export default function AdminPagesCMS() {
                     <textarea value={aboutParagraph} onChange={(e) => setAboutParagraph(e.target.value)} rows={5} placeholder="e.g. From the elegance of a butterfly…" className={TEXTAREA_CLS} />
                   </FormField>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-border mt-4">
-                    <ImageUploader label="Collage Left Image" value={aboutImageLeft} onChange={setAboutImageLeft} />
-                    <ImageUploader label="Collage Center Image" value={aboutImageCenter} onChange={setAboutImageCenter} />
-                    <ImageUploader label="Collage Right Image" value={aboutImageRight} onChange={setAboutImageRight} />
+                    <ImageUploader label="Collage Left Image" hint="600 × 800 px (3:4 ratio)" value={aboutImageLeft} onChange={setAboutImageLeft} />
+                    <ImageUploader label="Collage Center Image" hint="800 × 1000 px (4:5 ratio)" value={aboutImageCenter} onChange={setAboutImageCenter} />
+                    <ImageUploader label="Collage Right Image" hint="600 × 800 px (3:4 ratio)" value={aboutImageRight} onChange={setAboutImageRight} />
                   </div>
                 </>
               )}
@@ -813,7 +818,7 @@ export default function AdminPagesCMS() {
                       <FormField label="Highlight Metric / Stat">
                         <input value={welfare1Stat} onChange={(e) => setWelfare1Stat(e.target.value)} placeholder="5000+ Meals Served" className={INPUT_CLS} />
                       </FormField>
-                      <ImageUploader label="Banner Image" value={welfare1Img} onChange={setWelfare1Img} />
+                      <ImageUploader label="Banner Image" hint="800 × 600 px (4:3 ratio)" value={welfare1Img} onChange={setWelfare1Img} />
                     </div>
 
                     {/* Initiative 2 */}
@@ -828,7 +833,7 @@ export default function AdminPagesCMS() {
                       <FormField label="Highlight Metric / Stat">
                         <input value={welfare2Stat} onChange={(e) => setWelfare2Stat(e.target.value)} placeholder="12 Sanctuaries Supported" className={INPUT_CLS} />
                       </FormField>
-                      <ImageUploader label="Banner Image" value={welfare2Img} onChange={setWelfare2Img} />
+                      <ImageUploader label="Banner Image" hint="800 × 600 px (4:3 ratio)" value={welfare2Img} onChange={setWelfare2Img} />
                     </div>
 
                     {/* Initiative 3 */}
@@ -843,7 +848,7 @@ export default function AdminPagesCMS() {
                       <FormField label="Highlight Metric / Stat">
                         <input value={welfare3Stat} onChange={(e) => setWelfare3Stat(e.target.value)} placeholder="1200+ Nests Installed" className={INPUT_CLS} />
                       </FormField>
-                      <ImageUploader label="Banner Image" value={welfare3Img} onChange={setWelfare3Img} />
+                      <ImageUploader label="Banner Image" hint="800 × 600 px (4:3 ratio)" value={welfare3Img} onChange={setWelfare3Img} />
                     </div>
                   </div>
                 </div>
@@ -897,11 +902,11 @@ export default function AdminPagesCMS() {
                   <p className="text-xs text-jungle/50 -mt-2">Edit content for the <strong>/about/brand</strong> page.</p>
                   <FormField label="Hero Title"><input value={brandHeroTitle} onChange={(e) => setBrandHeroTitle(e.target.value)} placeholder="Our Story" className={INPUT_CLS} /></FormField>
                   <FormField label="Hero Subtitle"><input value={brandHeroSubtitle} onChange={(e) => setBrandHeroSubtitle(e.target.value)} placeholder="Born from a passion for wildlife…" className={INPUT_CLS} /></FormField>
-                  <ImageUploader label="Hero Background Image" value={brandHeroImage} onChange={setBrandHeroImage} />
+                  <ImageUploader label="Hero Background Image" hint="1920 × 800 px (21:9 widescreen)" value={brandHeroImage} onChange={setBrandHeroImage} />
                   <FormField label="Mission Section Title"><input value={brandMissionTitle} onChange={(e) => setBrandMissionTitle(e.target.value)} placeholder="A Brand Born From the Wild" className={INPUT_CLS} /></FormField>
                   <FormField label="Mission Paragraph 1"><textarea value={brandMission1} onChange={(e) => setBrandMission1(e.target.value)} rows={3} className={TEXTAREA_CLS} placeholder="WWJ was founded with…" /></FormField>
                   <FormField label="Mission Paragraph 2"><textarea value={brandMission2} onChange={(e) => setBrandMission2(e.target.value)} rows={3} className={TEXTAREA_CLS} placeholder="We believe jewellery should tell a story…" /></FormField>
-                  <ImageUploader label="Mission Section Image (right side)" value={brandMissionImage} onChange={setBrandMissionImage} />
+                  <ImageUploader label="Mission Section Image (right side)" hint="800 × 1000 px (4:5 portrait)" value={brandMissionImage} onChange={setBrandMissionImage} />
                 </div>
               )}
 
@@ -913,7 +918,7 @@ export default function AdminPagesCMS() {
                     <FormField label="Founder Name"><input value={founderName} onChange={(e) => setFounderName(e.target.value)} placeholder="Kanika" className={INPUT_CLS} /></FormField>
                     <FormField label="Founder Role"><input value={founderRole} onChange={(e) => setFounderRole(e.target.value)} placeholder="Founder & Creative Director" className={INPUT_CLS} /></FormField>
                   </div>
-                  <ImageUploader label="Founder Photo" value={founderImage} onChange={setFounderImage} />
+                  <ImageUploader label="Founder Photo" hint="Recommended Size: 800 × 1000 px (4:5 portrait ratio)" value={founderImage} onChange={setFounderImage} />
                   <FormField label="Pull Quote" hint="Shown in italic beside the photo"><textarea value={founderQuote} onChange={(e) => setFounderQuote(e.target.value)} rows={3} className={TEXTAREA_CLS} placeholder="I founded WWJ with a singular vision…" /></FormField>
                   <FormField label="Bio Paragraph 1"><textarea value={founderBio1} onChange={(e) => setFounderBio1(e.target.value)} rows={3} className={TEXTAREA_CLS} /></FormField>
                   <FormField label="Bio Paragraph 2"><textarea value={founderBio2} onChange={(e) => setFounderBio2(e.target.value)} rows={3} className={TEXTAREA_CLS} /></FormField>
@@ -1040,6 +1045,7 @@ export default function AdminPagesCMS() {
                         </div>
                         <ImageUploader
                           label="Image Thumbnail"
+                          hint="Recommended Size: 600 × 600 px (1:1 square ratio)"
                           value={feed.src}
                           onChange={(url) => setFeeds(prev => prev.map((f, i) => i === idx ? { ...f, src: url } : f))}
                         />
