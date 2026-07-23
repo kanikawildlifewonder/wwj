@@ -313,7 +313,7 @@ export default function NewEventPage() {
                   placeholder="Write detailed event highlights, descriptions, and results..."
                   value={formData.fullDescription}
                   onChange={e => setFormData({ ...formData, fullDescription: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-border rounded-xl resize-none text-jungle bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold transition-all min-h-[200px]"
+                  className="w-full px-4 py-2.5 border border-border rounded-xl resize-none text-jungle bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold transition-all min-h-50"
                 />
               </div>
             </div>
@@ -517,7 +517,7 @@ export default function NewEventPage() {
               )}
             </div>
             <p className="text-[10px] text-jungle/40 italic flex items-center gap-1">
-              <HelpCircle className="w-3.5 h-3.5 flex-shrink-0" /> selected: {selectedProductIds.length} items
+              <HelpCircle className="w-3.5 h-3.5 shrink-0" /> selected: {selectedProductIds.length} items
             </p>
           </div>
 
@@ -543,7 +543,7 @@ export default function NewEventPage() {
                   placeholder="Defaults to short description summary..."
                   value={formData.seoDescription}
                   onChange={e => setFormData({ ...formData, seoDescription: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-border rounded-xl resize-none text-jungle bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold transition-all min-h-[80px]"
+                  className="w-full px-4 py-2.5 border border-border rounded-xl resize-none text-jungle bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold transition-all min-h-20"
                 />
               </div>
             </div>
