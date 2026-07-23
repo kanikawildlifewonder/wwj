@@ -10,6 +10,12 @@ export async function Footer() {
     getPageContent("brand-logo")
   ]);
   let instagramUrl = "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==";
+  let facebookUrl = "#";
+  let pinterestUrl = "#";
+  let youtubeUrl = "#";
+  let brandDescription = "WWJ - Wildlife Wonder Jewellery is more than just a brand. It's a movement to celebrate wildlife, creativity and craftsmanship.";
+  let disclaimer = "Disclaimer: All jewelry products sold on this website are handcrafted fashion/imitation jewelry made of brass, alloy, and non-precious metals. We do not deal in precious metals (Gold, Silver, Platinum) or precious stones/gems.";
+
   let feeds = [
     { src: "/images/wildlife/tiger.webp", alt: "Tiger Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
     { src: "/images/products/peacock_necklace.png", alt: "Peacock Necklace", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
@@ -34,11 +40,16 @@ export async function Footer() {
     try {
       const parsed = JSON.parse(socialRaw);
       if (parsed.instagramUrl) instagramUrl = parsed.instagramUrl;
+      if (parsed.facebookUrl) facebookUrl = parsed.facebookUrl;
+      if (parsed.pinterestUrl) pinterestUrl = parsed.pinterestUrl;
+      if (parsed.youtubeUrl) youtubeUrl = parsed.youtubeUrl;
+      if (parsed.brandDescription) brandDescription = parsed.brandDescription;
+      if (parsed.disclaimer) disclaimer = parsed.disclaimer;
       if (Array.isArray(parsed.feeds)) {
         feeds = parsed.feeds.map((f: { src?: string; alt?: string; href?: string }, i: number) => ({
-          src: f.src ?? feeds[i].src,
-          alt: f.alt ?? feeds[i].alt,
-          href: f.href ?? feeds[i].href
+          src: f.src ?? feeds[i]?.src ?? "/images/wildlife/tiger.webp",
+          alt: f.alt ?? feeds[i]?.alt ?? "Wildlife Image",
+          href: f.href ?? feeds[i]?.href ?? instagramUrl
         }));
       }
     } catch { /* use default */ }
@@ -74,19 +85,19 @@ export async function Footer() {
               )}
             </Link>
             <p className="text-sm leading-relaxed max-w-xs">
-              WWJ - Wildlife Wonder Jewellery is more than just a brand. It&apos;s a movement to celebrate wildlife, creativity and craftsmanship.
+              {brandDescription}
             </p>
             <div className="flex items-center gap-4 pt-2">
               <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="hover:text-gold hover:scale-110 active:scale-95 transition-all duration-300 transform" aria-label="Instagram">
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
               </a>
-              <a href="#" className="hover:text-gold hover:scale-110 active:scale-95 transition-all duration-300 transform" aria-label="Facebook">
+              <a href={facebookUrl} target="_blank" rel="noopener noreferrer" className="hover:text-gold hover:scale-110 active:scale-95 transition-all duration-300 transform" aria-label="Facebook">
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
               </a>
-              <a href="#" className="hover:text-gold hover:scale-110 active:scale-95 transition-all duration-300 transform" aria-label="Pinterest">
+              <a href={pinterestUrl} target="_blank" rel="noopener noreferrer" className="hover:text-gold hover:scale-110 active:scale-95 transition-all duration-300 transform" aria-label="Pinterest">
                 <span className="font-display font-bold italic text-lg leading-none">P</span>
               </a>
-              <a href="#" className="hover:text-gold hover:scale-110 active:scale-95 transition-all duration-300 transform" aria-label="YouTube">
+              <a href={youtubeUrl} target="_blank" rel="noopener noreferrer" className="hover:text-gold hover:scale-110 active:scale-95 transition-all duration-300 transform" aria-label="YouTube">
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
               </a>
             </div>

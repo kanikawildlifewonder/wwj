@@ -20,9 +20,14 @@ export async function updatePageContent(id: string, content: string) {
     // Revalidate the frontend paths so they show the new content immediately
     revalidatePath('/')
     revalidatePath('/about')
-    revalidatePath('/impact')
+    revalidatePath('/about/brand')
+    revalidatePath('/about/founder')
+    revalidatePath('/welfare')
+    revalidatePath('/events')
+    revalidatePath('/contact')
     revalidatePath('/collections')
     revalidatePath('/shop')
+    revalidatePath('/policies/[slug]', 'page')
 
     return { success: true }
   } catch (error) {

@@ -53,4 +53,5 @@ next-env.d.ts
 
 testsprite_tests\tmp\config.json
 /scratch
+graphify-out/
 

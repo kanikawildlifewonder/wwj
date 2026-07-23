@@ -11,7 +11,7 @@ import {
 
 /* ─────────────────────── types ──────────────────────── */
 type CollectionSlot = { title: string; description: string; image: string };
-type Section = "hero" | "collections" | "about" | "announcement" | "aboutBrand" | "aboutFounder" | "catalogPdf" | "footerSocials";
+type Section = "hero" | "collections" | "about" | "announcement" | "aboutBrand" | "aboutFounder" | "welfare" | "policies" | "catalogPdf" | "footerSocials";
 
 const DEFAULT_COLLECTIONS: CollectionSlot[] = [
   { title: "WWJ JEWELLERY",       description: "Handcrafted animal-inspired fashion pieces.", image: "/images/products/peacock_necklace.png" },
@@ -288,9 +288,19 @@ export default function AdminPagesCMS() {
 
   // Announcement
   const [announcementText, setAnnouncementText] = useState("FREE SHIPPING ON ORDERS ABOVE ₹1499");
+  const [announcementEnabled, setAnnouncementEnabled] = useState(true);
+  const [announcementLinkUrl, setAnnouncementLinkUrl] = useState("");
+  const [announcementBadge1, setAnnouncementBadge1] = useState("HANDCRAFTED");
+  const [announcementBadge2, setAnnouncementBadge2] = useState("ANIMAL INSPIRED");
+  const [announcementBadge3, setAnnouncementBadge3] = useState("PREMIUM QUALITY");
 
   // Footer & Socials
   const [instagramUrl, setInstagramUrl] = useState("https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==");
+  const [facebookUrl, setFacebookUrl] = useState("#");
+  const [pinterestUrl, setPinterestUrl] = useState("#");
+  const [youtubeUrl, setYoutubeUrl] = useState("#");
+  const [brandDescription, setBrandDescription] = useState("WWJ - Wildlife Wonder Jewellery is more than just a brand. It's a movement to celebrate wildlife, creativity and craftsmanship.");
+  const [disclaimer, setDisclaimer] = useState("Disclaimer: All jewelry products sold on this website are handcrafted fashion/imitation jewelry made of brass, alloy, and non-precious metals.");
   const [feeds, setFeeds] = useState<{ src: string; alt: string; href: string }[]>([
     { src: "/images/wildlife/tiger.webp", alt: "Tiger Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
     { src: "/images/products/peacock_necklace.png", alt: "Peacock Necklace", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
@@ -299,6 +309,29 @@ export default function AdminPagesCMS() {
     { src: "/images/wildlife/peacock.webp", alt: "Peacock Wildlife", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" },
     { src: "/images/products/leopard_pendant.png", alt: "Leopard Pendant", href: "https://www.instagram.com/wildlife_wonder_jewellery_?igsh=MTN0c25tYjNyOGlocw==" }
   ]);
+
+  // Welfare Section
+  const [welfareTitle, setWelfareTitle] = useState("Welfare & Conservation Initiatives");
+  const [welfareSubtitle, setWelfareSubtitle] = useState("Giving back to nature with every purchase.");
+  const [welfare1Title, setWelfare1Title] = useState("Food for Paws");
+  const [welfare1Desc, setWelfare1Desc] = useState("Providing nutritious meals and medical care for stray animals.");
+  const [welfare1Stat, setWelfare1Stat] = useState("5000+ Meals Served");
+  const [welfare1Img, setWelfare1Img] = useState("/images/welfare/food-for-paws.jpg");
+  const [welfare2Title, setWelfare2Title] = useState("Homes for Cows");
+  const [welfare2Desc, setWelfare2Desc] = useState("Supporting gaushalas and shelter sanctuaries for abandoned cattle.");
+  const [welfare2Stat, setWelfare2Stat] = useState("12 Sanctuaries Supported");
+  const [welfare2Img, setWelfare2Img] = useState("/images/welfare/homes-for-cows.jpg");
+  const [welfare3Title, setWelfare3Title] = useState("Little Wings");
+  const [welfare3Desc, setWelfare3Desc] = useState("Avian rescue, water bowl placement, and bird nest installation.");
+  const [welfare3Stat, setWelfare3Stat] = useState("1200+ Nests Installed");
+  const [welfare3Img, setWelfare3Img] = useState("/images/welfare/little-wings.jpg");
+
+  // Policy Pages
+  const [activePolicyTab, setActivePolicyTab] = useState<"privacy" | "terms" | "returns" | "shipping">("privacy");
+  const [policyPrivacy, setPolicyPrivacy] = useState("");
+  const [policyTerms, setPolicyTerms] = useState("");
+  const [policyReturns, setPolicyReturns] = useState("");
+  const [policyShipping, setPolicyShipping] = useState("");
 
   // About Brand
   const [brandHeroTitle,     setBrandHeroTitle]     = useState("Our Story");
@@ -337,7 +370,10 @@ export default function AdminPagesCMS() {
     async function load() {
       setIsLoading(true);
       try {
-        const [heroRes, aboutRes, colRes, annRes, brandRes, founderRes, catalogRes, socialRes] = await Promise.all([
+        const [
+          heroRes, aboutRes, colRes, annRes, brandRes, founderRes, catalogRes, socialRes, welfareRes,
+          pPrivacyRes, pTermsRes, pReturnsRes, pShippingRes
+        ] = await Promise.all([
           getPageContent("home-hero"),
           getPageContent("home-about"),
           getPageContent("home-collections"),
@@ -346,6 +382,11 @@ export default function AdminPagesCMS() {
           getPageContent("about-founder"),
           getPageContent("shop-catalog"),
           getPageContent("footer-socials"),
+          getPageContent("home-welfare"),
+          getPageContent("policy-privacy"),
+          getPageContent("policy-terms"),
+          getPageContent("policy-returns"),
+          getPageContent("policy-shipping"),
         ]);
 
         if (heroRes) {
@@ -375,7 +416,12 @@ export default function AdminPagesCMS() {
         }
         if (annRes) {
           const c = JSON.parse(annRes);
-          setAnnouncementText(c.text ?? announcementText);
+          if (c.text !== undefined) setAnnouncementText(c.text);
+          if (c.enabled !== undefined) setAnnouncementEnabled(Boolean(c.enabled));
+          if (c.linkUrl !== undefined) setAnnouncementLinkUrl(c.linkUrl);
+          if (c.badge1) setAnnouncementBadge1(c.badge1);
+          if (c.badge2) setAnnouncementBadge2(c.badge2);
+          if (c.badge3) setAnnouncementBadge3(c.badge3);
         }
         if (brandRes) {
           const c = JSON.parse(brandRes);
@@ -415,6 +461,11 @@ export default function AdminPagesCMS() {
         if (socialRes) {
           const c = JSON.parse(socialRes);
           if (c.instagramUrl) setInstagramUrl(c.instagramUrl);
+          if (c.facebookUrl) setFacebookUrl(c.facebookUrl);
+          if (c.pinterestUrl) setPinterestUrl(c.pinterestUrl);
+          if (c.youtubeUrl) setYoutubeUrl(c.youtubeUrl);
+          if (c.brandDescription) setBrandDescription(c.brandDescription);
+          if (c.disclaimer) setDisclaimer(c.disclaimer);
           if (Array.isArray(c.feeds)) {
             setFeeds(prev => c.feeds.map((f: { src?: string; alt?: string; href?: string }, i: number) => ({
               src: f.src ?? (prev[i]?.src || ""),
@@ -423,6 +474,27 @@ export default function AdminPagesCMS() {
             })));
           }
         }
+        if (welfareRes) {
+          const c = JSON.parse(welfareRes);
+          if (c.title) setWelfareTitle(c.title);
+          if (c.subtitle) setWelfareSubtitle(c.subtitle);
+          if (c.item1Title) setWelfare1Title(c.item1Title);
+          if (c.item1Desc) setWelfare1Desc(c.item1Desc);
+          if (c.item1Stat) setWelfare1Stat(c.item1Stat);
+          if (c.item1Img) setWelfare1Img(c.item1Img);
+          if (c.item2Title) setWelfare2Title(c.item2Title);
+          if (c.item2Desc) setWelfare2Desc(c.item2Desc);
+          if (c.item2Stat) setWelfare2Stat(c.item2Stat);
+          if (c.item2Img) setWelfare2Img(c.item2Img);
+          if (c.item3Title) setWelfare3Title(c.item3Title);
+          if (c.item3Desc) setWelfare3Desc(c.item3Desc);
+          if (c.item3Stat) setWelfare3Stat(c.item3Stat);
+          if (c.item3Img) setWelfare3Img(c.item3Img);
+        }
+        if (pPrivacyRes) setPolicyPrivacy(pPrivacyRes);
+        if (pTermsRes) setPolicyTerms(pTermsRes);
+        if (pReturnsRes) setPolicyReturns(pReturnsRes);
+        if (pShippingRes) setPolicyShipping(pShippingRes);
       } catch { /* ignore */ }
       setIsLoading(false);
     }
@@ -464,6 +536,17 @@ export default function AdminPagesCMS() {
           milestone3Number: founderM3Num, milestone3Label: founderM3Label,
           milestone4Number: founderM4Num, milestone4Label: founderM4Label,
         }));
+      } else if (activeSection === "welfare") {
+        res = await updatePageContent("home-welfare", JSON.stringify({
+          title: welfareTitle, subtitle: welfareSubtitle,
+          item1Title: welfare1Title, item1Desc: welfare1Desc, item1Stat: welfare1Stat, item1Img: welfare1Img,
+          item2Title: welfare2Title, item2Desc: welfare2Desc, item2Stat: welfare2Stat, item2Img: welfare2Img,
+          item3Title: welfare3Title, item3Desc: welfare3Desc, item3Stat: welfare3Stat, item3Img: welfare3Img,
+        }));
+      } else if (activeSection === "policies") {
+        const key = `policy-${activePolicyTab}`;
+        const val = activePolicyTab === "privacy" ? policyPrivacy : activePolicyTab === "terms" ? policyTerms : activePolicyTab === "returns" ? policyReturns : policyShipping;
+        res = await updatePageContent(key, val);
       } else if (activeSection === "catalogPdf") {
         res = await updatePageContent("shop-catalog", JSON.stringify({
           pdfUrl: catalogPdfUrl,
@@ -471,9 +554,14 @@ export default function AdminPagesCMS() {
           showDownloadButton: showCatalogDownload,
         }));
       } else if (activeSection === "footerSocials") {
-        res = await updatePageContent("footer-socials", JSON.stringify({ instagramUrl, feeds }));
+        res = await updatePageContent("footer-socials", JSON.stringify({
+          instagramUrl, facebookUrl, pinterestUrl, youtubeUrl, brandDescription, disclaimer, feeds
+        }));
       } else {
-        res = await updatePageContent("announcement-bar", JSON.stringify({ text: announcementText }));
+        res = await updatePageContent("announcement-bar", JSON.stringify({
+          text: announcementText, enabled: announcementEnabled, linkUrl: announcementLinkUrl,
+          badge1: announcementBadge1, badge2: announcementBadge2, badge3: announcementBadge3,
+        }));
       }
       if (res.success) toast.success("Saved — changes are live!");
       else             toast.error("Failed to save changes.");
@@ -488,14 +576,16 @@ export default function AdminPagesCMS() {
   };
 
   const SECTIONS: { id: Section; icon: React.ElementType; label: string; description: string }[] = [
-    { id: "hero",         icon: Home,      label: "Hero Banner",          description: "Main title, subtitle & CTA button" },
-    { id: "collections",  icon: Layout,    label: "Collection Thumbnails", description: "Images & text for 3 collection cards" },
+    { id: "hero",         icon: Home,      label: "Hero Banner",           description: "Main title, subtitle & CTA button" },
+    { id: "collections",  icon: Layout,    label: "Collection Cards",     description: "Images & text for 3 collection cards" },
     { id: "about",        icon: FileText,  label: "Story / About Section", description: "Wildlife story banner text & images" },
-    { id: "announcement", icon: Megaphone, label: "Announcement Bar",      description: "Top-of-page strip message" },
+    { id: "announcement", icon: Megaphone, label: "Announcement Bar",      description: "Top-of-page notice & badges" },
+    { id: "welfare",      icon: Layout,    label: "Welfare & Initiatives",description: "Food for Paws, Gaushalas, Avian rescue" },
     { id: "aboutBrand",   icon: FileText,  label: "About Brand Page",      description: "Hero, mission, images for /about/brand" },
     { id: "aboutFounder", icon: FileText,  label: "About Founder Page",    description: "Founder photo, bio, quote, milestones" },
+    { id: "policies",     icon: FileText,  label: "Policy Pages",          description: "Privacy, Terms, Returns & Shipping policies" },
     { id: "catalogPdf",   icon: FileDown,  label: "Catalog PDF / Lookbook", description: "Upload lookbook PDF for the shop page" },
-    { id: "footerSocials", icon: Layout,    label: "Footer & Socials",     description: "Instagram link and feed thumbnails" },
+    { id: "footerSocials", icon: Layout,    label: "Footer & Social Links", description: "Social links, copyright & Instagram feed" },
   ];
 
   if (isLoading) {
@@ -649,10 +739,144 @@ export default function AdminPagesCMS() {
 
               {/* ── ANNOUNCEMENT ── */}
               {activeSection === "announcement" && (
-                <FormField label="Announcement Bar Text" hint="Shown in the top strip across all pages">
-                  <input value={announcementText} onChange={(e) => setAnnouncementText(e.target.value)} placeholder="e.g. FREE SHIPPING ON ORDERS ABOVE ₹1499" className={INPUT_CLS} />
-                  <p className="text-xs text-jungle/40 mt-1">Keep it short — ideally under 60 characters.</p>
-                </FormField>
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between p-4 bg-cream/30 border border-border rounded-xl">
+                    <div>
+                      <p className="text-sm font-semibold text-jungle">Enable Announcement Bar</p>
+                      <p className="text-xs text-jungle/50">Toggle top notification banner visibility across the site</p>
+                    </div>
+                    <div
+                      onClick={() => setAnnouncementEnabled(!announcementEnabled)}
+                      className={`w-11 h-6 rounded-full transition-colors cursor-pointer p-0.5 ${announcementEnabled ? "bg-gold" : "bg-jungle/20"}`}
+                    >
+                      <div className={`w-5 h-5 rounded-full bg-white shadow transition-transform ${announcementEnabled ? "translate-x-5" : "translate-x-0"}`} />
+                    </div>
+                  </div>
+
+                  <FormField label="Announcement Notice Text" hint="Shown on top left (desktop)">
+                    <input value={announcementText} onChange={(e) => setAnnouncementText(e.target.value)} placeholder="e.g. FREE SHIPPING ON ORDERS ABOVE ₹1499" className={INPUT_CLS} />
+                  </FormField>
+
+                  <FormField label="Click Announcement Link (Optional)" hint="URL to open when clicked">
+                    <input value={announcementLinkUrl} onChange={(e) => setAnnouncementLinkUrl(e.target.value)} placeholder="e.g. /shop or https://..." className={INPUT_CLS} />
+                  </FormField>
+
+                  <p className="text-xs font-semibold text-jungle/50 uppercase tracking-wider">Highlight Badges</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <FormField label="Badge 1">
+                      <input value={announcementBadge1} onChange={(e) => setAnnouncementBadge1(e.target.value)} placeholder="HANDCRAFTED" className={INPUT_CLS} />
+                    </FormField>
+                    <FormField label="Badge 2">
+                      <input value={announcementBadge2} onChange={(e) => setAnnouncementBadge2(e.target.value)} placeholder="ANIMAL INSPIRED" className={INPUT_CLS} />
+                    </FormField>
+                    <FormField label="Badge 3">
+                      <input value={announcementBadge3} onChange={(e) => setAnnouncementBadge3(e.target.value)} placeholder="PREMIUM QUALITY" className={INPUT_CLS} />
+                    </FormField>
+                  </div>
+                </div>
+              )}
+
+              {/* ── WELFARE & INITIATIVES ── */}
+              {activeSection === "welfare" && (
+                <div className="space-y-6">
+                  <p className="text-xs text-jungle/50 -mt-2">Customize title, copy, and statistics for welfare initiatives on the <strong>/welfare</strong> page.</p>
+
+                  <FormField label="Section Title">
+                    <input value={welfareTitle} onChange={(e) => setWelfareTitle(e.target.value)} placeholder="Welfare & Conservation Initiatives" className={INPUT_CLS} />
+                  </FormField>
+                  <FormField label="Section Subtitle">
+                    <input value={welfareSubtitle} onChange={(e) => setWelfareSubtitle(e.target.value)} placeholder="Giving back to nature with every purchase." className={INPUT_CLS} />
+                  </FormField>
+
+                  <div className="space-y-6 pt-4 border-t border-border">
+                    {/* Initiative 1 */}
+                    <div className="p-4 border border-border rounded-xl space-y-4 bg-cream/5">
+                      <h4 className="font-semibold text-sm text-jungle">Initiative 1 — Food for Paws</h4>
+                      <FormField label="Initiative Title">
+                        <input value={welfare1Title} onChange={(e) => setWelfare1Title(e.target.value)} placeholder="Food for Paws" className={INPUT_CLS} />
+                      </FormField>
+                      <FormField label="Description">
+                        <textarea value={welfare1Desc} onChange={(e) => setWelfare1Desc(e.target.value)} rows={2} className={TEXTAREA_CLS} />
+                      </FormField>
+                      <FormField label="Highlight Metric / Stat">
+                        <input value={welfare1Stat} onChange={(e) => setWelfare1Stat(e.target.value)} placeholder="5000+ Meals Served" className={INPUT_CLS} />
+                      </FormField>
+                      <ImageUploader label="Banner Image" value={welfare1Img} onChange={setWelfare1Img} />
+                    </div>
+
+                    {/* Initiative 2 */}
+                    <div className="p-4 border border-border rounded-xl space-y-4 bg-cream/5">
+                      <h4 className="font-semibold text-sm text-jungle">Initiative 2 — Homes for Cows</h4>
+                      <FormField label="Initiative Title">
+                        <input value={welfare2Title} onChange={(e) => setWelfare2Title(e.target.value)} placeholder="Homes for Cows" className={INPUT_CLS} />
+                      </FormField>
+                      <FormField label="Description">
+                        <textarea value={welfare2Desc} onChange={(e) => setWelfare2Desc(e.target.value)} rows={2} className={TEXTAREA_CLS} />
+                      </FormField>
+                      <FormField label="Highlight Metric / Stat">
+                        <input value={welfare2Stat} onChange={(e) => setWelfare2Stat(e.target.value)} placeholder="12 Sanctuaries Supported" className={INPUT_CLS} />
+                      </FormField>
+                      <ImageUploader label="Banner Image" value={welfare2Img} onChange={setWelfare2Img} />
+                    </div>
+
+                    {/* Initiative 3 */}
+                    <div className="p-4 border border-border rounded-xl space-y-4 bg-cream/5">
+                      <h4 className="font-semibold text-sm text-jungle">Initiative 3 — Little Wings</h4>
+                      <FormField label="Initiative Title">
+                        <input value={welfare3Title} onChange={(e) => setWelfare3Title(e.target.value)} placeholder="Little Wings" className={INPUT_CLS} />
+                      </FormField>
+                      <FormField label="Description">
+                        <textarea value={welfare3Desc} onChange={(e) => setWelfare3Desc(e.target.value)} rows={2} className={TEXTAREA_CLS} />
+                      </FormField>
+                      <FormField label="Highlight Metric / Stat">
+                        <input value={welfare3Stat} onChange={(e) => setWelfare3Stat(e.target.value)} placeholder="1200+ Nests Installed" className={INPUT_CLS} />
+                      </FormField>
+                      <ImageUploader label="Banner Image" value={welfare3Img} onChange={setWelfare3Img} />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ── POLICIES ── */}
+              {activeSection === "policies" && (
+                <div className="space-y-6">
+                  <p className="text-xs text-jungle/50 -mt-2">Edit content for store policies. Accessible live under <strong>/policies/privacy</strong>, <strong>/policies/terms</strong>, <strong>/policies/returns</strong>, and <strong>/policies/shipping</strong>.</p>
+
+                  <div className="flex border-b border-border gap-2">
+                    {(["privacy", "terms", "returns", "shipping"] as const).map((tab) => (
+                      <button
+                        key={tab}
+                        onClick={() => setActivePolicyTab(tab)}
+                        className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider border-b-2 transition-colors ${
+                          activePolicyTab === tab ? "border-gold text-jungle font-bold" : "border-transparent text-jungle/50 hover:text-jungle"
+                        }`}
+                      >
+                        {tab === "privacy" ? "Privacy Policy" : tab === "terms" ? "Terms of Service" : tab === "returns" ? "Return Policy" : "Shipping Policy"}
+                      </button>
+                    ))}
+                  </div>
+
+                  {activePolicyTab === "privacy" && (
+                    <FormField label="Privacy Policy Document (Markdown/Text)">
+                      <textarea value={policyPrivacy} onChange={(e) => setPolicyPrivacy(e.target.value)} rows={12} className={TEXTAREA_CLS} placeholder="Write privacy policy text..." />
+                    </FormField>
+                  )}
+                  {activePolicyTab === "terms" && (
+                    <FormField label="Terms of Service Document (Markdown/Text)">
+                      <textarea value={policyTerms} onChange={(e) => setPolicyTerms(e.target.value)} rows={12} className={TEXTAREA_CLS} placeholder="Write terms of service text..." />
+                    </FormField>
+                  )}
+                  {activePolicyTab === "returns" && (
+                    <FormField label="Return & Refund Policy Document (Markdown/Text)">
+                      <textarea value={policyReturns} onChange={(e) => setPolicyReturns(e.target.value)} rows={12} className={TEXTAREA_CLS} placeholder="Write return policy text..." />
+                    </FormField>
+                  )}
+                  {activePolicyTab === "shipping" && (
+                    <FormField label="Shipping & Delivery Policy Document (Markdown/Text)">
+                      <textarea value={policyShipping} onChange={(e) => setPolicyShipping(e.target.value)} rows={12} className={TEXTAREA_CLS} placeholder="Write shipping policy text..." />
+                    </FormField>
+                  )}
+                </div>
               )}
 
               {/* ── ABOUT BRAND ── */}
@@ -733,18 +957,66 @@ export default function AdminPagesCMS() {
               {activeSection === "footerSocials" && (
                 <div className="space-y-6">
                   <p className="text-xs text-jungle/50 -mt-2">
-                    Manage your Instagram profile link and the 6 feed thumbnail images/links in the footer.
+                    Manage footer brand bio, disclaimer, social media links, and the 6 Instagram feed thumbnails.
                   </p>
                   
-                  <FormField label="Instagram Profile Link">
-                    <input
-                      type="text"
-                      value={instagramUrl}
-                      onChange={(e) => setInstagramUrl(e.target.value)}
-                      placeholder="https://instagram.com/..."
-                      className={INPUT_CLS}
+                  <FormField label="Footer Brand Bio Snippet">
+                    <textarea
+                      value={brandDescription}
+                      onChange={(e) => setBrandDescription(e.target.value)}
+                      rows={3}
+                      className={TEXTAREA_CLS}
                     />
                   </FormField>
+
+                  <FormField label="Footer Disclaimer Text">
+                    <textarea
+                      value={disclaimer}
+                      onChange={(e) => setDisclaimer(e.target.value)}
+                      rows={3}
+                      className={TEXTAREA_CLS}
+                    />
+                  </FormField>
+
+                  <p className="text-xs font-semibold text-jungle/50 uppercase tracking-wider">Social Media Links</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField label="Instagram URL">
+                      <input
+                        type="text"
+                        value={instagramUrl}
+                        onChange={(e) => setInstagramUrl(e.target.value)}
+                        placeholder="https://instagram.com/..."
+                        className={INPUT_CLS}
+                      />
+                    </FormField>
+                    <FormField label="Facebook URL">
+                      <input
+                        type="text"
+                        value={facebookUrl}
+                        onChange={(e) => setFacebookUrl(e.target.value)}
+                        placeholder="https://facebook.com/..."
+                        className={INPUT_CLS}
+                      />
+                    </FormField>
+                    <FormField label="Pinterest URL">
+                      <input
+                        type="text"
+                        value={pinterestUrl}
+                        onChange={(e) => setPinterestUrl(e.target.value)}
+                        placeholder="https://pinterest.com/..."
+                        className={INPUT_CLS}
+                      />
+                    </FormField>
+                    <FormField label="YouTube URL">
+                      <input
+                        type="text"
+                        value={youtubeUrl}
+                        onChange={(e) => setYoutubeUrl(e.target.value)}
+                        placeholder="https://youtube.com/..."
+                        className={INPUT_CLS}
+                      />
+                    </FormField>
+                  </div>
 
                   <p className="text-xs font-semibold text-jungle/50 uppercase tracking-wider">Instagram Feed Items</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
