@@ -194,3 +194,31 @@ export async function addMainCategoryCollection(collectionKey: string) {
     return { success: false, error: error instanceof Error ? error.message : 'Failed to add main category' }
   }
 }
+
+/**
+ * Removes a main category collection.
+ * @param collectionKey The key for the collection (e.g. 'animal')
+ */
+export async function removeMainCategoryCollection(collectionKey: string) {
+  try {
+    await requireAdmin()
+    const grouped = await getGroupedProductCategories()
+    if (!grouped[collectionKey]) {
+      return { success: false, error: 'Main category does not exist' }
+    }
+
+    if (grouped[collectionKey].length > 0) {
+      return { success: false, error: 'Cannot remove a main category that still has subcategories' }
+    }
+
+    delete grouped[collectionKey]
+    await writeGrouped(grouped)
+    revalidatePath('/admin/settings')
+    revalidatePath('/shop')
+    revalidatePath('/')
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to remove main category:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to remove main category' }
+  }
+}

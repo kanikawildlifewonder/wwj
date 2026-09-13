@@ -7,10 +7,12 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import {
+  getProductCategories,
   getGroupedProductCategories,
   addProductCategory,
   removeProductCategory,
   addMainCategoryCollection,
+  removeMainCategoryCollection,
 } from "@/app/actions/categories";
 import { getPageContent, updatePageContent } from "@/app/actions/content";
 import { uploadImage } from "@/app/actions/upload";
@@ -105,10 +107,11 @@ interface CategoryPanelProps {
   busyCategory: string | null;
   onAdd: (name: string, collectionKey: string) => Promise<void>;
   onRemove: (name: string, collectionKey: string) => Promise<void>;
+  onDeleteMain?: (collectionKey: string) => Promise<void>;
 }
 
 function CategoryPanel({
-  title, icon, collectionKey, categories, busyCategory, onAdd, onRemove,
+  title, icon, collectionKey, categories, busyCategory, onAdd, onRemove, onDeleteMain
 }: CategoryPanelProps) {
   const [newCat, setNewCat] = useState("");
 
@@ -125,6 +128,16 @@ function CategoryPanel({
         <span className="text-gold">{icon}</span>
         <h4 className="font-display text-base text-jungle">{title}</h4>
         <span className="ml-auto text-xs font-mono text-jungle/30 bg-cream px-2 py-0.5 rounded">{collectionKey}</span>
+        {onDeleteMain && categories.length === 0 && (
+          <button
+            onClick={() => onDeleteMain(collectionKey)}
+            disabled={busyCategory === `__delete_main__${collectionKey}`}
+            className="text-red-500/50 hover:text-red-500 hover:bg-red-50 p-1.5 rounded transition-colors ml-1"
+            title="Delete empty main category"
+          >
+            {busyCategory === `__delete_main__${collectionKey}` ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+          </button>
+        )}
       </div>
 
       <form onSubmit={handleAdd} className="flex gap-2">
@@ -291,6 +304,19 @@ export default function AdminSettingsPage() {
     setBusyCategory(null);
   };
 
+  const handleRemoveMainCategory = async (collectionKey: string) => {
+    if (!confirm(`Delete the entire main category "${collectionKey}"?`)) return;
+    setBusyCategory(`__delete_main__${collectionKey}`);
+    const res = await removeMainCategoryCollection(collectionKey);
+    if (res.success) {
+      toast.success(`Deleted main category "${collectionKey}"`);
+      await reloadGrouped();
+    } else {
+      toast.error(res.error ?? "Failed to delete main category");
+    }
+    setBusyCategory(null);
+  };
+
   const handleSaveBrand = async () => {
     setIsSavingBrand(true);
     const [logoRes, favRes] = await Promise.all([
@@ -451,10 +477,11 @@ export default function AdminSettingsPage() {
                   title={DEFAULT_COLLECTION_NAMES[key] || key.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                   icon={<Tag className="w-4 h-4" />}
                   collectionKey={key}
-                  categories={cats}
+                  categories={grouped[key] ?? []}
                   busyCategory={busyCategory}
                   onAdd={handleAddCategory}
                   onRemove={handleRemoveCategory}
+                  onDeleteMain={handleRemoveMainCategory}
                 />
               ))}
             </div>
