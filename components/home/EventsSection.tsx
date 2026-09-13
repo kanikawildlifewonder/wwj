@@ -49,7 +49,7 @@ export async function EventsSection() {
                 <div
                   className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
                   style={{
-                    backgroundImage: `url(${event.featuredImage || "/images/collections/gifting_box.webp"})`,
+                    backgroundImage: `url(${event.featuredImage || "/images/products/placeholder.png"})`,
                   }}
                 />
                 <div className="absolute top-4 left-4 z-10 bg-jungle/90 text-gold px-2.5 py-0.5 text-[9px] font-bold tracking-widest uppercase rounded">

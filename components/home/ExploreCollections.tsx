@@ -27,8 +27,8 @@ function iconForCategory(name: string): "Sparkles" | "Gem" | "LinkIcon" | "Gift"
 import { DEFAULT_COLLECTION_NAMES } from "@/lib/categories";
 
 const DEFAULT_IMAGES = [
-  "/images/collections/jewellery_banner.webp",
-  "/images/collections/accessories_banner.webp",
+  "/images/products/peacock_necklace.png",
+  "/images/products/elephant_keychain.png",
   "/images/collections/gifting_box.webp",
   "/images/collections/animal_care_thumbnail.jpg"
 ];

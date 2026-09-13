@@ -505,7 +505,7 @@ export default function NewEventPage() {
                       />
                       <div
                         className="w-8 h-8 rounded bg-cream border border-border bg-cover bg-center"
-                        style={{ backgroundImage: `url(${p.images[0] || "/images/collections/gifting_box.webp"})` }}
+                        style={{ backgroundImage: `url(${p.images[0] || "/images/products/placeholder.png"})` }}
                       />
                       <div className="min-w-0 flex-1">
                         <p className="text-xs font-semibold text-jungle truncate">{p.name}</p>
