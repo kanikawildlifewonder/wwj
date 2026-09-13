@@ -9,6 +9,7 @@ import { updateProduct } from "@/app/actions/products";
 import { getGroupedProductCategories } from "@/app/actions/categories";
 import { categoriesMatch } from "@/lib/categories";
 import { uploadImage } from "@/app/actions/upload";
+import { DEFAULT_COLLECTION_NAMES } from "@/lib/categories";
 
 type EditableProduct = {
   id: string;
@@ -401,9 +402,11 @@ export default function EditProductForm({ product }: { product: EditableProduct 
                     }} 
                     className="w-full px-4 py-2.5 border border-border rounded-xl appearance-none bg-cream/40 hover:bg-cream/60 focus:bg-cream/80 text-jungle focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all cursor-pointer"
                   >
-                    <option value="wwj">WWJ (Wildlife Wonder Jewellery)</option>
-                    <option value="wwa">WWA (Wildlife Wonder Accessories)</option>
-                    <option value="gift_cards">Gifting Collection</option>
+                    {Object.keys(groupedCategories).map((key) => (
+                      <option key={key} value={key}>
+                        {DEFAULT_COLLECTION_NAMES[key] || key.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </option>
+                    ))}
                   </select>
                   <ChevronLeft className="w-4 h-4 text-jungle/50 absolute right-4 top-1/2 -translate-y-1/2 -rotate-90 pointer-events-none" />
                 </div>

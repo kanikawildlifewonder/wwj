@@ -24,6 +24,25 @@ export const DEFAULT_GROUPED_CATEGORIES: Record<string, string[]> = {
     "Gift Boxes",
     "Festive Collections",
   ],
+  "animal-care": [
+    "Dog Care",
+    "Cat Care",
+    "Horse Care",
+    "Grooming",
+    "Paw & Skin Care",
+    "Wellness & Supplements",
+    "New Pet Care Products",
+    "Gift Sets",
+    "Bestsellers",
+  ],
+};
+
+/** Default collection names mapping for UI fallback */
+export const DEFAULT_COLLECTION_NAMES: Record<string, string> = {
+  wwj: "WWJ Jewellery",
+  wwa: "WWA Accessories",
+  gift_cards: "Gifting Collection",
+  "animal-care": "Animal Care",
 };
 
 /** Flat list of all default categories (union across all collections) */
@@ -51,7 +70,7 @@ export function flattenGrouped(grouped: Record<string, string[]>): string[] {
  * into the correct collection group using the default mapping as reference.
  */
 export function rebuildGroupedFromFlat(flat: string[]): Record<string, string[]> {
-  const result: Record<string, string[]> = { wwj: [], wwa: [], gift_cards: [] };
+  const result: Record<string, string[]> = { wwj: [], wwa: [], gift_cards: [], "animal-care": [] };
   for (const cat of flat) {
     let placed = false;
     for (const [key, defaults] of Object.entries(DEFAULT_GROUPED_CATEGORIES)) {

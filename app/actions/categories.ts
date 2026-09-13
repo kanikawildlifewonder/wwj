@@ -24,13 +24,22 @@ async function readStoredGrouped(): Promise<Record<string, string[]> | null> {
   try {
     const parsed = JSON.parse(row.content)
 
-    // New format: { wwj: [...], wwa: [...], gift_cards: [...] }
+    // New format: any object that's not an array
     if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
       const result: Record<string, string[]> = {}
-      for (const key of Object.keys(DEFAULT_GROUPED_CATEGORIES)) {
+      
+      // Load all keys from parsed DB state (including dynamic ones)
+      for (const key of Object.keys(parsed)) {
         result[key] = Array.isArray(parsed[key])
           ? (parsed[key] as string[]).map(normalizeCategory).filter(Boolean)
-          : [...DEFAULT_GROUPED_CATEGORIES[key]]
+          : []
+      }
+
+      // Ensure defaults are always present if missing
+      for (const key of Object.keys(DEFAULT_GROUPED_CATEGORIES)) {
+        if (!result[key]) {
+          result[key] = [...DEFAULT_GROUPED_CATEGORIES[key]]
+        }
       }
       return result
     }
@@ -95,9 +104,7 @@ export async function addProductCategory(name: string, mainCategory = 'wwj') {
     return { success: false, error: 'Category name is required' }
   }
 
-  const collectionKey = ['wwj', 'wwa', 'gift_cards'].includes(mainCategory)
-    ? mainCategory
-    : 'wwj'
+  const collectionKey = mainCategory || 'wwj'
 
   try {
     await requireAdmin()
@@ -127,9 +134,7 @@ export async function addProductCategory(name: string, mainCategory = 'wwj') {
 export async function removeProductCategory(name: string, mainCategory = 'wwj') {
   const label = normalizeCategory(name)
 
-  const collectionKey = ['wwj', 'wwa', 'gift_cards'].includes(mainCategory)
-    ? mainCategory
-    : 'wwj'
+  const collectionKey = mainCategory || 'wwj'
 
   try {
     await requireAdmin()
@@ -163,5 +168,29 @@ export async function removeProductCategory(name: string, mainCategory = 'wwj') 
   } catch (error) {
     console.error('Failed to remove category:', error)
     return { success: false, error: error instanceof Error ? error.message : 'Failed to remove category' }
+  }
+}
+
+/**
+ * Adds a new main category collection.
+ * @param collectionKey The key for the collection (e.g. 'animal-care')
+ */
+export async function addMainCategoryCollection(collectionKey: string) {
+  try {
+    await requireAdmin()
+    const grouped = await getGroupedProductCategories()
+    if (grouped[collectionKey]) {
+      return { success: false, error: 'Main category already exists' }
+    }
+
+    grouped[collectionKey] = []
+    await writeGrouped(grouped)
+    revalidatePath('/admin/settings')
+    revalidatePath('/shop')
+    revalidatePath('/')
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to add main category:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to add main category' }
   }
 }

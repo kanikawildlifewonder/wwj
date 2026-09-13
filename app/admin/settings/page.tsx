@@ -10,9 +10,11 @@ import {
   getGroupedProductCategories,
   addProductCategory,
   removeProductCategory,
+  addMainCategoryCollection,
 } from "@/app/actions/categories";
 import { getPageContent, updatePageContent } from "@/app/actions/content";
 import { uploadImage } from "@/app/actions/upload";
+import { DEFAULT_COLLECTION_NAMES } from "@/lib/categories";
 
 /* ─── image uploader widget ─── */
 function MiniUploader({
@@ -441,34 +443,57 @@ export default function AdminSettingsPage() {
         {isLoadingCategories ? (
           <p className="text-sm text-jungle/50 py-4 text-center">Loading categories…</p>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <CategoryPanel
-              title="WWJ Jewellery"
-              icon={<Diamond className="w-4 h-4" />}
-              collectionKey="wwj"
-              categories={grouped.wwj ?? []}
-              busyCategory={busyCategory}
-              onAdd={handleAddCategory}
-              onRemove={handleRemoveCategory}
-            />
-            <CategoryPanel
-              title="WWA Accessories"
-              icon={<Gem className="w-4 h-4" />}
-              collectionKey="wwa"
-              categories={grouped.wwa ?? []}
-              busyCategory={busyCategory}
-              onAdd={handleAddCategory}
-              onRemove={handleRemoveCategory}
-            />
-            <CategoryPanel
-              title="Gifting"
-              icon={<Gift className="w-4 h-4" />}
-              collectionKey="gift_cards"
-              categories={grouped.gift_cards ?? []}
-              busyCategory={busyCategory}
-              onAdd={handleAddCategory}
-              onRemove={handleRemoveCategory}
-            />
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {Object.entries(grouped).map(([key, cats]) => (
+                <CategoryPanel
+                  key={key}
+                  title={DEFAULT_COLLECTION_NAMES[key] || key.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  icon={<Tag className="w-4 h-4" />}
+                  collectionKey={key}
+                  categories={cats}
+                  busyCategory={busyCategory}
+                  onAdd={handleAddCategory}
+                  onRemove={handleRemoveCategory}
+                />
+              ))}
+            </div>
+            
+            <div className="mt-4 p-4 border border-border bg-cream/20 rounded-xl">
+              <h4 className="font-display text-sm text-jungle mb-2">Create New Main Category</h4>
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const form = e.target as HTMLFormElement;
+                const input = form.elements.namedItem('newMain') as HTMLInputElement;
+                const val = input.value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                if (!val) return;
+                setBusyCategory('__add_main__');
+                const res = await addMainCategoryCollection(val);
+                if (res.success) {
+                  toast.success(`Created main category: ${val}`);
+                  await reloadGrouped();
+                  input.value = '';
+                } else {
+                  toast.error(res.error || "Failed to create main category");
+                }
+                setBusyCategory(null);
+              }} className="flex gap-2 max-w-sm">
+                <input 
+                  type="text" 
+                  name="newMain" 
+                  placeholder="e.g. Animal Care" 
+                  className="flex-1 border border-border px-3 py-2 rounded-lg bg-white hover:bg-cream/60 focus:bg-cream/80 focus:outline-none focus:border-gold text-sm text-jungle transition-all"
+                />
+                <button 
+                  type="submit" 
+                  disabled={busyCategory === '__add_main__'}
+                  className="bg-jungle text-gold px-3 py-2 rounded-btn flex items-center gap-1.5 text-xs font-bold tracking-wide hover:bg-charcoal transition-colors disabled:opacity-50"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  {busyCategory === '__add_main__' ? "Adding..." : "Add"}
+                </button>
+              </form>
+            </div>
           </div>
         )}
       </div>

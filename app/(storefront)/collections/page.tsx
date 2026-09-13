@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ArrowRight, Pencil } from "lucide-react";
 import { COLLECTIONS_LIST } from "@/lib/mock-data";
 import { getPageContent } from "@/app/actions/content";
+import { getGroupedProductCategories } from "@/app/actions/categories";
+import { DEFAULT_COLLECTION_NAMES } from "@/lib/categories";
 import { currentUser } from "@clerk/nextjs/server";
 
 export const metadata = {
@@ -15,12 +17,14 @@ const DEFAULT_IMAGES = [
   "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?q=80&w=800&auto=format&fit=crop",
   "https://images.unsplash.com/photo-1590736969955-71cc94801759?q=80&w=800&auto=format&fit=crop",
   "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=800&auto=format&fit=crop",
+  "/images/collections/animal_care_thumbnail.jpg"
 ];
 
 const DEFAULT_DESCRIPTIONS = [
   "Handcrafted animal-inspired fashion pieces.",
   "Cute everyday wildlife collectibles.",
   "Ready-to-gift pieces & curated sets.",
+  "In collaboration with Ananda Naturals."
 ];
 
 export default async function CollectionsPage() {
@@ -34,10 +38,14 @@ export default async function CollectionsPage() {
     }
   } catch { /* use defaults */ }
 
-  const collections = COLLECTIONS_LIST.map((col, i) => ({
-    ...col,
-    description: savedCollections[i]?.description || DEFAULT_DESCRIPTIONS[i],
-    image: savedCollections[i]?.image || DEFAULT_IMAGES[i],
+  const groupedCategories = await getGroupedProductCategories();
+  const keys = Object.keys(groupedCategories);
+
+  const collections = keys.map((key, i) => ({
+    slug: key,
+    name: savedCollections[i]?.title || DEFAULT_COLLECTION_NAMES[key] || key.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+    description: savedCollections[i]?.description || DEFAULT_DESCRIPTIONS[i] || "Explore our beautiful collection.",
+    image: savedCollections[i]?.image || DEFAULT_IMAGES[i] || DEFAULT_IMAGES[0],
   }));
 
   // Show edit button only for admin users

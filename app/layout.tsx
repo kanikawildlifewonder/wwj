@@ -84,7 +84,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className="antialiased h-full scroll-smooth">
-        <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+        <body suppressHydrationWarning className="min-h-full flex flex-col bg-background text-foreground font-sans">
           <DynamicThemeInjector />
           <DynamicFavicon />
           <Toaster richColors position="top-center" />

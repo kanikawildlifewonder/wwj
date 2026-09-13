@@ -24,75 +24,53 @@ function iconForCategory(name: string): "Sparkles" | "Gem" | "LinkIcon" | "Gift"
   return "Sparkles";
 }
 
-const DEFAULT_COLLECTIONS: CollectionCard[] = [
-  {
-    title: "WWJ JEWELLERY",
-    description: "Handcrafted animal-inspired fashion pieces.",
-    image: "/images/products/peacock_necklace.png",
-    link: "/collections/jewellery",
-    subLinks: [
-      { name: "Necklace", icon: "Sparkles" },
-      { name: "Rings", icon: "Gem" },
-      { name: "Earrings", icon: "Sparkles" },
-      { name: "Bracelets", icon: "LinkIcon" },
-    ],
-  },
-  {
-    title: "WWA ACCESSORIES",
-    description: "Cute everyday wildlife collectibles.",
-    image: "/images/products/elephant_keychain.png",
-    link: "/collections/accessories",
-    subLinks: [
-      { name: "Keychains", icon: "LinkIcon" },
-      { name: "Magnets", icon: "Sparkles" },
-    ],
-  },
-  {
-    title: "GIFTING COLLECTION",
-    description: "Ready-to-gift pieces & curated sets for every occasion.",
-    image: "/images/collections/gifting_box.webp",
-    link: "/collections/gifting",
-    subLinks: [
-      { name: "Gift Boxes", icon: "Gift" },
-      { name: "Combo", icon: "Gift" },
-      { name: "Sets", icon: "Sparkles" },
-      { name: "Festive Collections", icon: "Sparkles" },
-    ],
-  },
+import { DEFAULT_COLLECTION_NAMES } from "@/lib/categories";
+
+const DEFAULT_IMAGES = [
+  "/images/products/peacock_necklace.png",
+  "/images/products/elephant_keychain.png",
+  "/images/collections/gifting_box.webp",
+  "/images/collections/animal_care_thumbnail.jpg"
 ];
 
-/** Collection key → which card index it maps to */
-const COLLECTION_KEY_INDEX: Record<string, number> = {
-  wwj: 0,
-  wwa: 1,
-  gift_cards: 2,
-};
+const DEFAULT_DESCRIPTIONS = [
+  "Handcrafted animal-inspired fashion pieces.",
+  "Cute everyday wildlife collectibles.",
+  "Ready-to-gift pieces & curated sets for every occasion.",
+  "In collaboration with Ananda Naturals."
+];
 
 /** Max badges to show per card */
 const MAX_BADGES = 6;
 
 export function ExploreCollections({
-  collections = DEFAULT_COLLECTIONS,
-  groupedCategories,
+  collections = [],
+  groupedCategories = {},
 }: {
-  collections?: CollectionCard[];
+  collections?: { title?: string; description?: string; image?: string }[];
   groupedCategories?: Record<string, string[]>;
 }) {
-  // Merge DB-overrides into defaults (image/title/description only; subLinks come from grouped categories or default)
-  const merged = DEFAULT_COLLECTIONS.map((def, i) => {
+  const keys = Object.keys(groupedCategories);
+
+  // Build the dynamic list of collections
+  const merged = keys.map((key, i) => {
     const override = collections[i];
+    
+    // Default values
+    const defaultTitle = DEFAULT_COLLECTION_NAMES[key] || key.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    const defaultDesc = DEFAULT_DESCRIPTIONS[i] || "Explore our beautiful collection.";
+    const defaultImg = DEFAULT_IMAGES[i] || DEFAULT_IMAGES[0];
+
     const base = {
-      ...def,
-      title: override?.title || def.title,
-      description: override?.description || def.description,
-      image: override?.image || def.image,
+      title: override?.title || defaultTitle,
+      description: override?.description || defaultDesc,
+      image: override?.image || defaultImg,
+      link: `/collections/${key}`,
+      subLinks: [] as { name: string; icon: "Sparkles" | "Gem" | "LinkIcon" | "Gift" | "Star" }[]
     };
 
-    // Find which collection key maps to this index
-    const collectionKey = Object.entries(COLLECTION_KEY_INDEX).find(([, idx]) => idx === i)?.[0];
-    if (collectionKey && groupedCategories && groupedCategories[collectionKey]?.length > 0) {
-      // Build sub-links dynamically from saved categories (up to MAX_BADGES)
-      base.subLinks = groupedCategories[collectionKey]
+    if (groupedCategories[key]?.length > 0) {
+      base.subLinks = groupedCategories[key]
         .slice(0, MAX_BADGES)
         .map((name) => ({ name, icon: iconForCategory(name) }));
     }
@@ -115,7 +93,7 @@ export function ExploreCollections({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className={`grid grid-cols-1 sm:grid-cols-2 ${merged.length >= 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-6`}>
           {merged.map((col, idx) => {
             return (
               <div key={idx} className="group relative rounded-card overflow-hidden border border-border bg-forest h-87.5 sm:h-100 md:h-112.5 flex flex-col justify-between">

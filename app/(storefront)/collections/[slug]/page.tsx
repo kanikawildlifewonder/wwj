@@ -7,16 +7,14 @@ import { mapDbProductToUI } from "@/lib/utils/product-mapper";
 import prisma from "@/lib/prisma";
 import { Metadata } from "next";
 
-const COLLECTION_MAP: Record<string, string> = {
-  jewellery: "WWJ Jewellery",
-  accessories: "WWA Accessories",
-  gifting: "Gifting Collection",
-};
+import { getGroupedProductCategories } from "@/app/actions/categories";
+import { DEFAULT_COLLECTION_NAMES } from "@/lib/categories";
 
 const COLLECTION_IMAGES: Record<string, string> = {
-  jewellery: "/images/collections/jewellery_banner.webp",
-  accessories: "/images/collections/accessories_banner.webp",
-  gifting: "/images/collections/gifting_box.webp",
+  wwj: "/images/collections/jewellery_banner.webp",
+  wwa: "/images/collections/accessories_banner.webp",
+  gift_cards: "/images/collections/gifting_box.webp",
+  "animal-care": "/images/collections/animal_care_banner.jpg",
 };
 
 interface PageProps {
@@ -28,18 +26,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   
   const titleMap: Record<string, string> = {
-    jewellery: "WWJ Jewellery | Handcrafted Animal-Inspired Fine Jewelry",
-    accessories: "WWA Accessories | Unique Animal Keychains, Magnets & Collectibles",
-    gifting: "Gifting Collection | Luxury Curated Jewelry Gift Boxes & Gift Cards",
+    wwj: "WWJ Jewellery | Handcrafted Animal-Inspired Fine Jewelry",
+    wwa: "WWA Accessories | Unique Animal Keychains, Magnets & Collectibles",
+    gift_cards: "Gifting Collection | Luxury Curated Jewelry Gift Boxes & Gift Cards",
   };
 
   const descMap: Record<string, string> = {
-    jewellery: "Explore the premium WWJ jewellery collection. Handcrafted rings, necklaces, bracelets, and earrings inspired by wildlife, crafted in 925 sterling silver and brass.",
-    accessories: "Discover unique handcrafted accessories by Wildlife Wonder. Buy wild animal keychains, fridge magnets, hair accessories, bookmarks, and customized pet portraits.",
-    gifting: "Shop luxury curated gift sets and gift cards for wildlife lovers. Perfect presents featuring handcrafted animal-inspired jewelry and festive collections.",
+    wwj: "Explore the premium WWJ jewellery collection. Handcrafted rings, necklaces, bracelets, and earrings inspired by wildlife, crafted in 925 sterling silver and brass.",
+    wwa: "Discover unique handcrafted accessories by Wildlife Wonder. Buy wild animal keychains, fridge magnets, hair accessories, bookmarks, and customized pet portraits.",
+    gift_cards: "Shop luxury curated gift sets and gift cards for wildlife lovers. Perfect presents featuring handcrafted animal-inspired jewelry and festive collections.",
   };
 
-  const title = titleMap[slug] || "Collections | WWJ";
+  const title = titleMap[slug] || `${DEFAULT_COLLECTION_NAMES[slug] || slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} | WWJ`;
   const description = descMap[slug] || "Browse our themed collections of wildlife-inspired jewellery and handcrafted accessories.";
 
   return {
@@ -79,12 +77,16 @@ export default async function CollectionPage({ params, searchParams }: PageProps
   const { category } = await searchParams;
   const categoryQuery = typeof category === "string" ? category : Array.isArray(category) ? category[0] : undefined;
 
-  const collectionName = COLLECTION_MAP[slug];
-  if (!collectionName) notFound();
+  const groupedCategories = await getGroupedProductCategories();
+  const savedKeys = Object.keys(groupedCategories);
+  
+  if (!savedKeys.includes(slug)) notFound();
+
+  const collectionName = DEFAULT_COLLECTION_NAMES[slug] || slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
   // Fetch products that match this collection by mainCategory or category fallback
   let rawProducts: DbProduct[] = [];
-  if (slug === "jewellery") {
+  if (slug === "wwj") {
     rawProducts = await prisma.product.findMany({
       where: {
         mainCategory: "wwj",
@@ -95,7 +97,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
       },
       orderBy: { createdAt: 'desc' }
     });
-  } else if (slug === "accessories") {
+  } else if (slug === "wwa") {
     rawProducts = await prisma.product.findMany({
       where: {
         OR: [
@@ -105,7 +107,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
       },
       orderBy: { createdAt: 'desc' }
     });
-  } else if (slug === "gifting") {
+  } else if (slug === "gift_cards") {
     rawProducts = await prisma.product.findMany({
       where: {
         OR: [
@@ -113,6 +115,13 @@ export default async function CollectionPage({ params, searchParams }: PageProps
           { category: { in: ["Gift Boxes", "Festive Collections", "Friendship Day", "Gift Cards"] } },
           { category: { contains: "Gift" } }
         ]
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+  } else {
+    rawProducts = await prisma.product.findMany({
+      where: {
+        mainCategory: slug
       },
       orderBy: { createdAt: 'desc' }
     });
@@ -141,7 +150,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
 
   const mapProducts = (products: DbProduct[]) => products.map(mapDbProductToUI);
 
-  if (slug === "jewellery") {
+  if (slug === "wwj") {
     // 1. Necklaces
     const necklaces = rawProducts.filter(p => checkCategory(p.category, ["necklace", "choker", "pendant"]));
     // 2. Earrings (Evaluated before rings)
@@ -179,7 +188,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
       if (prods.length > 0) sections.push({ title: cName, products: mapProducts(prods) });
     }
 
-  } else if (slug === "accessories") {
+  } else if (slug === "wwa") {
     // 1. Keychains & Charms
     const keychains = rawProducts.filter(p => checkCategory(p.category, ["keychain", "charm"]));
     // 2. Fridge Magnets
@@ -220,11 +229,25 @@ export default async function CollectionPage({ params, searchParams }: PageProps
       if (prods.length > 0) sections.push({ title: cName, products: mapProducts(prods) });
     }
 
-  } else if (slug === "gifting") {
+  } else if (slug === "gift_cards") {
     // Dynamically group products in gifting by their exact category name (e.g. Friendship Day, Gift Boxes, etc.)
     const catMap: Record<string, DbProduct[]> = {};
     for (const prod of rawProducts) {
       const catName = prod.category ? prod.category.trim() : "Gift Collection";
+      if (!catMap[catName]) catMap[catName] = [];
+      catMap[catName].push(prod);
+    }
+
+    for (const [catName, prods] of Object.entries(catMap)) {
+      if (prods.length > 0) {
+        sections.push({ title: catName, products: mapProducts(prods) });
+      }
+    }
+  } else {
+    // Dynamically group products for custom main categories (e.g. animal-care)
+    const catMap: Record<string, DbProduct[]> = {};
+    for (const prod of rawProducts) {
+      const catName = prod.category ? prod.category.trim() : "Products";
       if (!catMap[catName]) catMap[catName] = [];
       catMap[catName].push(prod);
     }
@@ -271,7 +294,12 @@ export default async function CollectionPage({ params, searchParams }: PageProps
       <div className="container mx-auto px-4 lg:px-8 py-16">
         {/* Header Bar */}
         <div className="flex items-center justify-between mb-8 border-b border-jungle/10 pb-6">
-          <h1 className="font-display text-xl sm:text-2xl text-jungle font-semibold">{collectionName}</h1>
+          <div>
+            <h1 className="font-display text-xl sm:text-2xl text-jungle font-semibold">{collectionName}</h1>
+            {slug === "animal-care" && (
+              <p className="text-sm font-medium text-jungle/80 italic mt-1">In collaboration with Ananda Naturals.</p>
+            )}
+          </div>
           <p className="text-sm text-jungle/60">
             Showing <span className="font-bold text-jungle">{rawProducts.length}</span> pieces
           </p>
