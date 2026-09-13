@@ -245,7 +245,7 @@ export default function ProductDetailClient({
                 </div>
               ) : (
                 <Image
-                  src={currentMedia?.url || "/images/products/placeholder.png"}
+                  src={currentMedia?.url || "/images/collections/gifting_box.webp"}
                   alt={product.name}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"

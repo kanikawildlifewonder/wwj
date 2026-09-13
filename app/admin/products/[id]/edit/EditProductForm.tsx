@@ -151,7 +151,7 @@ export default function EditProductForm({ product }: { product: EditableProduct 
     }
 
     setIsSubmitting(true);
-    let mainImageUrl = product.images[0] || "/images/products/placeholder.png";
+    let mainImageUrl = product.images[0] || "/images/collections/gifting_box.webp";
     const finalGalleryUrls = [...galleryPreviews];
     let videoUrl: string | null | undefined = product.video;
 

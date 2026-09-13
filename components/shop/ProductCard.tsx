@@ -88,7 +88,7 @@ export function ProductCard({ product, theme = "light" }: ProductCardProps) {
 
         {/* Image */}
         <Image
-          src={product.images[0] || "/images/products/placeholder.png"}
+          src={product.images[0] || "/images/collections/gifting_box.webp"}
           alt={product.name}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"

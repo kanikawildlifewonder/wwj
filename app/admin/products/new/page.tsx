@@ -97,7 +97,7 @@ export default function NewProductPage() {
     }
 
     setIsSubmitting(true);
-    let mainImageUrl = "/images/products/placeholder.png";
+    let mainImageUrl = "/images/collections/gifting_box.webp";
     const galleryUrls: string[] = [];
     let videoUrl: string | undefined = undefined;
 

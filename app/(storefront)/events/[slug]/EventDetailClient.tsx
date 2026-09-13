@@ -309,7 +309,7 @@ export default function EventDetailClient({
                     >
                       <div
                         className="w-16 h-16 rounded-xl bg-cream border border-jungle/5 bg-cover bg-center flex-shrink-0 overflow-hidden"
-                        style={{ backgroundImage: `url(${p.images[0] || "/images/products/placeholder.png"})` }}
+                        style={{ backgroundImage: `url(${p.images[0] || "/images/collections/gifting_box.webp"})` }}
                       />
                       <div className="min-w-0 flex-1">
                         <p className="text-xs font-semibold text-jungle group-hover:text-gold transition-colors truncate">
