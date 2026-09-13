@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { updatePageContent, getPageContent } from "@/app/actions/content";
+import { getGroupedProductCategories } from "@/app/actions/categories";
+import { DEFAULT_COLLECTION_NAMES } from "@/lib/categories";
 import { uploadImage, uploadPdf } from "@/app/actions/upload";
 import { toast } from "sonner";
 import {
@@ -10,14 +12,8 @@ import {
 } from "lucide-react";
 
 /* ─────────────────────── types ──────────────────────── */
-type CollectionSlot = { title: string; description: string; image: string };
+type CollectionSlot = { key?: string; title: string; description: string; image: string };
 type Section = "hero" | "collections" | "about" | "announcement" | "aboutBrand" | "aboutFounder" | "welfare" | "policies" | "catalogPdf" | "footerSocials";
-
-const DEFAULT_COLLECTIONS: CollectionSlot[] = [
-  { title: "WWJ JEWELLERY",       description: "Handcrafted animal-inspired fashion pieces.", image: "/images/products/peacock_necklace.png" },
-  { title: "WWA ACCESSORIES",     description: "Cute everyday wildlife collectibles.",         image: "/images/products/elephant_keychain.png" },
-  { title: "GIFTING COLLECTION",  description: "Ready-to-gift pieces & curated sets for every occasion.", image: "/images/collections/gifting_box.webp" },
-];
 
 /* ─────────────────────── helpers ─────────────────────── */
 function SectionCard({ icon: Icon, label, description, active, onClick }: {
@@ -280,7 +276,7 @@ export default function AdminPagesCMS() {
   const [heroImage,      setHeroImage]      = useState("/images/hero_leopard.webp");
 
   // Collections
-  const [collections, setCollections] = useState<CollectionSlot[]>(DEFAULT_COLLECTIONS.map(c => ({ ...c })));
+  const [collections, setCollections] = useState<CollectionSlot[]>([]);
 
   // About/story
   const [aboutSubtitle,  setAboutSubtitle]  = useState("");
@@ -391,6 +387,7 @@ export default function AdminPagesCMS() {
           getPageContent("policy-terms"),
           getPageContent("policy-returns"),
           getPageContent("policy-shipping"),
+          getGroupedProductCategories(),
         ]);
 
         if (heroRes) {
@@ -409,15 +406,40 @@ export default function AdminPagesCMS() {
           setAboutImageCenter(c.imageCenter ?? "/images/wildlife/deer.webp");
           setAboutImageRight(c.imageRight ?? "/images/collections/accessories_banner.webp");
         }
+        const groupedCategoriesRes = pShippingRes !== undefined ? arguments[0][13] : (await getGroupedProductCategories());
+        
+        const keys = Object.keys(groupedCategoriesRes || {});
+        const dynamicDefaults = keys.map((key, i) => {
+           const defaultTitle = DEFAULT_COLLECTION_NAMES[key] || key.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+           const defaultDesc = [
+             "Handcrafted animal-inspired fashion pieces.",
+             "Cute everyday wildlife collectibles.",
+             "Ready-to-gift pieces & curated sets for every occasion.",
+             "In collaboration with Ananda Naturals."
+           ][i] || "Explore our beautiful collection.";
+           const defaultImg = [
+             "/images/products/peacock_necklace.png",
+             "/images/products/elephant_keychain.png",
+             "/images/collections/gifting_box.webp",
+             "/images/collections/animal_care_thumbnail.jpg"
+           ][i] || "/images/collections/animal_care_thumbnail.jpg";
+           return { key, title: defaultTitle, description: defaultDesc, image: defaultImg };
+        });
+
         if (colRes) {
-          const arr = JSON.parse(colRes);
-          if (Array.isArray(arr)) {
-            setCollections(DEFAULT_COLLECTIONS.map((def, i) => ({
-              title:       arr[i]?.title       ?? def.title,
-              description: arr[i]?.description ?? def.description,
-              image:       arr[i]?.image       ?? def.image,
-            })));
-          }
+          try {
+            const arr = JSON.parse(colRes);
+            if (Array.isArray(arr)) {
+              setCollections(dynamicDefaults.map((def, i) => ({
+                key:         def.key,
+                title:       arr[i]?.title       || def.title,
+                description: arr[i]?.description || def.description,
+                image:       arr[i]?.image       || def.image,
+              })));
+            } else setCollections(dynamicDefaults);
+          } catch { setCollections(dynamicDefaults); }
+        } else {
+          setCollections(dynamicDefaults);
         }
         if (annRes) {
           const c = JSON.parse(annRes);
@@ -587,7 +609,7 @@ export default function AdminPagesCMS() {
 
   const SECTIONS: { id: Section; icon: React.ElementType; label: string; description: string }[] = [
     { id: "hero",         icon: Home,      label: "Hero Banner",           description: "Main title, subtitle & CTA button" },
-    { id: "collections",  icon: Layout,    label: "Collection Cards",     description: "Images & text for 3 collection cards" },
+    { id: "collections",  icon: Layout,    label: "Collection Cards",     description: "Images & text for collection cards" },
     { id: "about",        icon: FileText,  label: "Story / About Section", description: "Wildlife story banner text & images" },
     { id: "announcement", icon: Megaphone, label: "Announcement Bar",      description: "Top-of-page notice & badges" },
     { id: "welfare",      icon: Layout,    label: "Welfare & Initiatives",description: "Food for Paws, Gaushalas, Avian rescue" },
@@ -707,13 +729,13 @@ export default function AdminPagesCMS() {
               {/* ── COLLECTIONS ── */}
               {activeSection === "collections" && (
                 <div className="space-y-8">
-                  <p className="text-xs text-jungle/50 -mt-2">Update the image and copy for each of the three collection cards shown on the homepage.</p>
+                  <p className="text-xs text-jungle/50 -mt-2">Update the image and copy for each of the collection cards shown on the homepage.</p>
                   {collections.map((col, idx) => (
                     <div key={idx} className="rounded-xl border border-border overflow-hidden">
                       <div className="px-4 py-3 bg-cream/30 border-b border-border flex items-center gap-2">
                         <span className="w-6 h-6 rounded-full bg-jungle text-gold text-xs font-bold flex items-center justify-center shrink-0">{idx + 1}</span>
                         <span className="text-sm font-semibold text-jungle">Card {idx + 1}</span>
-                        <span className="text-xs text-jungle/40 ml-1">— {DEFAULT_COLLECTIONS[idx].title}</span>
+                        <span className="text-xs text-jungle/40 ml-1">— {col.key ? (DEFAULT_COLLECTION_NAMES[col.key] || col.key) : col.title}</span>
                       </div>
                       <div className="p-4 space-y-4">
                         <ImageUploader
@@ -723,10 +745,10 @@ export default function AdminPagesCMS() {
                           onChange={(url) => updateCollection(idx, "image", url)}
                         />
                         <FormField label="Card Title">
-                          <input value={col.title} onChange={(e) => updateCollection(idx, "title", e.target.value)} placeholder={DEFAULT_COLLECTIONS[idx].title} className={INPUT_CLS} />
+                          <input value={col.title} onChange={(e) => updateCollection(idx, "title", e.target.value)} placeholder="Title" className={INPUT_CLS} />
                         </FormField>
                         <FormField label="Card Description">
-                          <input value={col.description} onChange={(e) => updateCollection(idx, "description", e.target.value)} placeholder={DEFAULT_COLLECTIONS[idx].description} className={INPUT_CLS} />
+                          <input value={col.description} onChange={(e) => updateCollection(idx, "description", e.target.value)} placeholder="Description" className={INPUT_CLS} />
                         </FormField>
                       </div>
                     </div>
