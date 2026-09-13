@@ -372,7 +372,7 @@ export default function AdminPagesCMS() {
       try {
         const [
           heroRes, aboutRes, colRes, annRes, brandRes, founderRes, catalogRes, socialRes, welfareRes,
-          pPrivacyRes, pTermsRes, pReturnsRes, pShippingRes
+          pPrivacyRes, pTermsRes, pReturnsRes, pShippingRes, groupedCategoriesRes
         ] = await Promise.all([
           getPageContent("home-hero"),
           getPageContent("home-about"),
@@ -406,7 +406,6 @@ export default function AdminPagesCMS() {
           setAboutImageCenter(c.imageCenter ?? "/images/wildlife/deer.webp");
           setAboutImageRight(c.imageRight ?? "/images/collections/accessories_banner.webp");
         }
-        const groupedCategoriesRes = pShippingRes !== undefined ? arguments[0][13] : (await getGroupedProductCategories());
         
         const keys = Object.keys(groupedCategoriesRes || {});
         const dynamicDefaults = keys.map((key, i) => {
